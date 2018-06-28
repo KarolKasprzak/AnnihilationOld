@@ -1,0 +1,48 @@
+
+oswalk.png
+size: 1024,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Astr
+  rotate: false
+  xy: 2, 2
+  size: 160, 250
+  orig: 160, 250
+  offset: 0, 0
+  index: 0
+Astr
+  rotate: false
+  xy: 164, 2
+  size: 160, 250
+  orig: 160, 250
+  offset: 0, 0
+  index: 1
+Astr
+  rotate: false
+  xy: 326, 2
+  size: 160, 250
+  orig: 160, 250
+  offset: 0, 0
+  index: 2
+Astr
+  rotate: false
+  xy: 488, 2
+  size: 160, 250
+  orig: 160, 250
+  offset: 0, 0
+  index: 3
+Astr
+  rotate: false
+  xy: 650, 2
+  size: 160, 250
+  orig: 160, 250
+  offset: 0, 0
+  index: 4
+Astr
+  rotate: false
+  xy: 812, 2
+  size: 160, 250
+  orig: 160, 250
+  offset: 0, 0
+  index: 5
