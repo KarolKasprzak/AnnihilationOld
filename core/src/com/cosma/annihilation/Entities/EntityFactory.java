@@ -28,37 +28,37 @@ public class EntityFactory {
         this.engine.addEntity(entity);
         return entity;
     }
-    public Entity playerEntity() {
-        Entity entity = new Entity();
-        BodyComponent bodyComponent = new BodyComponent();
-        PlayerComponent playerComponent = new PlayerComponent();
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(9, 1);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 1);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        bodyComponent.body = world.createBody(bodyDef);
-        bodyComponent.body.setFixedRotation(true);
-        bodyComponent.body.createFixture(fixtureDef);
-
-        TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.texture = (Texture) AssetsLoader.getResorce("hero");
-
-        Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
-        bodyComponent.body.setUserData(box2DSprite);
-
-        entity.add(playerComponent);
-        entity.add(bodyComponent);
-        entity.add(texture);
-
-        this.engine.addEntity(entity);
-
-        return entity;
-    }
+//    public Entity playerEntity() {
+//        Entity entity = new Entity();
+//        BodyComponent bodyComponent = new BodyComponent();
+//        PlayerComponent playerComponent = new PlayerComponent();
+//
+//        BodyDef bodyDef = new BodyDef();
+//        bodyDef.type = BodyDef.BodyType.DynamicBody;
+//        bodyDef.position.set(9, 1);
+//        PolygonShape shape = new PolygonShape();
+//        shape.setAsBox(0.5f, 1);
+//        FixtureDef fixtureDef = new FixtureDef();
+//        fixtureDef.shape = shape;
+//        fixtureDef.density = 1f;
+//        bodyComponent.body = world.createBody(bodyDef);
+//        bodyComponent.body.setFixedRotation(true);
+//        bodyComponent.body.createFixture(fixtureDef);
+//
+//        TextureComponent texture = engine.createComponent(TextureComponent.class);
+//        texture.texture = (Texture) AssetsLoader.getResorce("hero");
+//
+//        Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
+//        bodyComponent.body.setUserData(box2DSprite);
+//
+//        entity.add(playerComponent);
+//        entity.add(bodyComponent);
+//        entity.add(texture);
+//
+//        this.engine.addEntity(entity);
+//
+//        return entity;
+//    }
         public Entity cameraEntity(){
             Entity entity = engine.createEntity();
             CameraComponent cameraComponent = new CameraComponent();

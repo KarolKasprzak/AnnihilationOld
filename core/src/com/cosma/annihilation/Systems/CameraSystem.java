@@ -29,7 +29,7 @@ public class CameraSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
 
         BodyComponent body = bodyMapper.get(entity);
-        camera.position.set(body.body.getPosition().x,body.body.getPosition().y + 2,0);
+        camera.position.set(body.body.getPosition().x,body.body.getPosition().y + 1,0);
         camera.update();
 
     }

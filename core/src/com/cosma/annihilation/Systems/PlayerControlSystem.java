@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.StateComponent;
+import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerControlSystem extends IteratingSystem{
 
@@ -32,7 +33,7 @@ public class PlayerControlSystem extends IteratingSystem{
     protected void processEntity(Entity entity, float deltaTime) {
 
         BodyComponent b2body = bodyMapper.get(entity);
-
+        PlayerComponent player = playerMapper.get(entity);
 //        StateComponent state = sm.get(entity);
 //        // if body is going down set state falling
 //        if(b2body.body.getLinearVelocity().y > 0){
@@ -53,23 +54,28 @@ public class PlayerControlSystem extends IteratingSystem{
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 
             Vector2 vec = b2body.body.getLinearVelocity();
-            float desiredSpeed = -2;
+            float desiredSpeed = -player.velocity;
             float speedX = desiredSpeed - vec.x;
             float impulse =b2body.body.getMass() * speedX;
             b2body.body.applyLinearImpulse(new Vector2(impulse,0),
             b2body.body.getWorldCenter(), true);
-            System.out.println( b2body.body.getPosition().x);
 
+
+        }
+        if(StateManager.onGround)
+             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                     b2body.body.applyLinearImpulse(new Vector2(0,5),
+                     b2body.body.getWorldCenter(), true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 
             Vector2 vec = b2body.body.getLinearVelocity();
-            float desiredSpeed = 2;
+            float desiredSpeed = player.velocity;
             float speedX = desiredSpeed - vec.x;
             float impulse =b2body.body.getMass() * speedX;
             b2body.body.applyLinearImpulse(new Vector2(impulse,0),
                     b2body.body.getWorldCenter(), true);
-            System.out.println( b2body.body.getPosition().x);
+
 
         }
 

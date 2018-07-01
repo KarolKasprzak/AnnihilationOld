@@ -7,6 +7,8 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
@@ -15,8 +17,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Components.WorldSystem;
 import com.cosma.annihilation.Entities.EntityFactory;
+import com.cosma.annihilation.Entities.PlayerEntity;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.BodyID;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class WorldBuilder implements Disposable, EntityListener {
@@ -25,18 +29,23 @@ public class WorldBuilder implements Disposable, EntityListener {
     private OrthographicCamera camera;
     private Viewport viewport;
     private SpriteBatch sb;
-    Body body ;
+    private Body body ;
+    private TiledMap tiledMap;
 
         public WorldBuilder(){
         world = new World(new Vector2(0,-9), true);
+        world.setContactListener(new ContactListenerSystem());
         sb = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(16, 9,camera);
+        viewport = new FitViewport(22, 12,camera);
         viewport.apply(true);
         camera.update();
         sb.setProjectionMatrix(camera.combined);
         //create a pooled engine
         engine = new PooledEngine();
+        //TiledMap
+        tiledMap = new TmxMapLoader().load("bunker.tmx");
+
         // add all the relevant systems our engine should run
         engine.addSystem(new WorldSystem());
         engine.addSystem(new RenderSystem(camera,world));
@@ -44,9 +53,12 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
+        engine.addSystem(new TileMapRender(camera,tiledMap));
+
         // add all entity
+        PlayerEntity playerEntity = new PlayerEntity(engine,world);
         EntityFactory entityFactory = new EntityFactory(world,engine,camera);
-        entityFactory.playerEntity();
+//        entityFactory.playerEntity();
         entityFactory.cameraEntity();
         addMap();
     }
@@ -82,11 +94,12 @@ public class WorldBuilder implements Disposable, EntityListener {
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         body = world.createBody(bodyDef);
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData(BodyID.GROUND);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         texture.texture = (Texture) AssetsLoader.getResorce("ladder");
 
         Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
         body.setUserData(box2DSprite);
+
     }
 }

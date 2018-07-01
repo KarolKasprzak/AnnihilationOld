@@ -1,7 +1,9 @@
 package com.cosma.annihilation.Utils;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 import java.util.HashMap;
@@ -27,8 +29,8 @@ public class AssetsLoader {
         for(AssetsHelper asset : files.values()){
             manager.load(asset.path,asset.type);
         }
-//        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-//        manager.load("bunker.tmx", TiledMap.class);
+       manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.load("Map/1/bunker.tmx", TiledMap.class);
         manager.finishLoading();
         System.out.println("assets load");
     }
