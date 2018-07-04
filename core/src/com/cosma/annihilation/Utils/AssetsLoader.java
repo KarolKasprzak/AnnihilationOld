@@ -10,10 +10,10 @@ import java.util.HashMap;
 
 public class AssetsLoader {
 
-    private  static final AssetManager manager = new AssetManager();
+    public  static final AssetManager manager = new AssetManager();
     private static HashMap<String, AssetsHelper> files;
 
-    public  void load(){
+    public void load(){
 
         files = new HashMap<String, AssetsHelper>();
         //Textures
@@ -29,12 +29,12 @@ public class AssetsLoader {
         for(AssetsHelper asset : files.values()){
             manager.load(asset.path,asset.type);
         }
-       manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load("Map/1/bunker.tmx", TiledMap.class);
         manager.finishLoading();
         System.out.println("assets load");
     }
-    public static Object getResorce(String mapKey){
+    public static Object getResource(String mapKey){
         return manager.get(files.get(mapKey).path,files.get(mapKey).type);
     }
 

@@ -45,7 +45,7 @@ public class TestScreen implements Screen, InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-
+        worldBuilder.resize(width,height);
         System.out.println(Gdx.graphics.getHeight());
         System.out.println(Gdx.graphics.getWidth());
 

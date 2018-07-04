@@ -20,14 +20,13 @@ public class PlayerEntity {
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.texture = (Texture) AssetsLoader.getResorce("hero");
+        texture.texture = (Texture) AssetsLoader.getResource("hero");
 
         Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
         // Player physic components
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(9, 1);
-        bodyComponent.body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(1f, 2);
         bodyComponent.body = world.createBody(bodyDef);
