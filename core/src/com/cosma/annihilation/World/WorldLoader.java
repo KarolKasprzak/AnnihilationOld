@@ -90,9 +90,7 @@ class WorldLoader {
                 fixtureDef.density = 1f;
                 fixtureDef.isSensor = true;
                 fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
-                fixtureDef.filter.maskBits = Constants.NOT_COLIDED;
                 ladderBody.createFixture(fixtureDef).setUserData(BodyID.LADDER);
-
                 shape.dispose();
                 return ladderBody;
 

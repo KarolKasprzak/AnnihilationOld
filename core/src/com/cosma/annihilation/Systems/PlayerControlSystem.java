@@ -52,21 +52,34 @@ public class PlayerControlSystem extends IteratingSystem{
 //        }
         // apply forces depending on controller input
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-
             Vector2 vec = b2body.body.getLinearVelocity();
             float desiredSpeed = -player.velocity;
             float speedX = desiredSpeed - vec.x;
             float impulse =b2body.body.getMass() * speedX;
             b2body.body.applyLinearImpulse(new Vector2(impulse,0),
             b2body.body.getWorldCenter(), true);
-
-
         }
-        if(StateManager.onGround)
-             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                     b2body.body.applyLinearImpulse(new Vector2(0,2),
-                     b2body.body.getWorldCenter(), true);
+
+        if(StateManager.canJump && StateManager.onGround) {
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                b2body.body.applyLinearImpulse(new Vector2(0, 2),
+                        b2body.body.getWorldCenter(), true);
+            }
         }
+
+        if(StateManager.canClimb) {
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                b2body.body.setGravityScale(0);
+                b2body.body.setActive(true);
+                b2body.body.setLinearVelocity(new Vector2(0, 1));
+            }
+            else  b2body.body.setGravityScale(1);
+        }
+        else  b2body.body.setGravityScale(1);
+//        if(!StateManager.canClimb) {
+//            b2body.body.setGravityScale(1);
+//        }
+
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 
             Vector2 vec = b2body.body.getLinearVelocity();

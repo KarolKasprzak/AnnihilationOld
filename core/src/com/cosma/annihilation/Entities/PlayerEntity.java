@@ -48,12 +48,13 @@ public class PlayerEntity {
         //Foot sensor fixture
         PolygonShape footSensorShape = new PolygonShape();
         footSensorShape.setAsBox(0.5f/2,0.5f/2, new Vector2(0,-1),0);
-        fixtureDef.shape = footSensorShape;
-        fixtureDef.density = 0.2f;
-        fixtureDef.isSensor = true;
-        fixtureDef.filter.categoryBits = Constants.PLAYER_COLIDED;
-        fixtureDef.filter.maskBits = Constants.PLAYER_COLIDED;
-        bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_FOOT);
+        FixtureDef footFixtureDef = new FixtureDef();
+        footFixtureDef.shape = footSensorShape;
+        footFixtureDef.density = 0.2f;
+        footFixtureDef.isSensor = true;
+        footFixtureDef.filter.categoryBits = Constants.PLAYER_COLIDED;
+        footFixtureDef.filter.maskBits = Constants.PLAYER_COLIDED;
+        bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Add entity
         entity.add(playerComponent);
         entity.add(bodyComponent);
