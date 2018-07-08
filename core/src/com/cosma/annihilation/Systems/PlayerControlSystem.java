@@ -64,7 +64,7 @@ public class PlayerControlSystem extends IteratingSystem{
         }
         if(StateManager.onGround)
              if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                     b2body.body.applyLinearImpulse(new Vector2(0,5),
+                     b2body.body.applyLinearImpulse(new Vector2(0,2),
                      b2body.body.getWorldCenter(), true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {

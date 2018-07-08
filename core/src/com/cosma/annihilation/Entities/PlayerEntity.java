@@ -10,6 +10,7 @@ import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.Constants;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class PlayerEntity {
@@ -23,12 +24,13 @@ public class PlayerEntity {
         texture.texture = (Texture) AssetsLoader.getResource("hero");
 
         Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
+        box2DSprite.flip(false,false);
         // Player physic components
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(9, 1);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1f, 2);
+        shape.setAsBox(1f/2, 2/2);
         bodyComponent.body = world.createBody(bodyDef);
         bodyComponent.body.setFixedRotation(true);
         //Fixture
@@ -36,12 +38,21 @@ public class PlayerEntity {
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
-        //Sensor fixture
-        PolygonShape sensorShape = new PolygonShape();
-        sensorShape.setAsBox(0.5f,0.5f, new Vector2(0,-2),0);
-        fixtureDef.shape = sensorShape;
+        //Body sensor fixture
+        PolygonShape bodySensorShape = new PolygonShape();
+        bodySensorShape.setAsBox(1.1f/2,1.5f/2, new Vector2(0,0),0);
+        fixtureDef.shape = bodySensorShape;
         fixtureDef.density = 0.2f;
         fixtureDef.isSensor = true;
+        bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
+        //Foot sensor fixture
+        PolygonShape footSensorShape = new PolygonShape();
+        footSensorShape.setAsBox(0.5f/2,0.5f/2, new Vector2(0,-1),0);
+        fixtureDef.shape = footSensorShape;
+        fixtureDef.density = 0.2f;
+        fixtureDef.isSensor = true;
+        fixtureDef.filter.categoryBits = Constants.PLAYER_COLIDED;
+        fixtureDef.filter.maskBits = Constants.PLAYER_COLIDED;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Add entity
         entity.add(playerComponent);

@@ -16,7 +16,7 @@ public class TileMapRender extends IteratingSystem {
         public TileMapRender(OrthographicCamera camera,TiledMap tiledMap) {
             super(Family.all().get());
             this.camera = camera;
-            this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap,1/16f);
+            this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap,1f/64f);
         }
 
 

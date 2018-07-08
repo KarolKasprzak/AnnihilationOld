@@ -23,11 +23,14 @@ public class ContactListenerSystem extends EntitySystem implements ContactListen
         Fixture fb = contact.getFixtureB();
 
 
-        if(fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.GROUND)  {
-           StateManager.onGround = true;
-        }
-        if(fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.GROUND)  {
+
+        if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT)  {
             StateManager.onGround = true;
+        }
+        if(fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.LADDER ||
+                fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
+            System.out.println("its ladder");
+            StateManager.onGround =false;
         }
     }
 
@@ -35,12 +38,15 @@ public class ContactListenerSystem extends EntitySystem implements ContactListen
     public void endContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        if(fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.GROUND)  {
+        if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT)   {
             StateManager.onGround = false;
         }
-        if(fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.GROUND)  {
-            StateManager.onGround = false;
+        if(fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.LADDER ||
+                fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
+            System.out.println("its out ladder");
+            StateManager.onGround =false;
         }
+
     }
 
     @Override

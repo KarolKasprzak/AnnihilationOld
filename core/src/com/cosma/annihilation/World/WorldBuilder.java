@@ -6,18 +6,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
@@ -33,51 +27,45 @@ public class WorldBuilder implements Disposable, EntityListener {
     public World world;
     private OrthographicCamera camera;
     private Viewport viewport;
-    private SpriteBatch sb;
-    private Body body ;
     private TiledMap tiledMap;
     private WorldLoader worldLoader;
 
         public WorldBuilder(){
-        start();
-        loadMap();
-        sb = new SpriteBatch();
-        viewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT,camera);
-        viewport.apply(true);
-        camera.update();
+        initializeEngine();
+        SpriteBatch sb = new SpriteBatch();
         sb.setProjectionMatrix(camera.combined);
         // add all entity
         PlayerEntity playerEntity = new PlayerEntity(engine,world);
         EntityFactory entityFactory = new EntityFactory(world,engine,camera);
         entityFactory.cameraEntity();
         addMap();
-        WorldLoader worldLoader = new WorldLoader(engine,world,tiledMap);
+        worldLoader = new WorldLoader(engine,world,tiledMap);
         worldLoader.loadMap();
     }
-    public void start(){
+    public void initializeEngine(){
         //Create camera
         camera = new OrthographicCamera();
+        viewport = new ExtendViewport(16, 9,camera);
+        viewport.apply(true);
+        camera.update();
         //Load map
         tiledMap = AssetsLoader.manager.get("Map/1/bunker.tmx", TiledMap.class);
         //Create a pooled engine & world
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
-        world.setContactListener(new ContactListenerSystem());
+//        world.setContactListener(new ContactListenerSystem());
         engine = new PooledEngine();
         //Add all the relevant systems our engine should run
         engine.addSystem(new RenderSystem(camera,world));
+        engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
-//        engine.addSystem(new CameraSystem(camera));
+        engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
-    }
-    public void loadMap(){
-     worldLoader = new WorldLoader(engine,world,tiledMap);
-
     }
 
     public void update(float delta) {
-        debugInput();
+//        debugInput();
         viewport.apply();
         engine.update(delta);
         camera.update();
@@ -85,6 +73,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
     public void resize(int w, int h) {
         viewport.update(w, h, true);
+
         }
 
     private void debugInput() {
@@ -92,15 +81,11 @@ public class WorldBuilder implements Disposable, EntityListener {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.translate(0, -1);
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.translate(-1, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.translate(1, 0);
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) applyZoom(camera.zoom + 0.02f);
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) applyZoom(camera.zoom - 0.02f);
-    }
-    public void applyZoom(float amount) {
-        //Bound the zoom to min and max values 0.8 - 2.5
-        amount = Math.max(0.8f, Math.min(2.5f, amount));
-        camera.zoom = amount;
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) camera.zoom = camera.zoom + 0.2f;
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.zoom = camera.zoom - 0.2f;
         camera.update();
     }
+
     @Override
     public void entityAdded(Entity entity) {
 
@@ -131,7 +116,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
-        body = world.createBody(bodyDef);
+        Body body = world.createBody(bodyDef);
         body.createFixture(fixtureDef).setUserData(BodyID.GROUND);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         texture.texture = (Texture) AssetsLoader.getResource("ladder");
