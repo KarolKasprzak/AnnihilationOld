@@ -42,20 +42,19 @@ public class PhysicsSystem extends IteratingSystem {
             accumulator -= MAX_STEP_TIME;
 
             //Loop through all Entities and update our components
-            for (Entity entity : bodiesQueue) {
-                // get components
-                TransformComponent tfm = transformMapper.get(entity);
-                BodyComponent bodyComp = bodyMapper.get(entity);
-                // get position from body
-                Vector2 position = bodyComp.body.getPosition();
-                System.out.println(position);
-                // update our transform to match body position
-                tfm.position.x = position.x;
-                tfm.position.y = position.y;
-                tfm.rotation = bodyComp.body.getAngle() * MathUtils.radiansToDegrees;
-            }
-        }
 
+        }
+        for (Entity entity : bodiesQueue) {
+            // get components
+            TransformComponent tfm = transformMapper.get(entity);
+            BodyComponent bodyComp = bodyMapper.get(entity);
+            // get position from body
+            Vector2 position = bodyComp.body.getPosition();
+            // update our transform to match body position
+            tfm.position.x = position.x;
+            tfm.position.y = position.y;
+            tfm.rotation = bodyComp.body.getAngle() * MathUtils.radiansToDegrees;
+        }
         // empty queue
         bodiesQueue.clear();
     }

@@ -18,6 +18,9 @@ import com.cosma.annihilation.Utils.StateManager;
 public class CollisionSystem extends IteratingSystem implements ContactListener {
 
     private World world;
+    private Family playerFamily;
+    private Entity player;
+    private float ladderX;
     private ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
     private ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
     private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
@@ -25,14 +28,26 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     public CollisionSystem(World world) {
         // System for all Entities that have B2dBodyComponent and TransformComponent
-        super(Family.all(BodyComponent.class, TransformComponent.class).get());
+        super(Family.all(PlayerComponent.class).get());
+        bodyMapper = ComponentMapper.getFor(BodyComponent.class);
+        playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.world = world;
         world.setContactListener(this);
+
+
     }
+
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
+
+        player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        Body body =  player.getComponent(BodyComponent.class).body;
+        if(StateManager.climbing) {
+            body.setTransform(ladderX,body.getPosition().y,0);
+        }
+
+
 
     }
 
@@ -54,7 +69,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
                 StateManager.canJump = false;
                 StateManager.canClimb = true;
+                if(fa.getUserData() == BodyID.LADDER){
+                    ladderX = fa.getBody().getPosition().x;
+                }else{
+                    ladderX = fb.getBody().getPosition().x;
+                }
         }
+
     }
 
     @Override
@@ -66,7 +87,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         }
         //Ladder climb
         if(fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.LADDER ||
-                fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
+            fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
             StateManager.canJump = true;
             StateManager.canClimb = false;
         }

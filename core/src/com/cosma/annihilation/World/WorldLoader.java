@@ -1,10 +1,15 @@
 package com.cosma.annihilation.World;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.physics.box2d.*;
+import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Entities.PlayerEntity;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.Constants;
 
@@ -16,19 +21,19 @@ class WorldLoader {
         this.engine = engine;
         this.world = world;
         this.gameMap = gameMap;
+        createEntitys();
+        loadMap();
     }
     void loadMap(){
 
                     MapLayers layers = gameMap.getLayers();
                     MapLayer layer = layers.get("object");
-                    MapObject mobject = layer.getObjects().get("spawn");
-
-                    System.out.println(mobject.getProperties().get("x"));
-
                     for(MapObject mo : layer.getObjects()){
-                        if("spawnBox".equals(mo.getName())){
+                        if("spawn".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
-                            Body body = createBoxBody(dimension[0],dimension[1],1,1,true,0);
+                            Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                            Body playerBody =  player.getComponent(BodyComponent.class).body;
+                            playerBody.setTransform(dimension[0],dimension[1],0);
                         }
                         if("ladder".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
@@ -85,8 +90,10 @@ class WorldLoader {
                 PolygonShape shape = new PolygonShape();
                 shape.setAsBox(width/2, height/2);
                 //Fixture
+                PolygonShape fshape = new PolygonShape();
+                fshape.setAsBox(1/2, height/2);
                 FixtureDef fixtureDef = new FixtureDef();
-                fixtureDef.shape = shape;
+                fixtureDef.shape = fshape;
                 fixtureDef.density = 1f;
                 fixtureDef.isSensor = true;
                 fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
@@ -96,6 +103,9 @@ class WorldLoader {
 
         }
 
+        private void createEntitys(){
+            PlayerEntity playerEntity = new PlayerEntity(engine,world);
+        }
 
         private float[] getDimension(MapObject mapObject){
             MapProperties properties = mapObject.getProperties();

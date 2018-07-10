@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TextureComponent;
+import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.Constants;
@@ -21,8 +22,9 @@ public class PlayerEntity {
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.texture = (Texture) AssetsLoader.getResource("hero");
+        TransformComponent transformComponent = new TransformComponent();
 
+        texture.texture = (Texture) AssetsLoader.getResource("hero");
         Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
         box2DSprite.flip(false,false);
         // Player physic components
@@ -40,7 +42,7 @@ public class PlayerEntity {
         bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
-        bodySensorShape.setAsBox(1.1f/2,1.5f/2, new Vector2(0,0),0);
+        bodySensorShape.setAsBox(0.2f/2,1.5f/2, new Vector2(0,0),0);
         fixtureDef.shape = bodySensorShape;
         fixtureDef.density = 0.2f;
         fixtureDef.isSensor = true;
@@ -56,6 +58,7 @@ public class PlayerEntity {
         footFixtureDef.filter.maskBits = Constants.PLAYER_COLIDED;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Add entity
+        entity.add(transformComponent);
         entity.add(playerComponent);
         entity.add(bodyComponent);
         entity.add(texture);

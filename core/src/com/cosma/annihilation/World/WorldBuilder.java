@@ -20,6 +20,7 @@ import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.StateManager;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class WorldBuilder implements Disposable, EntityListener {
@@ -35,12 +36,9 @@ public class WorldBuilder implements Disposable, EntityListener {
         SpriteBatch sb = new SpriteBatch();
         sb.setProjectionMatrix(camera.combined);
         // add all entity
-        PlayerEntity playerEntity = new PlayerEntity(engine,world);
         EntityFactory entityFactory = new EntityFactory(world,engine,camera);
         entityFactory.cameraEntity();
-        addMap();
         worldLoader = new WorldLoader(engine,world,tiledMap);
-        worldLoader.loadMap();
     }
     public void initializeEngine(){
         //Create camera
@@ -57,7 +55,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         //Add all the relevant systems our engine should run
         engine.addSystem(new RenderSystem(camera,world));
         engine.addSystem(new CollisionSystem(world));
-        engine.addSystem(new DebugRenderSystem(camera,world));
+//        engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
@@ -105,24 +103,5 @@ public class WorldBuilder implements Disposable, EntityListener {
                 ((Disposable) entitySystem).dispose();
             }
         }
-    }
-    private void addMap(){
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(1, -2);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(25f, 1);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        Body body = world.createBody(bodyDef);
-        body.createFixture(fixtureDef).setUserData(BodyID.GROUND);
-        TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.texture = (Texture) AssetsLoader.getResource("ladder");
-
-        Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
-        body.setUserData(box2DSprite);
-
     }
 }

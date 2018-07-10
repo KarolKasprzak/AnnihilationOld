@@ -17,7 +17,7 @@ public class PlayerControlSystem extends IteratingSystem{
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
-    private ComponentMapper<StateComponent> stateMapper;
+
 
 
 
@@ -27,7 +27,6 @@ public class PlayerControlSystem extends IteratingSystem{
 
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-        stateMapper = ComponentMapper.getFor(StateComponent.class);
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -51,14 +50,7 @@ public class PlayerControlSystem extends IteratingSystem{
 //            }
 //        }
         // apply forces depending on controller input
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            Vector2 vec = b2body.body.getLinearVelocity();
-            float desiredSpeed = -player.velocity;
-            float speedX = desiredSpeed - vec.x;
-            float impulse =b2body.body.getMass() * speedX;
-            b2body.body.applyLinearImpulse(new Vector2(impulse,0),
-            b2body.body.getWorldCenter(), true);
-        }
+
 
         if(StateManager.canJump && StateManager.onGround) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
@@ -69,28 +61,40 @@ public class PlayerControlSystem extends IteratingSystem{
 
         if(StateManager.canClimb) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                StateManager.climbing = true;
                 b2body.body.setGravityScale(0);
                 b2body.body.setActive(true);
                 b2body.body.setLinearVelocity(new Vector2(0, 1));
             }
-            else  b2body.body.setGravityScale(1);
+            else {
+                  b2body.body.setGravityScale(1);
+                  StateManager.climbing = false;
+            }
         }
-        else  b2body.body.setGravityScale(1);
-//        if(!StateManager.canClimb) {
-//            b2body.body.setGravityScale(1);
-//        }
+        else {
+              b2body.body.setGravityScale(1);
+              StateManager.climbing = false;
+             }
+        if(!StateManager.climbing) {
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-
-            Vector2 vec = b2body.body.getLinearVelocity();
-            float desiredSpeed = player.velocity;
-            float speedX = desiredSpeed - vec.x;
-            float impulse =b2body.body.getMass() * speedX;
-            b2body.body.applyLinearImpulse(new Vector2(impulse,0),
-                    b2body.body.getWorldCenter(), true);
+                Vector2 vec = b2body.body.getLinearVelocity();
+                float desiredSpeed = player.velocity;
+                float speedX = desiredSpeed - vec.x;
+                float impulse = b2body.body.getMass() * speedX;
+                b2body.body.applyLinearImpulse(new Vector2(impulse, 0),
+                        b2body.body.getWorldCenter(), true);
 
 
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                Vector2 vec = b2body.body.getLinearVelocity();
+                float desiredSpeed = -player.velocity;
+                float speedX = desiredSpeed - vec.x;
+                float impulse = b2body.body.getMass() * speedX;
+                b2body.body.applyLinearImpulse(new Vector2(impulse, 0),
+                        b2body.body.getWorldCenter(), true);
+            }
         }
-
     }
 }
