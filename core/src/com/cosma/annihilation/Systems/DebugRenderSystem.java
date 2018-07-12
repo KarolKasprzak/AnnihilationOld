@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.cosma.annihilation.Utils.StateManager;
 
 
 public class DebugRenderSystem extends IteratingSystem {
@@ -29,8 +30,9 @@ public class DebugRenderSystem extends IteratingSystem {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        debugRenderer.render(world, camera.combined);
-
+        if(StateManager.debugMode) {
+            debugRenderer.render(world, camera.combined);
+        }
     }
 
 

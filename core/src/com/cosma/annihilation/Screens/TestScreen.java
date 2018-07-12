@@ -8,59 +8,32 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Gui.OnScreenGui;
+import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.World.WorldBuilder;
 
 public class TestScreen implements Screen, InputProcessor {
     private WorldBuilder worldBuilder;
-    private OnScreenGui onScreenGui;
+    private OnScreenGui gui;
     private InputMultiplexer im;
-    //gui test
+    private Viewport guiViewport;
     private Viewport viewport;
     private Camera camera;
-    private Touchpad tpad;
-    Stage stage;
-
-
+    Stage guiStage;
     public  TestScreen() {
-        //stage gui test
-        stage = new Stage();
-        camera = new OrthographicCamera();
-        camera.update();
-        viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),camera);
-        stage.setViewport(viewport);
-        viewport.apply(true);
-        Skin skin = new Skin(Gdx.files.internal("UI/uiskin.json"));
-        Table table = new Table();
-        table.top();
-        table.setFillParent(true);
-        //Debug Mode
-        table.setDebug(true);
-
-        table.row();
-        table.row();
-
-        Touchpad
-        tpad = new Touchpad(0,skin,"default");
-        table.add(tpad).expandX().padBottom(10).padLeft(10).width(50).height(50).fillY().expandY().bottom().left();
-        table.row();
-        stage.addActor(table);
 
 
+        gui = new OnScreenGui();
         worldBuilder = new WorldBuilder();
-        onScreenGui = new OnScreenGui();
         im = new InputMultiplexer();
         im.addProcessor(this);
-
-        }
+        im.addProcessor(gui);
+    }
 
     @Override
     public void show() {
-        viewport.apply(true);
         Gdx.input.setInputProcessor(im);
         System.out.println(Gdx.graphics.getHeight());
         System.out.println(Gdx.graphics.getWidth());
@@ -69,16 +42,22 @@ public class TestScreen implements Screen, InputProcessor {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
-        stage.draw();
-        camera.update();
-//        worldBuilder.update(delta);
+        worldBuilder.update(delta);
+        //Gui render
+        gui.draw();
+        if(StateManager.debugMode){
+            gui.setDebugAll(true);
+        }else gui.setDebugAll(false);
+        gui.act(delta);
+
         }
 
     @Override
     public void resize(int width, int height) {
         worldBuilder.resize(width,height);
+        gui.getViewport().update(width, height,true);
     }
+
 
     @Override
     public void pause() {

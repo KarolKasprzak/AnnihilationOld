@@ -42,7 +42,7 @@ public class PlayerEntity {
         bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
-        bodySensorShape.setAsBox(0.2f/2,1.5f/2, new Vector2(0,0),0);
+        bodySensorShape.setAsBox(0.2f/2,2f/2, new Vector2(0,0.2f),0);
         fixtureDef.shape = bodySensorShape;
         fixtureDef.density = 0.2f;
         fixtureDef.isSensor = true;

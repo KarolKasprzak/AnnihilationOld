@@ -2,7 +2,7 @@
 oswalk.png
 size: 1024,256
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 Astr
   rotate: false

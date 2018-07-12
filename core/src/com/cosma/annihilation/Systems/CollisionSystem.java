@@ -76,18 +76,20 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 }
         }
 
+
+
     }
 
     @Override
     public void endContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT)   {
+        if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT){
             StateManager.onGround = false;
         }
         //Ladder climb
         if(fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.LADDER ||
-            fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
+            fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER){
             StateManager.canJump = true;
             StateManager.canClimb = false;
         }
@@ -95,6 +97,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
+        Fixture fa = contact.getFixtureA();
+        Fixture fb = contact.getFixtureB();
+        if(fa.getUserData() == BodyID.PLAYER_BODY||fb.getUserData() == BodyID.PLAYER_BODY){
+
+                contact.setEnabled(false);
+
+        }
 
     }
 

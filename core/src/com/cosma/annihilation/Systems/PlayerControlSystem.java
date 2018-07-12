@@ -8,25 +8,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.StateComponent;
+import com.cosma.annihilation.Gui.OnScreenGui;
 import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerControlSystem extends IteratingSystem{
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
-
+    private Touchpad touchpad;
 
 
 
 
     public PlayerControlSystem() {
         super(Family.all(PlayerComponent.class).get());
-
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
+        this.touchpad = OnScreenGui.getTouchpad();
+
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -58,23 +61,35 @@ public class PlayerControlSystem extends IteratingSystem{
                         b2body.body.getWorldCenter(), true);
             }
         }
+        if(touchpad.getKnobPercentX() >= 0.5f){
+            System.out.println("dasd");
+        }
 
+        if(StateManager.canClimb && !Gdx.input.isKeyPressed(Input.Keys.UP)){
+            b2body.body.setLinearVelocity(0,0);
+        }
+        if(!StateManager.canClimb){
+            b2body.body.setGravityScale(1);
+        }
+
+        //Ladder up
         if(StateManager.canClimb) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
                 StateManager.climbing = true;
                 b2body.body.setGravityScale(0);
-                b2body.body.setActive(true);
                 b2body.body.setLinearVelocity(new Vector2(0, 1));
             }
-            else {
-                  b2body.body.setGravityScale(1);
-                  StateManager.climbing = false;
+            else {StateManager.climbing = false;}
+        }else {StateManager.climbing = false;}
+        //Ladder down
+        if(StateManager.canClimb) {
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                b2body.body.setGravityScale(0);
+                b2body.body.setLinearVelocity(new Vector2(0, -1));
             }
-        }
-        else {
-              b2body.body.setGravityScale(1);
-              StateManager.climbing = false;
-             }
+            else {StateManager.climbing = false;}
+        }else {StateManager.climbing = false;}
+
         if(!StateManager.climbing) {
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 
@@ -94,6 +109,12 @@ public class PlayerControlSystem extends IteratingSystem{
                 float impulse = b2body.body.getMass() * speedX;
                 b2body.body.applyLinearImpulse(new Vector2(impulse, 0),
                         b2body.body.getWorldCenter(), true);
+            }
+
+            if (StateManager.climbing) {
+                b2body.body.setGravityScale(0);
+                b2body.body.setActive(true);
+
             }
         }
     }
