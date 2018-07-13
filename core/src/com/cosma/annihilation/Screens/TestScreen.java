@@ -49,6 +49,8 @@ public class TestScreen implements Screen, InputProcessor {
             gui.setDebugAll(true);
         }else gui.setDebugAll(false);
         gui.act(delta);
+        gui.actlab();
+
 
         }
 

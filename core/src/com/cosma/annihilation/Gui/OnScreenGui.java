@@ -22,7 +22,11 @@ public class OnScreenGui extends Stage implements Disposable {
     private Skin skin;
     private TextButton debugButton;
     private TextButton menuButton;
+    private TextButton stateCheckButton;
     private Window window;
+    Label label;
+    Label label1;
+    private Label label2;
 
     public OnScreenGui(){
 
@@ -47,7 +51,16 @@ public class OnScreenGui extends Stage implements Disposable {
         window.setSize(Gdx.graphics.getWidth()/4,Gdx.graphics.getHeight()/4);
         window.setVisible(false);
         addActor(window);
-
+        stateCheckButton = new TextButton("State check", skin);
+        stateCheckButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (stateCheckButton.isChecked()) {
+                    window.setVisible(true);
+                } else
+                    window.setVisible(false);
+            }
+        });
         menuButton = new TextButton("Character menu", skin);
         menuButton.addListener(new ChangeListener() {
             @Override
@@ -72,15 +85,25 @@ public class OnScreenGui extends Stage implements Disposable {
                 }
             }
         });
+        label = new Label("1" ,skin);
+        label1 = new Label("1" ,skin);
+        label2 = new Label("1" ,skin);
         table.add(debugButton).padTop(10).padLeft(10).left();
         table.add(menuButton).padTop(10).padRight(10).right();
         table.row();
+        table.add(stateCheckButton).padTop(10).padLeft(10).left();
+        table.row();
+        table.add(label).padTop(10).padLeft(10).left();
+        table.row();
+        table.add(label1).padTop(10).padLeft(10).left();
+        table.row();
+        table.add(label2).padTop(10).padLeft(10).left();
         table.row();
         table.add(tpad).expandX().padBottom(10).padLeft(10).width(200).height(200).fillY().expandY().bottom().left();
         table.row();
         addActor(table);
-    }
 
+    }
 
 //    public void resize(int width, int height) {
 //        //Update the viewport size
@@ -92,10 +115,14 @@ public class OnScreenGui extends Stage implements Disposable {
 ////        Camera stageCam = getViewport().getCamera();
 ////        stageCam.update();
 //    }
-        static public Touchpad getTouchpad(){
+   static public Touchpad getTouchpad(){
         return  tpad;
     }
-
+   public void actlab(){
+       label.setText("canClimb ="  + StateManager.canClimb);
+       label1.setText("climbing ="  + StateManager.climbing);
+       label2.setText("canMoveOnSide ="  + StateManager.canMoveOnSide);
+   }
 
 
     @Override

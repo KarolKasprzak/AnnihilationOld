@@ -33,29 +33,20 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.world = world;
         world.setContactListener(this);
-
-
     }
-
-
     @Override
     public void update(float deltaTime) {
-
         player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         Body body =  player.getComponent(BodyComponent.class).body;
         if(StateManager.climbing) {
-            body.setTransform(ladderX,body.getPosition().y,0);
+            if(body.getLinearVelocity().y> 0) {
+                body.setTransform(ladderX, body.getPosition().y, 0);
+            }
         }
-
-
-
     }
-
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-
     }
-
     @Override
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -65,9 +56,10 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             StateManager.onGround = true;
         }
         //Ladder climb
-        if(fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.LADDER ||
-                fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER)  {
+        if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.LADDER ||
+                fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER)  {
                 StateManager.canJump = false;
+                if(StateManager.onGround)
                 StateManager.canClimb = true;
                 if(fa.getUserData() == BodyID.LADDER){
                     ladderX = fa.getBody().getPosition().x;
@@ -75,9 +67,11 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                     ladderX = fb.getBody().getPosition().x;
                 }
         }
-
-
-
+        if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.DESCENT || fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.DESCENT ){
+            if(StateManager.canClimb) {
+                StateManager.canMoveOnSide = false;
+            }
+        }
     }
 
     @Override
@@ -88,10 +82,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             StateManager.onGround = false;
         }
         //Ladder climb
-        if(fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.LADDER ||
-            fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.LADDER){
+        if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.LADDER ||
+            fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER){
             StateManager.canJump = true;
             StateManager.canClimb = false;
+        }
+        if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.DESCENT || fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.DESCENT ){
+            StateManager.canMoveOnSide = true;
         }
     }
 
@@ -99,12 +96,19 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     public void preSolve(Contact contact, Manifold oldManifold) {
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        if(fa.getUserData() == BodyID.PLAYER_BODY||fb.getUserData() == BodyID.PLAYER_BODY){
-
+        if(fa.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.PLAYER_BODY) {
+            if (StateManager.canClimb) {
+                float velY = player.getComponent(BodyComponent.class).body.getLinearVelocity().y;
+                if(velY > 0)
                 contact.setEnabled(false);
-
+            }
         }
 
+        if(fa.getUserData() == BodyID.DESCENT && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.DESCENT && fa.getUserData() == BodyID.PLAYER_BODY) {
+            if (StateManager.canClimb) {
+                contact.setEnabled(false);
+            }
+        }
     }
 
     @Override

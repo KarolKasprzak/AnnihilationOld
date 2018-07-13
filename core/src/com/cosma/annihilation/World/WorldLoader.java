@@ -43,6 +43,10 @@ class WorldLoader {
                             float[] dimension = getDimension(mo);
                             Body body = createBoxBody(dimension[0], dimension[1], dimension[2], dimension[3], false, 0);
                         }
+                        if("descent".equals(mo.getName())) {
+                            float[] dimension = getDimension(mo);
+                            Body body = createBoxBody(dimension[0], dimension[1], dimension[2], dimension[3], false, 1);
+                        }
                     }
                 }
 
@@ -64,12 +68,13 @@ class WorldLoader {
 
                 switch (selectType) {
                     case 0:
-                        boxBody.createFixture(fixtureDef);
+                        boxBody.createFixture(fixtureDef).setUserData(BodyID.GROUND);
                         break;
 
                     case 1:
                         fixtureDef.isSensor = true;
-                        boxBody.createFixture(fixtureDef);
+                        boxBody.createFixture(fixtureDef).setUserData(BodyID.DESCENT);
+
                         break;
 
                     case 2:
