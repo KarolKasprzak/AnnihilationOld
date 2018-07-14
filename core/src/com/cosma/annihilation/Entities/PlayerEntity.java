@@ -39,6 +39,7 @@ public class PlayerEntity {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
+       fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();

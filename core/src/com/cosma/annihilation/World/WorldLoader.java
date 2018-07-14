@@ -73,6 +73,8 @@ class WorldLoader {
 
                     case 1:
                         fixtureDef.isSensor = true;
+                        fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
+                        fixtureDef.filter.maskBits = Constants.NOT_COLIDED;
                         boxBody.createFixture(fixtureDef).setUserData(BodyID.DESCENT);
 
                         break;
@@ -96,12 +98,13 @@ class WorldLoader {
                 shape.setAsBox(width/2, height/2);
                 //Fixture
                 PolygonShape fshape = new PolygonShape();
-                fshape.setAsBox(1/2, height/2);
+                fshape.setAsBox(width/2, height/2);
                 FixtureDef fixtureDef = new FixtureDef();
                 fixtureDef.shape = fshape;
                 fixtureDef.density = 1f;
                 fixtureDef.isSensor = true;
                 fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
+                fixtureDef.filter.maskBits = Constants.NOT_COLIDED;
                 ladderBody.createFixture(fixtureDef).setUserData(BodyID.LADDER);
                 shape.dispose();
                 return ladderBody;

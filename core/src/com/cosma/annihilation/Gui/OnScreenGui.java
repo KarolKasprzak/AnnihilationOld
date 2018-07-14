@@ -27,6 +27,8 @@ public class OnScreenGui extends Stage implements Disposable {
     Label label;
     Label label1;
     private Label label2;
+    private Label label3;
+    private Label label4;
 
     public OnScreenGui(){
 
@@ -88,6 +90,8 @@ public class OnScreenGui extends Stage implements Disposable {
         label = new Label("1" ,skin);
         label1 = new Label("1" ,skin);
         label2 = new Label("1" ,skin);
+        label3 = new Label("1" ,skin);
+        label4 = new Label("1" ,skin);
         table.add(debugButton).padTop(10).padLeft(10).left();
         table.add(menuButton).padTop(10).padRight(10).right();
         table.row();
@@ -98,6 +102,10 @@ public class OnScreenGui extends Stage implements Disposable {
         table.add(label1).padTop(10).padLeft(10).left();
         table.row();
         table.add(label2).padTop(10).padLeft(10).left();
+        table.row();
+        table.add(label3).padTop(10).padLeft(10).left();
+        table.row();
+        table.add(label4).padTop(10).padLeft(10).left();
         table.row();
         table.add(tpad).expandX().padBottom(10).padLeft(10).width(200).height(200).fillY().expandY().bottom().left();
         table.row();
@@ -122,6 +130,8 @@ public class OnScreenGui extends Stage implements Disposable {
        label.setText("canClimb ="  + StateManager.canClimb);
        label1.setText("climbing ="  + StateManager.climbing);
        label2.setText("canMoveOnSide ="  + StateManager.canMoveOnSide);
+       label3.setText("canJump ="  + StateManager.canJump);
+       label4.setText("onGround ="  + StateManager.onGround);
    }
 
 

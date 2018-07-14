@@ -37,12 +37,24 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     @Override
     public void update(float deltaTime) {
         player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        Body body =  player.getComponent(BodyComponent.class).body;
-        if(StateManager.climbing) {
-            if(body.getLinearVelocity().y> 0) {
-                body.setTransform(ladderX, body.getPosition().y, 0);
+        Body playerBody =  player.getComponent(BodyComponent.class).body;
+
+        if(StateManager.climbing && StateManager.onGround) {
+            float b1 = playerBody.getPosition().x;
+            float b2 = ladderX;
+
+            if (b1 == b2) {
+                System.out.println((b1 + b2));
+            } else {
+                if (b1 < (b2 - 0.05f)) {
+                    playerBody.setLinearVelocity(1, 0);
+                }
+                if (b1 > (b2 + 0.05f)) {
+                    playerBody.setLinearVelocity(-1, 0);
+                }
             }
         }
+
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -96,23 +108,26 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     public void preSolve(Contact contact, Manifold oldManifold) {
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        if(fa.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.PLAYER_BODY) {
-            if (StateManager.canClimb) {
-                float velY = player.getComponent(BodyComponent.class).body.getLinearVelocity().y;
-                if(velY > 0)
-                contact.setEnabled(false);
-            }
-        }
-
-        if(fa.getUserData() == BodyID.DESCENT && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.DESCENT && fa.getUserData() == BodyID.PLAYER_BODY) {
-            if (StateManager.canClimb) {
-                contact.setEnabled(false);
-            }
-        }
+//        if(fa.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.PLAYER_BODY) {
+//            if (StateManager.climbing) {
+//                float velY = player.getComponent(BodyComponent.class).playerBody.getLinearVelocity().y;
+//                if(velY >= 0)
+//                contact.setEnabled(false);
+//            }
+//        }
+//
+//        if(fa.getUserData() == BodyID.DESCENT && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.DESCENT && fa.getUserData() == BodyID.PLAYER_BODY) {
+//            if (StateManager.canClimb) {
+//                contact.setEnabled(false);
+//            }
+//        }
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
     }
+
+
+
 }
