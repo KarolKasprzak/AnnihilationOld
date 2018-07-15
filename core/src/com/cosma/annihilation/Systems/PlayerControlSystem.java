@@ -77,8 +77,9 @@ public class PlayerControlSystem extends IteratingSystem{
                 if(StateManager.climbing){playerBody.body.setLinearVelocity(new Vector2(0, 0));}
                 StateManager.canMoveOnSide = true;}
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                StateManager.canMoveOnSide = false;
                 StateManager.climbing = true;
+                playerBody.body.setGravityScale(0);
+                StateManager.canMoveOnSide = false;
                 playerBody.body.setLinearVelocity(new Vector2(0, -1));
             }
 

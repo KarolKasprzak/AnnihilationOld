@@ -39,6 +39,7 @@ class WorldLoader {
                         if("ladder".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             Body body = createLadder(dimension[0],dimension[1],dimension[2],dimension[3]);
+                            System.out.println(" drabina w " + dimension[0] + "   " + dimension[1]);
                         }
                         if("ground".equals(mo.getName())) {
                             float[] dimension = getDimension(mo);

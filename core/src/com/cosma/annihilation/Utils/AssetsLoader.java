@@ -21,7 +21,7 @@ public class AssetsLoader {
         files.put("ladder", new AssetsHelper("gfx/map_util/ladders_wood.png", Texture.class));
         files.put("ladder2", new AssetsHelper("tiles/ladder_mid.png", Texture.class));
         files.put("hero", new AssetsHelper("idi.png", Texture.class));
-//        files.put("map", new AssetFile("bunker.tmx", TiledMap.class));
+
 
 
 
