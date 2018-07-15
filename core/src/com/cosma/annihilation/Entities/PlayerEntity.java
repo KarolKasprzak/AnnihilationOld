@@ -11,6 +11,7 @@ import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Constants;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
@@ -39,15 +40,16 @@ public class PlayerEntity {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
-       fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
-        bodySensorShape.setAsBox(0.1f/2,2.2f/2, new Vector2(0,0f),0);
-        fixtureDef.shape = bodySensorShape;
-        fixtureDef.density = 0.2f;
-        fixtureDef.isSensor = true;
-        bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_CENTER);
+        bodySensorShape.setAsBox(0.1f/2,2f/2, new Vector2(0,0f),0);
+        FixtureDef centerFixtureDef = new FixtureDef();
+        centerFixtureDef.shape = bodySensorShape;
+        centerFixtureDef.density = 0.2f;
+        centerFixtureDef.isSensor = true;
+        centerFixtureDef.filter.categoryBits = CollisionID.CATEGORY_PLAYER_SENSOR;
+        bodyComponent.body.createFixture(centerFixtureDef).setUserData(BodyID.PLAYER_CENTER);
         //Foot sensor fixture
         PolygonShape footSensorShape = new PolygonShape();
         footSensorShape.setAsBox(0.5f/2,0.5f/2, new Vector2(0,-1),0);

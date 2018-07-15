@@ -6,11 +6,15 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.ContactFilter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TransformComponent;
+import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.StateManager;
 
 
 public class PhysicsSystem extends IteratingSystem {
@@ -30,6 +34,7 @@ public class PhysicsSystem extends IteratingSystem {
         super(Family.all(BodyComponent.class, TransformComponent.class).get());
         this.world = world;
         this.bodiesQueue = new Array<Entity>();
+
     }
 
     @Override

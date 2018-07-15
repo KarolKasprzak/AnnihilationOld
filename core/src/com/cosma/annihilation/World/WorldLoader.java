@@ -11,6 +11,7 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Entities.PlayerEntity;
 import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Constants;
 
 class WorldLoader {
@@ -69,13 +70,15 @@ class WorldLoader {
                 switch (selectType) {
                     case 0:
                         boxBody.createFixture(fixtureDef).setUserData(BodyID.GROUND);
+                        fixtureDef.filter.categoryBits = CollisionID.CATEGORY_GROUND;
+
                         break;
 
                     case 1:
                         fixtureDef.isSensor = true;
-                        fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
-                        fixtureDef.filter.maskBits = Constants.NOT_COLIDED;
                         boxBody.createFixture(fixtureDef).setUserData(BodyID.DESCENT);
+                        fixtureDef.filter.categoryBits = CollisionID.CATEGORY_LADDER;
+                        fixtureDef.filter.maskBits = CollisionID.CATEGORY_PLAYER_SENSOR;
 
                         break;
 
@@ -103,8 +106,8 @@ class WorldLoader {
                 fixtureDef.shape = fshape;
                 fixtureDef.density = 1f;
                 fixtureDef.isSensor = true;
-                fixtureDef.filter.categoryBits = Constants.NOT_COLIDED;
-                fixtureDef.filter.maskBits = Constants.NOT_COLIDED;
+                fixtureDef.filter.categoryBits = CollisionID.CATEGORY_LADDER;
+                fixtureDef.filter.maskBits = CollisionID.CATEGORY_PLAYER_SENSOR;
                 ladderBody.createFixture(fixtureDef).setUserData(BodyID.LADDER);
                 shape.dispose();
                 return ladderBody;

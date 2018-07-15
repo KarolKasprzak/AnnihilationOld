@@ -12,6 +12,7 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.StateManager;
 
 
@@ -24,7 +25,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     private ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
     private ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
     private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
-
+    private Body playerBody;
 
     public CollisionSystem(World world) {
         // System for all Entities that have B2dBodyComponent and TransformComponent
@@ -33,13 +34,14 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.world = world;
         world.setContactListener(this);
+
     }
     @Override
     public void update(float deltaTime) {
         player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        Body playerBody =  player.getComponent(BodyComponent.class).body;
+        playerBody =  player.getComponent(BodyComponent.class).body;
 
-        if(StateManager.climbing && StateManager.onGround) {
+        if(StateManager.climbing && StateManager.canClimb) {
             float b1 = playerBody.getPosition().x;
             float b2 = ladderX;
 
@@ -54,7 +56,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 }
             }
         }
-
+//        System.out.println(playerBody.getFixtureList().get(0));
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -64,6 +66,10 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
+
+
+
+
         if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT)  {
             StateManager.onGround = true;
         }
@@ -72,16 +78,23 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER)  {
                 StateManager.canJump = false;
                 if(StateManager.onGround)
-                StateManager.canClimb = true;
-                if(fa.getUserData() == BodyID.LADDER){
-                    ladderX = fa.getBody().getPosition().x;
-                }else{
-                    ladderX = fb.getBody().getPosition().x;
-                }
+                    StateManager.canClimb = true;
+                    if (fa.getUserData() == BodyID.LADDER) {
+                        ladderX = fa.getBody().getPosition().x;
+                    } else {
+                        ladderX = fb.getBody().getPosition().x;
+                    }
+
         }
+        if(StateManager.climbing) {
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.DESCENT || fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.DESCENT ){
-            if(StateManager.canClimb) {
-                StateManager.canMoveOnSide = false;
+            System.out.println("start");
+
+
+                Filter filter = new Filter();
+                filter.maskBits = CollisionID.CATEGORY_SCENERY;
+                filter.groupIndex = -1;
+                playerBody.getFixtureList().get(0).setFilterData(filter);
             }
         }
     }
@@ -99,28 +112,23 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             StateManager.canJump = true;
             StateManager.canClimb = false;
         }
+
+
+
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.DESCENT || fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.DESCENT ){
-            StateManager.canMoveOnSide = true;
+
+                   Filter filter = new Filter();
+                   System.out.println("end");
+                   playerBody.getFixtureList().get(0).setFilterData(filter);
+
         }
     }
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-        Fixture fa = contact.getFixtureA();
-        Fixture fb = contact.getFixtureB();
-//        if(fa.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.PLAYER_BODY) {
-//            if (StateManager.climbing) {
-//                float velY = player.getComponent(BodyComponent.class).playerBody.getLinearVelocity().y;
-//                if(velY >= 0)
-//                contact.setEnabled(false);
-//            }
-//        }
-//
-//        if(fa.getUserData() == BodyID.DESCENT && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.DESCENT && fa.getUserData() == BodyID.PLAYER_BODY) {
-//            if (StateManager.canClimb) {
-//                contact.setEnabled(false);
-//            }
-//        }
+
+        Body playerBody =  player.getComponent(BodyComponent.class).body;
+
     }
 
     @Override
