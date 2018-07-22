@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Components.TransformComponent;
+import com.cosma.annihilation.Utils.Constants;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 import java.util.Comparator;
@@ -34,7 +35,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
     public RenderSystem(OrthographicCamera camera,World world) {
         // gets all entities with a TransformComponent and TextureComponent
 //        super(Family.all(TransformComponent.class, TextureComponent.class).get(), new ZComparator());
-        super(Family.all(TransformComponent.class, TextureComponent.class).get(),11);
+        super(Family.all(TransformComponent.class, TextureComponent.class).get(),Constants.RENDER);
         this.camera = camera;
         this.world = world;
         batch = new SpriteBatch();

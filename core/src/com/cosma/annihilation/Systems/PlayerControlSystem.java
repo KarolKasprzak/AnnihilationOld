@@ -13,6 +13,7 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.StateComponent;
 import com.cosma.annihilation.Gui.OnScreenGui;
+import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerControlSystem extends IteratingSystem{
@@ -25,7 +26,7 @@ public class PlayerControlSystem extends IteratingSystem{
 
 
     public PlayerControlSystem() {
-        super(Family.all(PlayerComponent.class).get());
+        super(Family.all(PlayerComponent.class).get(),Constants.PLAYER_CONTROL_SYSTEM);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         this.touchpad = OnScreenGui.getTouchpad();

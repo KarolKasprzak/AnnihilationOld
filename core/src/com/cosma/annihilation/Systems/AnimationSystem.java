@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.StateManager;
 import net.dermetfan.gdx.graphics.g2d.AnimatedBox2DSprite;
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
@@ -34,7 +35,7 @@ public class AnimationSystem extends IteratingSystem {
     Texture tex5;
     Box2DSprite box2DSprite;
     public AnimationSystem() {
-        super(Family.all(PlayerComponent.class).get());
+        super(Family.all(PlayerComponent.class).get(), Constants.ANIMATION);
 
         tex1 = (Texture) AssetsLoader.getResource("pl_1");
         tex2 = (Texture) AssetsLoader.getResource("pl_2");

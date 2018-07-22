@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.cosma.annihilation.Utils.Constants;
 
 public class TileMapRender extends IteratingSystem {
 
@@ -14,7 +15,7 @@ public class TileMapRender extends IteratingSystem {
     private TiledMapRenderer tiledMapRenderer;
 
         public TileMapRender(OrthographicCamera camera,TiledMap tiledMap) {
-            super(Family.all().get());
+            super(Family.all().get(),Constants.TILE_MAP_RENDER);
             this.camera = camera;
             this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap,1f/32f);
         }

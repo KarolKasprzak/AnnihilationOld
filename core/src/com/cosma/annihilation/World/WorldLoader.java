@@ -54,7 +54,7 @@ class WorldLoader {
                         if("light".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             ConeLight pl = new ConeLight(rayHandler, 128, new Color(1,1,1,1f), 5,dimension[0],dimension[1],-90,90);
-                            pl.setStaticLight(false);
+                            pl.setStaticLight(true);
                             pl.setSoft(true);
 
 

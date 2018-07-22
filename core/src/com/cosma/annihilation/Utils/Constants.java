@@ -5,8 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Constants {
     // --------------- UI / Window ------------
 
-    public static final int DEFAULT_SCREEN_WIDTH = 800;
-    public static final int DEFAULT_SCREEN_HEIGHT = 600;
+
 
     // -------------- Physics -----------------
     // -------------- Physics -----------------
@@ -14,8 +13,7 @@ public class Constants {
     public static final float PPM = 32f;
     public static final float PIXEL_TO_METRE = 1 / PPM;
 
-    public static final int WORLD_WIDTH  = (int) (DEFAULT_SCREEN_WIDTH * PIXEL_TO_METRE)+5;
-    public static final int WORLD_HEIGHT = (int) (DEFAULT_SCREEN_HEIGHT * PIXEL_TO_METRE)+5;
+
 
     public static final float BOX2D_FPS = 60.0f;
     public static final int BOX2D_VELOCITY_ITERATIONS = 6;
@@ -24,5 +22,16 @@ public class Constants {
     public static final Vector2 WORLD_GRAVITY = new Vector2(0, -10);
     public static final   short PLAYER_COLIDED = 0x1;
     public static final   short  NOT_COLIDED= 0x2;
+
+    //--------ENGINE-----------
+    public static final int PHYSIC_SYSTEM                  = 1;
+    public static final int COLLISION_SYSTEM               = 2;
+    public static final int PLAYER_CONTROL_SYSTEM          = 3;
+    public static final int CAMERA_SYSTEM                  = 4;
+    public static final int ANIMATION                      = 5;
+    public static final int TILE_MAP_RENDER                = 6;
+    public static final int RENDER                         = 7;
+    public static final int DEBUG_RENDER                   = 8;
+    public static final int LIGHT_RENDER                   = 9;
 
 }

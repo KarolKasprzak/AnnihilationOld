@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.StateManager;
 
 
@@ -18,7 +19,7 @@ public class DebugRenderSystem extends IteratingSystem {
     private World world;
 
     public DebugRenderSystem(OrthographicCamera camera, World world) {
-        super(Family.all().get());
+        super(Family.all().get(),Constants.DEBUG_RENDER);
 
         this.camera = camera;
         this.world = world;
