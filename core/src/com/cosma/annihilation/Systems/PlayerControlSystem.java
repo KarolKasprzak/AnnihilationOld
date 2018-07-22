@@ -36,77 +36,62 @@ public class PlayerControlSystem extends IteratingSystem{
 
         BodyComponent playerBody = bodyMapper.get(entity);
         PlayerComponent player = playerMapper.get(entity);
-//        StateComponent state = sm.get(entity);
-//        // if body is going down set state falling
-//        if(playerBody.body.getLinearVelocity().y > 0){
-//            state.set(StateComponent.STATE_FALLING);
-//        }
-//        // if body stationary on y axis
-//        if(playerBody.body.getLinearVelocity().y == 0){
-//            // only change to normal if previous state was falling(no mid air jump)
-//            if(state.get() == StateComponent.STATE_FALLING){
-//                state.set(StateComponent.STATE_NORMAL);
-//            }
-//            // set state moving if not falling and moving on x axis
-//            if(playerBody.body.getLinearVelocity().x != 0){
-//                state.set(StateComponent.STATE_MOVING);
-//            }
-//        }
-        // apply forces depending on controller input
 
-        //Jump
+        // prevent slip
         if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             playerBody.body.setLinearVelocity(new Vector2(0,playerBody.body.getLinearVelocity().y));
         }
-
-        if(StateManager.onGround) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                playerBody.body.applyLinearImpulse(new Vector2(0, 2f),
-                        playerBody.body.getWorldCenter(), true);
+        // jump
+        if(StateManager.onGround && StateManager.canJump) {
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)|| touchpad.getKnobPercentY() >= 0.7) {
+                     playerBody.body.applyLinearImpulse(new Vector2(0, 2f),
+                     playerBody.body.getWorldCenter(), true);
             }
         }
+        //Climbing
+        if(StateManager.climbing){
+            StateManager.canJump = false;
+            playerBody.body.setGravityScale(0);
+            playerBody.body.setLinearVelocity(new Vector2(0, 0));
+        }else playerBody.body.setGravityScale(1);
 
         //Ladder up
         if(StateManager.canClimb) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)|| touchpad.getKnobPercentY() >= 0.5) {
                 StateManager.climbing = true;
-                StateManager.canMoveOnSide = false;
-                playerBody.body.setGravityScale(0);
                 playerBody.body.setLinearVelocity(new Vector2(0, 1));
-            }else {
-                if(StateManager.climbing){playerBody.body.setLinearVelocity(new Vector2(0, 0));}
-                StateManager.canMoveOnSide = true;}
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            }
+        }
+        if(StateManager.canClimb || StateManager.canClimbDown) {
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)|| touchpad.getKnobPercentY() <= -0.5) {
                 StateManager.climbing = true;
-                playerBody.body.setGravityScale(0);
-                StateManager.canMoveOnSide = false;
                 playerBody.body.setLinearVelocity(new Vector2(0, -1));
             }
-
-        }else {
-            playerBody.body.setGravityScale(1);
-//            StateManager.climbing = false;
         }
+
+
+
+
 
         //Moving on side
         if(StateManager.canMoveOnSide) {
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT ) || touchpad.getKnobPercentX() >= 0.5) {
 
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;
                 StateManager.climbing = false;
-                playerBody.body.setGravityScale(1);
+                StateManager.playerDirection=false;
                 float speedX = desiredSpeed - vec.x;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || touchpad.getKnobPercentX() <= -0.5) {
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -player.velocity;
                 float speedX = desiredSpeed - vec.x;
                 StateManager.climbing = false;
-                playerBody.body.setGravityScale(1);
+                StateManager.playerDirection=true;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);

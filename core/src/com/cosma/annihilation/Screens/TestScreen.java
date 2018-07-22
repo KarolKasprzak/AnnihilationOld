@@ -4,6 +4,8 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -45,7 +47,7 @@ public class TestScreen implements Screen, InputProcessor {
         worldBuilder.update(delta);
         //Gui render
         gui.draw();
-        if(StateManager.debugMode){
+        if(StateManager.debugModeGui){
             gui.setDebugAll(true);
         }else gui.setDebugAll(false);
         gui.act(delta);
@@ -98,6 +100,10 @@ public class TestScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
+               System.out.println(vec);
+
         return false;
     }
 

@@ -11,7 +11,7 @@ public class Constants {
     // -------------- Physics -----------------
     // -------------- Physics -----------------
 
-    public static final float PPM = 64f;
+    public static final float PPM = 32f;
     public static final float PIXEL_TO_METRE = 1 / PPM;
 
     public static final int WORLD_WIDTH  = (int) (DEFAULT_SCREEN_WIDTH * PIXEL_TO_METRE)+5;

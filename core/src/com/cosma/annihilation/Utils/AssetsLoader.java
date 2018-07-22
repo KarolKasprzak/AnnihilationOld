@@ -21,6 +21,11 @@ public class AssetsLoader {
         files.put("ladder", new AssetsHelper("gfx/map_util/ladders_wood.png", Texture.class));
         files.put("ladder2", new AssetsHelper("tiles/ladder_mid.png", Texture.class));
         files.put("hero", new AssetsHelper("idi.png", Texture.class));
+        files.put("pl_1", new AssetsHelper("character/player_front1.png", Texture.class));
+        files.put("pl_2", new AssetsHelper("character/player_front2.png", Texture.class));
+        files.put("pl_3", new AssetsHelper("character/player_front3.png", Texture.class));
+        files.put("pl_4", new AssetsHelper("character/player_front4.png", Texture.class));
+        files.put("pl_5", new AssetsHelper("character/player_front5.png", Texture.class));
 
 
 
@@ -30,7 +35,7 @@ public class AssetsLoader {
             manager.load(asset.path,asset.type);
         }
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        manager.load("Map/1/bunker.tmx", TiledMap.class);
+        manager.load("Map/2/map1.tmx", TiledMap.class);
         manager.finishLoading();
         System.out.println("assets load");
     }

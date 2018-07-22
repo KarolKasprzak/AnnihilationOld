@@ -5,6 +5,6 @@ public enum  BodyID {
     PLAYER_BODY,
     PLAYER_CENTER,
     GROUND,
-    DESCENT,
+    DESCENT_LADDER,
     LADDER
 }

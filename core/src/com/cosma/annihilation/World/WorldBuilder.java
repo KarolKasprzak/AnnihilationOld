@@ -1,5 +1,6 @@
 package com.cosma.annihilation.World;
 
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -30,6 +31,7 @@ public class WorldBuilder implements Disposable, EntityListener {
     private Viewport viewport;
     private TiledMap tiledMap;
     private WorldLoader worldLoader;
+    private RayHandler rayHandler;
 
         public WorldBuilder(){
         initializeEngine();
@@ -37,17 +39,21 @@ public class WorldBuilder implements Disposable, EntityListener {
         sb.setProjectionMatrix(camera.combined);
         // add all entity
         EntityFactory entityFactory = new EntityFactory(world,engine,camera);
-        entityFactory.cameraEntity();
-        worldLoader = new WorldLoader(engine,world,tiledMap);
+
+        worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
     }
     public void initializeEngine(){
         //Create camera
         camera = new OrthographicCamera();
-        viewport = new ExtendViewport(16, 9,camera);
+        viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(0.01f, 0.01f, 0.01f, 1f);
+        rayHandler.setBlurNum(3);
+        rayHandler.setShadows(true);
         viewport.apply(true);
         camera.update();
         //Load map
-        tiledMap = AssetsLoader.manager.get("Map/1/bunker.tmx", TiledMap.class);
+        tiledMap = AssetsLoader.manager.get("Map/2/map1.tmx", TiledMap.class);
         //Create a pooled engine & world
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
 //        world.setContactListener(new ContactListenerSystem());
@@ -55,11 +61,12 @@ public class WorldBuilder implements Disposable, EntityListener {
         //Add all the relevant systems our engine should run
         engine.addSystem(new RenderSystem(camera,world));
         engine.addSystem(new CollisionSystem(world));
-        engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
+        engine.addSystem(new AnimationSystem());
+        engine.addSystem(new DebugRenderSystem(camera,world));
     }
 
     public void update(float delta) {
@@ -67,12 +74,18 @@ public class WorldBuilder implements Disposable, EntityListener {
         viewport.apply();
         engine.update(delta);
         camera.update();
+        rayHandler.setCombinedMatrix(camera.combined,0,0,1,1);
+        rayHandler.updateAndRender();
         }
 
     public void resize(int w, int h) {
         viewport.update(w, h, true);
+        rayHandler.useCustomViewport(viewport.getScreenX(),viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
 
         }
+    public OrthographicCamera getCamera() {
+            return  camera;
+            }
 
     private void debugInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) camera.translate(0, 1);

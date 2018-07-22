@@ -21,6 +21,7 @@ public class OnScreenGui extends Stage implements Disposable {
     static Touchpad tpad;
     private Skin skin;
     private TextButton debugButton;
+    private TextButton debugButtonGui;
     private TextButton menuButton;
     private TextButton stateCheckButton;
     private Window window;
@@ -35,19 +36,18 @@ public class OnScreenGui extends Stage implements Disposable {
 
         camera = new OrthographicCamera();
         camera.update();
-        viewport = new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),camera);
+        viewport = new ExtendViewport(Gdx.graphics.getWidth() , Gdx.graphics.getHeight(),camera);
         viewport.apply(true);
         setViewport(viewport);
         skin = new Skin(Gdx.files.internal("UI/uiskin.json"));
-        tpad = new Touchpad(0,skin,"default");
-        addActor();
+        tpad = new Touchpad(2,skin,"default");
+        addActors();
     }
 
-    private void addActor(){
+    private void addActors(){
         Table table = new Table();
         table.center();
         table.setFillParent(true);
-        //Debug Mode
         //Table
         window = new Window("Character",skin);
         window.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
@@ -74,7 +74,22 @@ public class OnScreenGui extends Stage implements Disposable {
                     window.setVisible(false);
             }
         });
-        debugButton = new TextButton("Debug mode", skin);
+        debugButtonGui = new TextButton("Debug mode GUI", skin);
+        debugButtonGui.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(debugButtonGui.isChecked()){
+                    debugButtonGui.setText("Debug mode - enabled");
+                    StateManager.debugModeGui = true;
+                }
+                else {
+                    debugButtonGui.setText("Debug mode GUI");
+                    StateManager.debugModeGui = false;
+                }
+            }
+
+        });
+        debugButton = new TextButton("Debug mode ", skin);
         debugButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -87,6 +102,7 @@ public class OnScreenGui extends Stage implements Disposable {
                     StateManager.debugMode = false;
                 }
             }
+
         });
         label = new Label("1" ,skin);
         label1 = new Label("1" ,skin);
@@ -94,10 +110,12 @@ public class OnScreenGui extends Stage implements Disposable {
         label3 = new Label("1" ,skin);
         label4 = new Label("1" ,skin);
         label5 = new Label("1" ,skin);
-        table.add(debugButton).padTop(10).padLeft(10).left();
-        table.add(menuButton).padTop(10).padRight(10).right();
+        table.add(debugButton).padTop(10).padLeft(10).left().width(150).height(50);
+        table.add(menuButton).padTop(10).padRight(10).right().width(150).height(50);
         table.row();
-        table.add(stateCheckButton).padTop(10).padLeft(10).left();
+        table.add(debugButtonGui).padTop(10).padLeft(10).left().width(150).height(50);
+        table.row();
+        table.add(stateCheckButton).padTop(10).padLeft(10).left().width(150).height(50);
         table.row();
         table.add(label).padTop(10).padLeft(10).left();
         table.row();
@@ -111,7 +129,7 @@ public class OnScreenGui extends Stage implements Disposable {
         table.row();
         table.add(label5).padTop(10).padLeft(10).left();
         table.row();
-        table.add(tpad).expandX().padBottom(10).padLeft(10).width(200).height(200).fillY().expandY().bottom().left();
+        table.add(tpad).expandX().padBottom(10).padLeft(10).width(400).height(400).fillY().expandY().bottom().left();
         table.row();
         addActor(table);
 

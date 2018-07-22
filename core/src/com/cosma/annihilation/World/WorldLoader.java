@@ -1,11 +1,15 @@
 package com.cosma.annihilation.World;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
@@ -18,10 +22,12 @@ class WorldLoader {
     private  Engine engine;
     private  World world;
     private  TiledMap gameMap;
-     WorldLoader(Engine engine,World world,TiledMap gameMap){
+    private  RayHandler rayHandler;
+     WorldLoader(Engine engine, World world, TiledMap gameMap, RayHandler rayHandler){
         this.engine = engine;
         this.world = world;
         this.gameMap = gameMap;
+        this.rayHandler = rayHandler;
         createEntitys();
         loadMap();
     }
@@ -39,16 +45,18 @@ class WorldLoader {
                         if("ladder".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             Body body = createLadder(dimension[0],dimension[1],dimension[2],dimension[3]);
-                            System.out.println(" drabina w " + dimension[0] + "   " + dimension[1]);
                         }
                         if("ground".equals(mo.getName())) {
                             float[] dimension = getDimension(mo);
                             Body body = createBoxBody(dimension[0], dimension[1], dimension[2], dimension[3], false, 0);
                         }
-                        if("descent".equals(mo.getName())) {
+                        if("light".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
-                            Body body = createBoxBody(dimension[0], dimension[1], dimension[2], dimension[3], false, 1);
+                            PointLight pl = new PointLight(rayHandler, 128, new Color(1,1,1,1f), 8,dimension[0],dimension[1]);
+                            pl.setStaticLight(false);
+                            pl.setSoft(true);
                         }
+
                     }
                 }
 
@@ -77,11 +85,7 @@ class WorldLoader {
 
                     case 1:
                         fixtureDef.isSensor = true;
-                        boxBody.createFixture(fixtureDef).setUserData(BodyID.DESCENT);
-                        fixtureDef.filter.categoryBits = CollisionID.CATEGORY_LADDER;
-                        fixtureDef.filter.maskBits = CollisionID.CATEGORY_PLAYER_SENSOR;
-
-                        break;
+                             break;
 
                     case 2:
                         fixtureDef.isSensor = true;
@@ -110,6 +114,13 @@ class WorldLoader {
                 fixtureDef.filter.categoryBits = CollisionID.CATEGORY_LADDER;
                 fixtureDef.filter.maskBits = CollisionID.CATEGORY_PLAYER_SENSOR;
                 ladderBody.createFixture(fixtureDef).setUserData(BodyID.LADDER);
+                //Fixture sensor2
+                PolygonShape shapesensor2 = new PolygonShape();
+                shapesensor2.setAsBox(0.3f, 0.3f,new Vector2(0,(height / 2)-0.3f),0);
+                FixtureDef fixtureDef1 = new FixtureDef();
+                fixtureDef1.shape = shapesensor2;
+                fixtureDef1.isSensor = true;
+                ladderBody.createFixture(fixtureDef1).setUserData(BodyID.DESCENT_LADDER);
                 shape.dispose();
                 return ladderBody;
 
