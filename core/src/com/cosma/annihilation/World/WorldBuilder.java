@@ -35,21 +35,15 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         public WorldBuilder(){
         initializeEngine();
-        SpriteBatch sb = new SpriteBatch();
-        sb.setProjectionMatrix(camera.combined);
+
         // add all entity
         EntityFactory entityFactory = new EntityFactory(world,engine,camera);
-
         worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
     }
     public void initializeEngine(){
         //Create camera
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
-        rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.01f, 0.01f, 0.01f, 1f);
-        rayHandler.setBlurNum(3);
-        rayHandler.setShadows(true);
         viewport.apply(true);
         camera.update();
         //Load map
@@ -59,6 +53,8 @@ public class WorldBuilder implements Disposable, EntityListener {
 //        world.setContactListener(new ContactListenerSystem());
         engine = new PooledEngine();
         //Add all the relevant systems our engine should run
+        LightRenderSystem lightRenderSystem = new LightRenderSystem(camera,world);
+        this.rayHandler = lightRenderSystem.getRayHandler();
         engine.addSystem(new RenderSystem(camera,world));
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
@@ -67,6 +63,10 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new TileMapRender(camera,tiledMap));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera,world));
+        engine.addSystem(lightRenderSystem);
+
+
+
     }
 
     public void update(float delta) {
@@ -74,13 +74,12 @@ public class WorldBuilder implements Disposable, EntityListener {
         viewport.apply();
         engine.update(delta);
         camera.update();
-        rayHandler.setCombinedMatrix(camera.combined,0,0,1,1);
-        rayHandler.updateAndRender();
+
         }
 
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        rayHandler.useCustomViewport(viewport.getScreenX(),viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
+//        rayHandler.useCustomViewport(viewport.getScreenX(),viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
 
         }
     public OrthographicCamera getCamera() {

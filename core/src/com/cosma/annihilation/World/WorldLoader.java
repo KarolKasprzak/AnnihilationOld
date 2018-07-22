@@ -1,5 +1,6 @@
 package com.cosma.annihilation.World;
 
+import box2dLight.ConeLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
@@ -52,9 +53,18 @@ class WorldLoader {
                         }
                         if("light".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
-                            PointLight pl = new PointLight(rayHandler, 128, new Color(1,1,1,1f), 8,dimension[0],dimension[1]);
+                            ConeLight pl = new ConeLight(rayHandler, 128, new Color(1,1,1,1f), 5,dimension[0],dimension[1],-90,90);
                             pl.setStaticLight(false);
                             pl.setSoft(true);
+
+
+                        }
+                        if("light1".equals(mo.getName())){
+                            float[] dimension = getDimension(mo);
+                            PointLight pl1 = new PointLight(rayHandler, 90, new Color(1,1,1,0.6f), 8,dimension[0],dimension[1]);
+                            pl1.setStaticLight(true);
+                            pl1.setSoft(true);
+
                         }
 
                     }

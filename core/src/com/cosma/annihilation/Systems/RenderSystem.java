@@ -55,10 +55,11 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
     @Override
     public void update(float deltaTime) {
+        super.update(deltaTime);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         Box2DSprite.draw(batch,world);
-        super.update(deltaTime);
+
         batch.end();
     }
 
