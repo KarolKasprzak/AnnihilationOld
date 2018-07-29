@@ -18,15 +18,15 @@ public class OnScreenGui extends Stage implements Disposable {
     private Stage stage;
     private Viewport viewport;
     private Camera camera;
-    static Touchpad tpad;
+    private static Touchpad tpad;
     private Skin skin;
     private TextButton debugButton;
     private TextButton debugButtonGui;
     private TextButton menuButton;
     private TextButton stateCheckButton;
     private Window window;
-    Label label;
-    Label label1;
+    private Label label;
+    private Label label1;
     private Label label2;
     private Label label3;
     private Label label4;
@@ -39,8 +39,8 @@ public class OnScreenGui extends Stage implements Disposable {
         viewport = new ExtendViewport(Gdx.graphics.getWidth() , Gdx.graphics.getHeight(),camera);
         viewport.apply(true);
         setViewport(viewport);
-        skin = new Skin(Gdx.files.internal("UI/uiskin.json"));
-        tpad = new Touchpad(2,skin,"default");
+        skin = new Skin(Gdx.files.internal("UI/skin/pixthulhu-ui.json"));
+        tpad = new Touchpad(0,skin,"default");
         addActors();
     }
 

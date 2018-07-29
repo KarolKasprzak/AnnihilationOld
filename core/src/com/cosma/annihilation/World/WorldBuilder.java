@@ -25,6 +25,8 @@ import com.cosma.annihilation.Utils.StateManager;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class WorldBuilder implements Disposable, EntityListener {
+
+
     private Engine engine;
     public World world;
     private OrthographicCamera camera;
@@ -37,7 +39,6 @@ public class WorldBuilder implements Disposable, EntityListener {
         initializeEngine();
 
         // add all entity
-        EntityFactory entityFactory = new EntityFactory(world,engine,camera);
         worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
     }
     public void initializeEngine(){
@@ -50,7 +51,6 @@ public class WorldBuilder implements Disposable, EntityListener {
         tiledMap = AssetsLoader.manager.get("Map/2/map1.tmx", TiledMap.class);
         //Create a pooled engine & world
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
-//        world.setContactListener(new ContactListenerSystem());
         engine = new PooledEngine();
         //Add all the relevant systems our engine should run
         LightRenderSystem lightRenderSystem = new LightRenderSystem(camera,world);
@@ -63,6 +63,8 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new TileMapRender(camera,tiledMap));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera,world));
+        engine.addSystem(new ActionSystem(engine,world,camera));
+        engine.addSystem(new SecondRenderSystem(camera,world));
         engine.addSystem(lightRenderSystem);
 
 
@@ -70,7 +72,7 @@ public class WorldBuilder implements Disposable, EntityListener {
     }
 
     public void update(float delta) {
-//        debugInput();
+        debugInput();
         viewport.apply();
         engine.update(delta);
         camera.update();
@@ -94,6 +96,10 @@ public class WorldBuilder implements Disposable, EntityListener {
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) camera.zoom = camera.zoom + 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.zoom = camera.zoom - 0.2f;
         camera.update();
+    }
+
+    public Engine getEngine() {
+        return engine;
     }
 
     @Override

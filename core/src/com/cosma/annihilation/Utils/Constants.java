@@ -33,5 +33,6 @@ public class Constants {
     public static final int RENDER                         = 7;
     public static final int DEBUG_RENDER                   = 8;
     public static final int LIGHT_RENDER                   = 9;
+    public static final int SECOND_RENDER                   = 10;
 
 }

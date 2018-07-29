@@ -25,20 +25,16 @@ public class LightRenderSystem extends IteratingSystem {
         this.camera = camera;
         this.world = world;
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.02f, 0.02f, 0.02f, 0.9f);
+        rayHandler.setAmbientLight(0.06f, 0.06f, 0.06f, 1f);
         rayHandler.useDiffuseLight(true);
-
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
-
     }
-
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {

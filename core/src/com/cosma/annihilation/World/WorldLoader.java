@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Entities.PlayerEntity;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.CollisionID;
@@ -24,11 +25,13 @@ class WorldLoader {
     private  World world;
     private  TiledMap gameMap;
     private  RayHandler rayHandler;
-     WorldLoader(Engine engine, World world, TiledMap gameMap, RayHandler rayHandler){
+    private EntityFactory entityFactory;
+    WorldLoader(Engine engine, World world, TiledMap gameMap, RayHandler rayHandler){
         this.engine = engine;
         this.world = world;
         this.gameMap = gameMap;
         this.rayHandler = rayHandler;
+        entityFactory = new EntityFactory(world,engine);
         createEntitys();
         loadMap();
     }
@@ -55,15 +58,23 @@ class WorldLoader {
                             float[] dimension = getDimension(mo);
                             ConeLight pl = new ConeLight(rayHandler, 128, new Color(1,1,1,1f), 5,dimension[0],dimension[1],-90,90);
                             pl.setStaticLight(true);
+                            pl.setXray(true);
                             pl.setSoft(true);
-
-
                         }
                         if("light1".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             PointLight pl1 = new PointLight(rayHandler, 90, new Color(1,1,1,0.6f), 8,dimension[0],dimension[1]);
+                            Filter filter = new Filter();
+                            pl1.setContactFilter(filter);
                             pl1.setStaticLight(true);
+                            pl1.setXray(true);
                             pl1.setSoft(true);
+
+                        }
+                        if("spawn_box".equals(mo.getName())){
+                            float[] dimension = getDimension(mo);
+                            entityFactory.createBoxEntity(dimension[0],dimension[1]);
+
 
                         }
 

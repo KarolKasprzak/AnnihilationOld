@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Gui.OnScreenGui;
+import com.cosma.annihilation.Systems.ActionSystem;
+import com.cosma.annihilation.Systems.PlayerControlSystem;
 import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.World.WorldBuilder;
 
@@ -30,8 +32,11 @@ public class TestScreen implements Screen, InputProcessor {
         gui = new OnScreenGui();
         worldBuilder = new WorldBuilder();
         im = new InputMultiplexer();
-        im.addProcessor(this);
         im.addProcessor(gui);
+        im.addProcessor( worldBuilder.getEngine().getSystem(PlayerControlSystem.class));
+        im.addProcessor( worldBuilder.getEngine().getSystem(ActionSystem.class));
+        im.addProcessor(this);
+
     }
 
     @Override
@@ -100,9 +105,9 @@ public class TestScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
-               System.out.println(vec);
+//        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+//        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
+//               System.out.println(vec);
 
         return false;
     }

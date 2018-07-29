@@ -24,8 +24,6 @@ public class DebugRenderSystem extends IteratingSystem {
         this.camera = camera;
         this.world = world;
         debugRenderer = new Box2DDebugRenderer();
-
-
     }
 
     @Override
@@ -35,7 +33,6 @@ public class DebugRenderSystem extends IteratingSystem {
             debugRenderer.render(world, camera.combined);
         }
     }
-
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {

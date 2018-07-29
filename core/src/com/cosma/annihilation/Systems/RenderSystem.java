@@ -34,22 +34,17 @@ public class RenderSystem extends IteratingSystem implements Disposable {
     @SuppressWarnings("unchecked")
     public RenderSystem(OrthographicCamera camera,World world) {
         // gets all entities with a TransformComponent and TextureComponent
-//        super(Family.all(TransformComponent.class, TextureComponent.class).get(), new ZComparator());
         super(Family.all(TransformComponent.class, TextureComponent.class).get(),Constants.RENDER);
         this.camera = camera;
         this.world = world;
         batch = new SpriteBatch();
         //creates out componentMappers
-        textureMapper = ComponentMapper.getFor(TextureComponent.class);
-        transformMapper = ComponentMapper.getFor(TransformComponent.class);
+//        textureMapper = ComponentMapper.getFor(TextureComponent.class);
+//        transformMapper = ComponentMapper.getFor(TransformComponent.class);
 //        this.batch = batch;  // set our batch to the one supplied in constructor
         // set up the camera to match our screen size
 //        camera = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
 //        camera.position.set(FRUSTUM_WIDTH / 2f, FRUSTUM_HEIGHT / 2f, 0);
-
-
-
-
 
 
     }
@@ -60,7 +55,6 @@ public class RenderSystem extends IteratingSystem implements Disposable {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         Box2DSprite.draw(batch,world);
-
         batch.end();
     }
 

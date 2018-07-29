@@ -6,8 +6,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
@@ -16,11 +18,12 @@ import com.cosma.annihilation.Gui.OnScreenGui;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.StateManager;
 
-public class PlayerControlSystem extends IteratingSystem{
+public class PlayerControlSystem extends IteratingSystem implements InputProcessor {
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private Touchpad touchpad;
+    private Body playerBody;
 
 
 
@@ -36,19 +39,14 @@ public class PlayerControlSystem extends IteratingSystem{
     protected void processEntity(Entity entity, float deltaTime) {
 
         BodyComponent playerBody = bodyMapper.get(entity);
+        this.playerBody = playerBody.body;
         PlayerComponent player = playerMapper.get(entity);
 
         // prevent slip
         if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             playerBody.body.setLinearVelocity(new Vector2(0,playerBody.body.getLinearVelocity().y));
         }
-        // jump
-        if(StateManager.onGround && StateManager.canJump) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)|| touchpad.getKnobPercentY() >= 0.7) {
-                     playerBody.body.applyLinearImpulse(new Vector2(0, 2f),
-                     playerBody.body.getWorldCenter(), true);
-            }
-        }
+
         //Climbing
         if(StateManager.climbing){
             StateManager.canJump = false;
@@ -56,7 +54,7 @@ public class PlayerControlSystem extends IteratingSystem{
             playerBody.body.setLinearVelocity(new Vector2(0, 0));
         }else playerBody.body.setGravityScale(1);
 
-        //Ladder up
+
         if(StateManager.canClimb) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)|| touchpad.getKnobPercentY() >= 0.5) {
                 StateManager.climbing = true;
@@ -76,7 +74,7 @@ public class PlayerControlSystem extends IteratingSystem{
 
         //Moving on side
         if(StateManager.canMoveOnSide) {
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT ) || touchpad.getKnobPercentX() >= 0.5) {
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT ) || touchpad.getKnobPercentX() >= 0.2) {
 
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;
@@ -87,7 +85,7 @@ public class PlayerControlSystem extends IteratingSystem{
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || touchpad.getKnobPercentX() <= -0.5) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || touchpad.getKnobPercentX() <= -0.2) {
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -player.velocity;
                 float speedX = desiredSpeed - vec.x;
@@ -98,5 +96,52 @@ public class PlayerControlSystem extends IteratingSystem{
                         playerBody.body.getWorldCenter(), true);
             }
         }
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+
+        if(StateManager.onGround && StateManager.canJump) {
+            if (keycode == Input.Keys.UP || touchpad.getKnobPercentY() >= 0.7) {
+                playerBody.applyLinearImpulse(new Vector2(0, 13f),
+                        playerBody.getWorldCenter(), true);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

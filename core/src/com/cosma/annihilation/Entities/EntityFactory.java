@@ -2,68 +2,73 @@ package com.cosma.annihilation.Entities;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.CollisionID;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class EntityFactory {
     private Engine engine;
     private World world;
-    private OrthographicCamera camera;
-    public EntityFactory(World world, Engine engine, OrthographicCamera camera){
+     public EntityFactory(World world, Engine engine){
         this.world = world;
         this.engine = engine;
-        this.camera = camera;
+        }
 
-    }
-    public  Entity createWorld() {
-        Entity entity = new Entity();
-        WorldComponent worldComponent = new WorldComponent();
-        worldComponent.world = this.world;
-        entity.add(worldComponent);
-        this.engine.addEntity(entity);
-        return entity;
-    }
-//    public Entity playerEntity() {
-//        Entity entity = new Entity();
-//        BodyComponent bodyComponent = new BodyComponent();
-//        PlayerComponent playerComponent = new PlayerComponent();
-//
-//        BodyDef bodyDef = new BodyDef();
-//        bodyDef.type = BodyDef.BodyType.DynamicBody;
-//        bodyDef.position.set(9, 1);
-//        PolygonShape shape = new PolygonShape();
-//        shape.setAsBox(0.5f, 1);
-//        FixtureDef fixtureDef = new FixtureDef();
-//        fixtureDef.shape = shape;
-//        fixtureDef.density = 1f;
-//        bodyComponent.body = world.createBody(bodyDef);
-//        bodyComponent.body.setFixedRotation(true);
-//        bodyComponent.body.createFixture(fixtureDef);
-//
-//        TextureComponent texture = engine.createComponent(TextureComponent.class);
-//        texture.texture = (Texture) AssetsLoader.getResorce("hero");
-//
-//        Box2DSprite box2DSprite = new Box2DSprite(texture.texture);
-//        bodyComponent.body.setUserData(box2DSprite);
-//
-//        entity.add(playerComponent);
-//        entity.add(bodyComponent);
-//        entity.add(texture);
-//
-//        this.engine.addEntity(entity);
-//
-//        return entity;
-//    }
-        public Entity cameraEntity(){
+        public Entity createBoxEntity(float x, float y){
             Entity entity = engine.createEntity();
-            CameraComponent cameraComponent = new CameraComponent();
-            cameraComponent.camera = camera;
-            entity.add(cameraComponent);
+
+            Texture mainTexture = (Texture) AssetsLoader.getResource("box");
+            Box2DSprite box2DSprite = new Box2DSprite(mainTexture);
+
+            //Component
+            BodyComponent bodyComponent = new BodyComponent();
+            ContainerComponent containerComponent = new ContainerComponent();
+            InventoryComponent inventoryComponent = new InventoryComponent();
+            TransformComponent transformComponent = new TransformComponent();
+
+
+            BodyDef bodyDef = new BodyDef();
+            bodyDef.type = BodyDef.BodyType.DynamicBody;
+            bodyDef.position.set(x,y);
+            bodyComponent.body = world.createBody(bodyDef);
+            bodyComponent.body.setUserData(entity);
+                  //Physic fixture
+            PolygonShape shape = new PolygonShape();
+            shape.setAsBox(1f/2,1f/2);
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = shape;
+            fixtureDef.density = 8f;
+            fixtureDef.friction = 1f;
+            bodyComponent.body.createFixture(fixtureDef);
+                  //Render fixture
+            FixtureDef renderFixture = new FixtureDef();
+            renderFixture.shape = shape;
+            renderFixture.isSensor = true;
+            bodyComponent.body.createFixture(renderFixture).setUserData(box2DSprite);
+                   //Icon fixture
+            PolygonShape iconShape = new PolygonShape();
+            iconShape.setAsBox(0.5f/2,0.5f/2);
+            FixtureDef iconFixture = new FixtureDef();
+            iconFixture.shape = iconShape;
+            iconFixture.isSensor = true;
+            bodyComponent.body.createFixture(iconFixture);
+                  //Sensor fixture
+            CircleShape sensorShape = new CircleShape();
+            sensorShape.setRadius(1);
+            FixtureDef touchSensorFixture = new FixtureDef();
+            touchSensorFixture.shape = sensorShape;
+            touchSensorFixture.isSensor = true;
+            bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
+
+            entity.add(bodyComponent);
+            entity.add(containerComponent);
+            entity.add(inventoryComponent);
+            entity.add(transformComponent);
             this.engine.addEntity(entity);
 
             return entity;

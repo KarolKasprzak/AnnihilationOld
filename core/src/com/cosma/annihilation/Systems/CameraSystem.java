@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.CameraComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 
 public class CameraSystem extends IteratingSystem {
@@ -23,14 +22,11 @@ public class CameraSystem extends IteratingSystem {
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.camera = camera;
-
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-
         BodyComponent body = bodyMapper.get(entity);
         camera.position.set(body.body.getPosition().x,body.body.getPosition().y + 1,0);
         camera.update();
-
     }
 }

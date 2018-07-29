@@ -33,22 +33,23 @@ public class PlayerEntity {
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TransformComponent transformComponent = new TransformComponent();
-        // Player physic components
+        //Player physic fixture
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(1, 1);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1f/2, 2/2);
+        shape.setAsBox(0.5f/2, 2/2);
         bodyComponent.body = world.createBody(bodyDef);
         bodyComponent.body.setFixedRotation(true);
-        //Fixture
+        //Body physic fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
+        fixtureDef.density = 2f;
+        fixtureDef.friction = 0f;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
-        bodySensorShape.setAsBox(0.3f/2,1.9f/2, new Vector2(0,0f),0);
+        bodySensorShape.setAsBox(0.5f/2,1.9f/2, new Vector2(0,0f),0);
         FixtureDef centerFixtureDef = new FixtureDef();
         centerFixtureDef.shape = bodySensorShape;
         centerFixtureDef.density = 0.2f;
@@ -63,7 +64,7 @@ public class PlayerEntity {
         footFixtureDef.density = 0.2f;
         footFixtureDef.isSensor = true;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
-        //Player fixture to render
+        //Sprite render fixture
         PolygonShape playerSensorShape = new PolygonShape();
         playerSensorShape.setAsBox(1f/2,2f/2, new Vector2(0,0),0);
         FixtureDef playerRenderFixture = new FixtureDef();
