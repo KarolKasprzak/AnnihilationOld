@@ -24,19 +24,27 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     private Entity player;
     private float ladderX;
     private float ladderY;
-    private ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
-    private ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-    private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
+    private float ladderHeight;
+    private ComponentMapper<PlayerComponent> playerMapper;
+    private ComponentMapper<BodyComponent> bodyMapper;
     private Body playerBody;
+    private Filter goTroughFilter;
+    private Filter normalFilter;
+
 
     public CollisionSystem(World world) {
-        // System for all Entities that have B2dBodyComponent and TransformComponent
         super(Family.all(PlayerComponent.class).get());
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.world = world;
         world.setContactListener(this);
 
+        goTroughFilter = new Filter();
+        goTroughFilter.maskBits = CollisionID.CATEGORY_SCENERY;
+        goTroughFilter.groupIndex = -1;
+
+        normalFilter = new Filter();
+        normalFilter.categoryBits = CollisionID.NO_SHADOW;
 
     }
 
@@ -64,30 +72,20 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 }
             }
         }
-        //CORRECT THIS!
         //Player go through wall
         if (StateManager.climbing) {
-
-              if (playerBody.getPosition().y > ladderY) {
-                Filter filter = new Filter();
-                filter.maskBits = CollisionID.CATEGORY_SCENERY;
-                filter.groupIndex = -1;
-
-                playerBody.getFixtureList().get(0).setFilterData(filter);
-                if (playerBody.getPosition().y < ladderY) {
-                    Filter filter1 = new Filter();
-
-                    playerBody.getFixtureList().get(0).setFilterData(filter1);
+              if (playerBody.getPosition().y > ladderY-(ladderHeight/2-2)) {
+                  playerBody.getFixtureList().get(0).setFilterData(goTroughFilter);
+                if (playerBody.getPosition().y < ladderY-(ladderHeight/2-2)) {
+                    System.out.println(ladderY);
+                    playerBody.getFixtureList().get(0).setFilterData(normalFilter);
                 }
             } else {
-                Filter filter2 = new Filter();
-
-                playerBody.getFixtureList().get(0).setFilterData(filter2);
+                     playerBody.getFixtureList().get(0).setFilterData(normalFilter);
             }
         } else {
-            Filter filter2 = new Filter();
 
-            playerBody.getFixtureList().get(0).setFilterData(filter2);
+            playerBody.getFixtureList().get(0).setFilterData(normalFilter);
         }
     }
 
@@ -99,70 +97,64 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
-
-
-
-
-
-
-
-
-        //-----------------------Interaction-----------------------------
+        //-----------------------Interaction-----------------------------//
         if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
                 || fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.CONTAINER)  {
             Entity entity;
            if(fa.getUserData() == BodyID.CONTAINER){
                entity = (Entity) fa.getBody().getUserData();
-               entity.getComponent(ContainerComponent.class).showIcon = true;
+//               System.out.println(entity.getComponent(BodyComponent.class).SizeX);
+
             }else{
                entity = (Entity) fb.getBody().getUserData();
-               entity.getComponent(ContainerComponent.class).showIcon = true;
+
 
            }
         }
 
-
-
-
-
-        //-----------------------Jumping & Climb-----------------------------
-        if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT)  {
+//        -----------------------Jumping & Climb-----------------------------
+        if(fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor())  {
             player.getComponent(PlayerComponent.class).numFootContacts++;
         }
+        //Ladder climb down
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.GROUND ||
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.GROUND)  {
             if(StateManager.climbing) {
                 StateManager.canMoveOnSide = false;
             }
         }
+
         if(fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.DESCENT_LADDER || fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.DESCENT_LADDER)  {
             StateManager.canClimbDown = true;
             if (fa.getUserData() == BodyID.DESCENT_LADDER) {
                 ladderX = fa.getBody().getPosition().x;
                 ladderY = fa.getBody().getPosition().y;
-            } else {
-                System.out.println(fa.getBody().getPosition());
-                ladderX = fb.getBody().getPosition().x;
-                ladderY = fb.getBody().getPosition().y;
+                ladderHeight = (Float) fa.getBody().getUserData();
             }
+                else {
+                    System.out.println(fa.getBody().getPosition());
+                    ladderX = fb.getBody().getPosition().x;
+                    ladderY = fb.getBody().getPosition().y;
+                    ladderHeight = (Float) fb.getBody().getUserData();
+                    }
+
         }
-        //Ladder climb
+        //Ladder climb up
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.LADDER ||
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER)  {
+
+            if(StateManager.onGround) {
+                StateManager.canClimb = true;
+                StateManager.canJump = false;}
+
             if (fa.getUserData() == BodyID.LADDER) {
                 ladderX = fa.getBody().getPosition().x;
                 ladderY = fa.getBody().getPosition().y;
-
-            } else {
-                ladderX = fb.getBody().getPosition().x;
-                ladderY = fb.getBody().getPosition().y;
-
-
-            }
-             if(StateManager.onGround) {
-                 StateManager.canClimb = true;
-                 StateManager.canJump = false;
-             }
+                ladderHeight = (Float) fa.getBody().getUserData();}
+                else {
+                    ladderX = fb.getBody().getPosition().x;
+                    ladderY = fb.getBody().getPosition().y;
+                    ladderHeight = (Float) fb.getBody().getUserData();}
         }
     }
 
@@ -187,7 +179,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
 
 
-        //-----------------------Jumping & Climb-----------------------------
+        //-----------------------Jumping-----------------------------
+        if(fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
+            StateManager.onGround = false;
+            player.getComponent(PlayerComponent.class).numFootContacts--;
+        }
+
+        //------------------------Ladder--------------
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.GROUND ||
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.GROUND)  {
 
@@ -201,10 +199,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         }
 
-        if(fb.getUserData() == BodyID.PLAYER_FOOT || fa.getUserData() == BodyID.PLAYER_FOOT){
-            StateManager.onGround = false;
-            player.getComponent(PlayerComponent.class).numFootContacts--;
-        }
+
         //Ladder climb
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.LADDER ||
             fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER){

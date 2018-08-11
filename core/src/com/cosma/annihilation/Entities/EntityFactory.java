@@ -40,29 +40,34 @@ public class EntityFactory {
                   //Physic fixture
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(1f/2,1f/2);
+            bodyComponent.SizeX = 1f/2;
+            bodyComponent.SizeY = 1f/2;
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = shape;
             fixtureDef.density = 8f;
             fixtureDef.friction = 1f;
+            fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
             bodyComponent.body.createFixture(fixtureDef);
                   //Render fixture
             FixtureDef renderFixture = new FixtureDef();
             renderFixture.shape = shape;
             renderFixture.isSensor = true;
+            renderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
             bodyComponent.body.createFixture(renderFixture).setUserData(box2DSprite);
-                   //Icon fixture
-            PolygonShape iconShape = new PolygonShape();
-            iconShape.setAsBox(0.5f/2,0.5f/2);
-            FixtureDef iconFixture = new FixtureDef();
-            iconFixture.shape = iconShape;
-            iconFixture.isSensor = true;
-            bodyComponent.body.createFixture(iconFixture);
+//                   //Icon fixture
+//            PolygonShape iconShape = new PolygonShape();
+//            iconShape.setAsBox(0.5f/2,0.5f/2);
+//            FixtureDef iconFixture = new FixtureDef();
+//            iconFixture.shape = iconShape;
+//            iconFixture.isSensor = true;
+//            bodyComponent.body.createFixture(iconFixture);
                   //Sensor fixture
             CircleShape sensorShape = new CircleShape();
             sensorShape.setRadius(1);
             FixtureDef touchSensorFixture = new FixtureDef();
             touchSensorFixture.shape = sensorShape;
             touchSensorFixture.isSensor = true;
+            touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
             bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
 
             entity.add(bodyComponent);

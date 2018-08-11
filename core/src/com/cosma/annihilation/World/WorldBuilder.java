@@ -62,11 +62,10 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
         engine.addSystem(new AnimationSystem());
-        engine.addSystem(new DebugRenderSystem(camera,world));
-        engine.addSystem(new ActionSystem(engine,world,camera));
-        engine.addSystem(new SecondRenderSystem(camera,world));
+        engine.addSystem(new ActionSystem(engine,world));
+        engine.addSystem(new HealthSystem());
         engine.addSystem(lightRenderSystem);
-
+        engine.addSystem(new DebugRenderSystem(camera,world));
 
 
     }
@@ -81,8 +80,6 @@ public class WorldBuilder implements Disposable, EntityListener {
 
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-//        rayHandler.useCustomViewport(viewport.getScreenX(),viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
-
         }
     public OrthographicCamera getCamera() {
             return  camera;

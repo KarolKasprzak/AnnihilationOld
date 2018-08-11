@@ -5,6 +5,13 @@ public class StateManager {
     public static boolean onGround = false;
     public static boolean climbing = false;
     public static boolean canClimb = false;
+    public static float playerHP = 1;
+    //------Control-----
+    public static boolean goLeft = false;
+    public static boolean goRight = false;
+    public static boolean goUp = false;
+    public static boolean goDown = false;
+
 
     public static boolean debugMode = false;
     public static boolean debugModeGui = false;
@@ -13,5 +20,6 @@ public class StateManager {
 
     // false = right side
     public static boolean playerDirection = false;
+    public static boolean Open = false;
     // true = left side
     }

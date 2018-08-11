@@ -13,28 +13,28 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Gui.OnScreenGui;
+import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.PlayerControlSystem;
 import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.World.WorldBuilder;
 
 public class TestScreen implements Screen, InputProcessor {
+
     private WorldBuilder worldBuilder;
     private OnScreenGui gui;
     private InputMultiplexer im;
-    private Viewport guiViewport;
-    private Viewport viewport;
-    private Camera camera;
+    private PlayerGUI playerGUI;
     Stage guiStage;
     public  TestScreen() {
 
-
-        gui = new OnScreenGui();
+//        camera = new OrthographicCamera();
+//        gui = new OnScreenGui(camera);
         worldBuilder = new WorldBuilder();
         im = new InputMultiplexer();
-        im.addProcessor(gui);
+        playerGUI = new PlayerGUI();
+        im.addProcessor(playerGUI.getStage());
         im.addProcessor( worldBuilder.getEngine().getSystem(PlayerControlSystem.class));
-        im.addProcessor( worldBuilder.getEngine().getSystem(ActionSystem.class));
         im.addProcessor(this);
 
     }
@@ -50,13 +50,15 @@ public class TestScreen implements Screen, InputProcessor {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         worldBuilder.update(delta);
+        playerGUI.render(delta);
         //Gui render
-        gui.draw();
-        if(StateManager.debugModeGui){
-            gui.setDebugAll(true);
-        }else gui.setDebugAll(false);
-        gui.act(delta);
-        gui.actlab();
+//        gui.draw();
+//        if(StateManager.debugModeGui){
+//            gui.setDebugAll(true);
+//        }else gui.setDebugAll(false);
+//        gui.getCamera().update();
+//        gui.act(delta);
+//        gui.actlab();
 
 
         }
@@ -64,7 +66,11 @@ public class TestScreen implements Screen, InputProcessor {
     @Override
     public void resize(int width, int height) {
         worldBuilder.resize(width,height);
-        gui.getViewport().update(width, height,true);
+        playerGUI.resize(width,height);
+//        gui.getViewport().update(width, height,true);
+//        gui.getViewport().apply(true);
+//        gui.getCamera().update();
+
     }
 
 
@@ -105,9 +111,9 @@ public class TestScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-//        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
-//               System.out.println(vec);
+        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
+               System.out.println(screenX + " " + screenY);
 
         return false;
     }

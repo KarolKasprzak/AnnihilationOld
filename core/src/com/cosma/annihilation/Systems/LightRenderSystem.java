@@ -25,8 +25,8 @@ public class LightRenderSystem extends IteratingSystem {
         this.camera = camera;
         this.world = world;
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.06f, 0.06f, 0.06f, 1f);
         rayHandler.useDiffuseLight(true);
+
     }
 
     @Override

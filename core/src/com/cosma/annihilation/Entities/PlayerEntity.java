@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.TextureComponent;
-import com.cosma.annihilation.Components.TransformComponent;
+import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.CollisionID;
@@ -33,36 +30,37 @@ public class PlayerEntity {
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TransformComponent transformComponent = new TransformComponent();
-        //Player physic fixture
+        HealthComponent healthComponent= new HealthComponent();
+        //Player body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(1, 1);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f/2, 2/2);
         bodyComponent.body = world.createBody(bodyDef);
         bodyComponent.body.setFixedRotation(true);
         //Body physic fixture
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(1f/2, 2f/2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 2f;
+        fixtureDef.density = 1f;
         fixtureDef.friction = 0f;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
-        bodySensorShape.setAsBox(0.5f/2,1.9f/2, new Vector2(0,0f),0);
+        bodySensorShape.setAsBox(0.5f/2,1.9f/2);
         FixtureDef centerFixtureDef = new FixtureDef();
         centerFixtureDef.shape = bodySensorShape;
-        centerFixtureDef.density = 0.2f;
         centerFixtureDef.isSensor = true;
-        centerFixtureDef.filter.categoryBits = CollisionID.CATEGORY_PLAYER_SENSOR;
+        centerFixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(centerFixtureDef).setUserData(BodyID.PLAYER_CENTER);
         //Foot sensor fixture
         PolygonShape footSensorShape = new PolygonShape();
         footSensorShape.setAsBox(0.5f/2,0.5f/2, new Vector2(0,-1),0);
         FixtureDef footFixtureDef = new FixtureDef();
         footFixtureDef.shape = footSensorShape;
-        footFixtureDef.density = 0.2f;
         footFixtureDef.isSensor = true;
+        footFixtureDef.filter.categoryBits = CollisionID.NO_SHADOW ;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Sprite render fixture
         PolygonShape playerSensorShape = new PolygonShape();
@@ -70,8 +68,10 @@ public class PlayerEntity {
         FixtureDef playerRenderFixture = new FixtureDef();
         playerRenderFixture.shape = playerSensorShape;
         playerRenderFixture.isSensor = true;
+        playerRenderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(playerRenderFixture);
         //Add entity
+        entity.add(healthComponent);
         entity.add(transformComponent);
         entity.add(playerComponent);
         entity.add(bodyComponent);

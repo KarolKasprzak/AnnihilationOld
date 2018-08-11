@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.StateComponent;
@@ -22,31 +23,30 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
-    private Touchpad touchpad;
-    private Body playerBody;
-
-
-
 
     public PlayerControlSystem() {
-        super(Family.all(PlayerComponent.class).get(),Constants.PLAYER_CONTROL_SYSTEM);
+        super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-        this.touchpad = OnScreenGui.getTouchpad();
-
     }
+
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
 
         BodyComponent playerBody = bodyMapper.get(entity);
-        this.playerBody = playerBody.body;
         PlayerComponent player = playerMapper.get(entity);
 
         // prevent slip
-        if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            playerBody.body.setLinearVelocity(new Vector2(0,playerBody.body.getLinearVelocity().y));
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                 playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
         }
-
+        // Jumping
+        if (StateManager.onGround && StateManager.canJump) {
+                if (Gdx.input.isKeyPressed(Input.Keys.UP) || StateManager.goUp) {
+                    playerBody.body.applyLinearImpulse(new Vector2(0, 1.5f),
+                            playerBody.body.getWorldCenter(), true);
+                }
+        }
         //Climbing
         if(StateManager.climbing){
             StateManager.canJump = false;
@@ -55,26 +55,26 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         }else playerBody.body.setGravityScale(1);
 
 
-        if(StateManager.canClimb) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)|| touchpad.getKnobPercentY() >= 0.5) {
+        if(StateManager.canClimb  && playerBody.body.getLinearVelocity().x == 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)|| StateManager.goUp) {
                 StateManager.climbing = true;
-                playerBody.body.setLinearVelocity(new Vector2(0, 1));
+                if(playerBody.body.getLinearVelocity().x == 0f) {
+                    System.out.println(playerBody.body.getLinearVelocity().x);
+                    playerBody.body.setLinearVelocity(new Vector2(0, 1));
+                }
             }
         }
         if(StateManager.canClimb || StateManager.canClimbDown) {
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)|| touchpad.getKnobPercentY() <= -0.5) {
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)|| StateManager.goDown) {
                 StateManager.climbing = true;
                 playerBody.body.setLinearVelocity(new Vector2(0, -1));
             }
         }
 
 
-
-
-
         //Moving on side
         if(StateManager.canMoveOnSide) {
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT ) || touchpad.getKnobPercentX() >= 0.2) {
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT ) || StateManager.goRight) {
 
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;
@@ -85,7 +85,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || touchpad.getKnobPercentX() <= -0.2) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || StateManager.goLeft) {
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -player.velocity;
                 float speedX = desiredSpeed - vec.x;
@@ -101,12 +101,6 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
     @Override
     public boolean keyDown(int keycode) {
 
-        if(StateManager.onGround && StateManager.canJump) {
-            if (keycode == Input.Keys.UP || touchpad.getKnobPercentY() >= 0.7) {
-                playerBody.applyLinearImpulse(new Vector2(0, 13f),
-                        playerBody.getWorldCenter(), true);
-            }
-        }
         return false;
     }
 

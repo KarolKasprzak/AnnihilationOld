@@ -31,8 +31,8 @@ public class Constants {
     public static final int ANIMATION                      = 5;
     public static final int TILE_MAP_RENDER                = 6;
     public static final int RENDER                         = 7;
-    public static final int DEBUG_RENDER                   = 8;
+    public static final int HEALTHSYSTEM                   = 8;
     public static final int LIGHT_RENDER                   = 9;
-    public static final int SECOND_RENDER                   = 10;
+    public static final int DEBUG_RENDER                   = 11;
 
 }
