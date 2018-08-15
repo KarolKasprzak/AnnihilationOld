@@ -66,6 +66,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new HealthSystem());
         engine.addSystem(lightRenderSystem);
         engine.addSystem(new DebugRenderSystem(camera,world));
+        engine.addSystem(new SaveSystem(world));
 
 
     }

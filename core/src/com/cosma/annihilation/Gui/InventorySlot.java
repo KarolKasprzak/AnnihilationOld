@@ -8,18 +8,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.AssetsLoader;
 
 public class InventorySlot extends Stack {
-    private int itemValue = 0;
+    private int itemsAmount = 0;
     private int itemType = 0;
     private int itemTypeFilter = 0;
     private Image backgroundImage;
-    private Label itemValueLabel;
+    private Label itemsAmountLabel;
     private Stack stack;
-    private Label itemsNumberLabel;
 
     public InventorySlot(){
         stack = new Stack();
@@ -29,10 +29,10 @@ public class InventorySlot extends Stack {
         stack.setName("background");
         this.add(stack);
         Skin skin = new Skin(Gdx.files.internal("UI/skin/pixthulhu-ui.json"));
-        itemsNumberLabel = new Label(String.valueOf(itemValue),skin);
-        itemsNumberLabel.setAlignment(Align.bottomRight);
-        itemsNumberLabel.setVisible(true);
-        this.add(itemsNumberLabel);
+        itemsAmountLabel = new Label(String.valueOf(itemsAmount),skin);
+        itemsAmountLabel.setAlignment(Align.bottomRight);
+        itemsAmountLabel.setVisible(false);
+        this.add(itemsAmountLabel);
     }
     public InventorySlot(int itemTypeFilter,Image backgroundImage) {
         this();
@@ -50,9 +50,51 @@ public class InventorySlot extends Stack {
         }
     }
 
+    public boolean hasItem(){
+        if( hasChildren() ){
+            SnapshotArray<Actor> items = this.getChildren();
+            if( items.size > 2 ){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void checkVisibilityOfItemCount(){
+        if( itemsAmount < 2){
+            itemsAmountLabel.setVisible(false);
+        }else{
+            itemsAmountLabel.setVisible(true);
+        }
+    }
+
+    public void decrementItemCount(boolean sendRemoveNotification) {
+        itemsAmount--;
+       itemsAmountLabel.setText(String.valueOf(itemsAmount));
+//        if( _defaultBackground.getChildren().size == 1 ){
+//            _defaultBackground.add(_customBackgroundDecal);
+//        }
+        checkVisibilityOfItemCount();
+//        if( sendRemoveNotification ){
+//            notify(this, InventorySlotObserver.SlotEvent.REMOVED_ITEM);
+//        }
+
+    }
+
+    public void incrementItemCount(boolean sendAddNotification) {
+        itemsAmount++;
+        itemsAmountLabel.setText(String.valueOf(itemsAmount));
+//        if( _defaultBackground.getChildren().size > 1 ){
+//            _defaultBackground.getChildren().pop();
+//        }
+        checkVisibilityOfItemCount();
+//        if( sendAddNotification ){
+//            notify(this, InventorySlotObserver.SlotEvent.ADDED_ITEM);
+//        }
+    }
+
     public InventoryItem getInventoryItem(){
         InventoryItem actor = null;
-
         if( this.hasChildren() ){
             SnapshotArray<Actor> items = this.getChildren();
             if( items.size > 2 ){
@@ -61,14 +103,45 @@ public class InventorySlot extends Stack {
         }
         return actor;
     }
+    public Array<Actor> getAllInventoryItems() {
+        Array<Actor> items = new Array<Actor>();
+        if( hasItem() ){
+            SnapshotArray<Actor> arrayChildren = this.getChildren();
+            int numInventoryItems =  arrayChildren.size - 2;
+            for(int i = 0; i < numInventoryItems; i++) {
+                decrementItemCount(true);
+                items.add(arrayChildren.pop());
+            }
+        }
+        return items;
+    }
 
+    public int getItemsNumber(){
+        if( hasChildren() ){
+            SnapshotArray<Actor> items = this.getChildren();
+            return items.size - 2;
+        }
+        return 0;
+    }
+
+
+    public void clearAllInventoryItems(boolean sendRemoveNotifications) {
+        if( hasItem() ){
+            SnapshotArray<Actor> arrayChildren = this.getChildren();
+            int numInventoryItems =  getItemsNumber();
+            for(int i = 0; i < numInventoryItems; i++) {
+                decrementItemCount(sendRemoveNotifications);
+                arrayChildren.pop();
+            }
+        }
+    }
 
 
     @Override
     public void add(Actor actor) {
         super.add(actor);
 
-        if( itemsNumberLabel == null ){
+        if( itemsAmountLabel == null ){
             return;
         }
 

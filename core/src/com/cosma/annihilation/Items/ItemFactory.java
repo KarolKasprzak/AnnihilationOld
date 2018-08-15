@@ -6,43 +6,55 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.InventoryItem.ItemID;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 
 public class ItemFactory {
     private Json json = new Json();
-    private Hashtable<ItemID, Object> weaponItemMap;
-//    private Hashtable<ItemID, ArmourItem> armourItemMap;
-//    private Hashtable<ItemID, StandardItem> standardItemMap;
+    private Hashtable<ItemID, Object> itemMap;
+    private static ItemFactory instance = null;
     private final String WEAPON_ITEM_PATH = "json/items/weapons/weapons.json";
     private final String ARMOUR_ITEM_PATH = "json/items/armours/armours.json";
-    private final String STANDARD_ITEM_PATH = "json/items/standard/standard.json";
+    private final String STANDARD_ITEM_PATH = "json/items/standard/items.json";
+
+
+    public static ItemFactory getInstance() {
+        if (instance == null) {
+            instance = new ItemFactory();
+        }
+
+        return instance;
+    }
 
     public ItemFactory() {
         ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(WEAPON_ITEM_PATH));
+        ArrayList<JsonValue> list1 = json.fromJson(ArrayList.class, Gdx.files.internal(STANDARD_ITEM_PATH));
 
-        weaponItemMap = new Hashtable<ItemID, Object>();
+        itemMap = new Hashtable<ItemID, Object>();
+        json.setIgnoreUnknownFields(true);
 
         for (JsonValue jsonValue : list) {
-            if(jsonValue.getString("type").equals("weapon")){
-
-            }
-            WeaponItem inventoryItem = json.readValue(WeaponItem.class, jsonValue);
-//            InventoryItem inventoryItem = json.readValue(InventoryItem.class, jsonValue);
-            weaponItemMap.put(inventoryItem.getItemID(), inventoryItem);
-
+            WeaponItem weaponItem = json.readValue(WeaponItem.class, jsonValue);
+            itemMap.put(weaponItem.getItemID(), weaponItem);
+        }
+        for (JsonValue jsonValue : list1) {
+            InventoryItem inventoryItem = json.readValue(InventoryItem.class, jsonValue);
+            itemMap.put(inventoryItem.getItemID(), inventoryItem);
         }
 
     }
 
-    public InventoryItem getItem(ItemID itemID){
-         InventoryItem item = new InventoryItem()
+    public InventoryItem getItem(ItemID itemID) {
+            InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
+            return (InventoryItem) item;
+    }
 
-        return item;
-
+    public WeaponItem getWeapon(ItemID itemID) {
+        WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
+        return  item;
     }
 }
-
 
 
 //        System.out.println(list);

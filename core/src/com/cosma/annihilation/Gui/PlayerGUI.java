@@ -41,6 +41,8 @@ public class PlayerGUI implements Screen {
         createActionButton();
         createHUD();
         createInventoryWindow();
+
+
     }
 
     private void createInventoryWindow(){

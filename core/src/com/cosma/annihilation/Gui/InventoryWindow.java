@@ -1,12 +1,17 @@
 package com.cosma.annihilation.Gui;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
-import com.cosma.annihilation.Items.WeaponItem;
-import com.cosma.annihilation.Utils.AssetsLoader;
+
+import java.util.ArrayList;
 
 public class InventoryWindow extends Window {
     private DragAndDrop dragAndDrop;
@@ -18,15 +23,14 @@ public class InventoryWindow extends Window {
         super(title, skin);
         dragAndDrop = new DragAndDrop();
         this.skin = skin;
+        createEquipementTable();
+        createinventoryTable();
+        loadInventory();
+    }
+
+    public void createEquipementTable() {
         equipmentSlotsTable = new Table();
         equipmentSlotsTable.setDebug(false);
-
-
-//      InventoryItem inventoryItem = new InventoryItem(1,1,"ad");
-        InventoryItem inventoryItem = new InventoryItem("bullet",InventoryItem.ItemID.BOX);
-
-        ItemFactory itemFactory = new ItemFactory();
-
 
         InventorySlot headInventorySlot = new InventorySlot();
         InventorySlot bodyInventorySlot = new InventorySlot();
@@ -34,14 +38,9 @@ public class InventoryWindow extends Window {
         InventorySlot leftInventorySlot = new InventorySlot();
         InventorySlot rightInventorySlot = new InventorySlot();
 
-
-        headInventorySlot.add(itemFactory.getItem(InventoryItem.ItemID.MP44));
-
-        dragAndDrop.addSource(new InventorySlotSource(headInventorySlot,dragAndDrop));
-        dragAndDrop.addTarget(new InventorySlotTarget(headInventorySlot));
-
-//        dragAndDrop.addSource(new InventorySlotSource(legsInventorySlot,dragAndDrop));
-        dragAndDrop.addTarget(new InventorySlotTarget(legsInventorySlot));
+//        ItemFactory itemFactory = new ItemFactory();
+//        rightInventorySlot.add(itemFactory.getItem(InventoryItem.ItemID.BOX));
+//        legsInventorySlot.add(itemFactory.getWeapon(InventoryItem.ItemID.MP44));
 
         equipmentSlotsTable.add();
         equipmentSlotsTable.add(headInventorySlot).size(50,50).pad(2);
@@ -58,6 +57,10 @@ public class InventoryWindow extends Window {
         equipmentSlotsTable.center();
         equipmentSlotsTable.pad(20);
         this.row();
+
+    }
+
+    public void createinventoryTable() {
         inventorySlotsTable = new Table();
         inventorySlotsTable.bottom();
         inventorySlotsTable.setDebug(false);
@@ -72,6 +75,72 @@ public class InventoryWindow extends Window {
         }
         this.add(inventorySlotsTable);
 
+
     }
+
+    public static void clearInventoryItems(Table targetTable){
+        Array<Cell> cells = targetTable.getCells();
+        for( int i = 0; i < cells.size; i++){
+            InventorySlot inventorySlot = (InventorySlot)cells.get(i).getActor();
+            if( inventorySlot == null ) continue;
+            inventorySlot.clearAllInventoryItems(false);
+        }
+    }
+
+    public static Array<InventoryItemLocation> getInventory(Table targetTable){
+        Array<Cell> cells = targetTable.getCells();
+        Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
+        for(int i = 0; i < cells.size; i++){
+            InventorySlot inventorySlot = ((InventorySlot)cells.get(i).getActor());
+            if(inventorySlot == null) continue;;
+            int itemNumber = inventorySlot.getItemsNumber();
+            if(itemNumber> 0){
+                items.add(new InventoryItemLocation(i,inventorySlot.getInventoryItem().getItemID().toString(),itemNumber));
+            }
+        }
+        return items;
+
+
+    }
+    public static  void fillInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop dragAndDrop ){
+        clearInventoryItems(targetTable);
+        Array<Cell> cells = targetTable.getCells();
+        for (int i =0; i < inventoryItems.size; i++){
+            InventoryItemLocation itemLocation = inventoryItems.get(i);
+            InventoryItem.ItemID itemID = InventoryItem.ItemID.valueOf(itemLocation.getItemID());
+            InventorySlot inventorySlot = ((InventorySlot)cells.get(itemLocation.getTableIndex()).getActor());
+
+            for( int index = 0; index < itemLocation.getItemsAmount(); index++){
+                InventoryItem item = ItemFactory.getInstance().getItem(itemID);
+                item.setName(targetTable.getName());
+                inventorySlot.add(item);
+                dragAndDrop.addSource(new InventorySlotSource(inventorySlot, dragAndDrop));
+            }
+        }
+
+    }
+
+    public void saveInventory(){
+        Json json = new Json();
+        FileHandle file = Gdx.files.local("save/saveInv.json");
+        file.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
+
+    }
+    public void loadInventory(){
+        Json json = new Json();
+        ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal("save/saveInv.json"));
+        Array<InventoryItemLocation> list1= json.fromJson(Array.class, Gdx.files.internal("save/saveInv.json"));
+        System.out.println(list1);
+        fillInventory(equipmentSlotsTable,list1,dragAndDrop);
+       
+    }
+
+
+
+
+
+
+
+
 
 }
