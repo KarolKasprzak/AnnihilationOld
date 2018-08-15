@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Gui.OnScreenGui;
 import com.cosma.annihilation.Utils.BodyID;
 
 public class ActionSystem extends IteratingSystem {

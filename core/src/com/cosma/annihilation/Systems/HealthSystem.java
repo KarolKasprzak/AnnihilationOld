@@ -26,9 +26,5 @@ public class HealthSystem extends IteratingSystem {
         float hp = healthMapper.get(entity).hp;
         float maxHP = healthMapper.get(entity).maxHP;
         StateManager.playerHP = hp;
-        if(StateManager.goUp){
-            healthMapper.get(entity).hp = hp -10;
-        }
-
     }
 }

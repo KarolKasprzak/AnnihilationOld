@@ -19,6 +19,8 @@ public class PlayerGUI implements Screen {
     private Viewport viewport;
     private Camera camera;
     private Skin skin;
+    private Label fpslabel;
+    private String fpsnumber;
     private ImageButton actionButtonUp;
     private ImageButton actionButtonDown;
     private ImageButton actionButtonLeft;
@@ -26,8 +28,8 @@ public class PlayerGUI implements Screen {
     private TextButton debugButton;
     private TextButton debugButtonGui;
     private TextButton menuButton;
-    private TextButton stateCheckButton;
     private InventoryWindow inventoryWindow;
+    private  ProgressBar healthBar;
     public  PlayerGUI(){
 
         camera = new OrthographicCamera();
@@ -36,8 +38,8 @@ public class PlayerGUI implements Screen {
         stage = new Stage(viewport);
         viewport.apply(true);
         skin = new Skin(Gdx.files.internal("UI/skin/pixthulhu-ui.json"));
-        createHUD();
         createActionButton();
+        createHUD();
         createInventoryWindow();
     }
 
@@ -53,8 +55,8 @@ public class PlayerGUI implements Screen {
         stage.addActor(inventoryWindow);
     }
     private void createActionButton(){
+        fpslabel = new Label(fpsnumber,skin);
         actionButtonUp = new ImageButton(skin,"default");
-        actionButtonUp.setZIndex(5);
         actionButtonUp.addListener(new InputListener()
         {
             @Override
@@ -71,7 +73,6 @@ public class PlayerGUI implements Screen {
 
         });
         actionButtonDown = new ImageButton(skin,"default");
-        actionButtonDown.setZIndex(5);
         actionButtonDown.addListener(new InputListener()
         {
             @Override
@@ -126,8 +127,12 @@ public class PlayerGUI implements Screen {
         Table bTable = new Table();
         bTable.bottom().left();
         bTable.setFillParent(true);
+
         stage.addActor(table);
         stage.addActor(bTable);
+
+
+
 
         //Table
         menuButton = new TextButton("Character menu", skin);
@@ -176,9 +181,8 @@ public class PlayerGUI implements Screen {
         table.add(debugButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
         table.add(menuButton).padTop(10).padRight(10).right().width(150).height(50);
         table.row();
-        table.add(debugButtonGui).padTop(10).padLeft(10).left().width(150).height(50);
-        table.row();
-        table.add(stateCheckButton).padTop(10).padLeft(10).left().width(150).height(50);
+        table.add(fpslabel).padTop(10).padLeft(10).left().width(150).height(50);
+
         table.row();
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15).size(300);
         bTable.add(actionButtonUp).width(150).height(150).center().colspan(3);
@@ -203,6 +207,9 @@ public class PlayerGUI implements Screen {
 
     @Override
     public void render(float delta) {
+    float fpss = Gdx.graphics.getFramesPerSecond();
+    fpsnumber = Float.toString(fpss);
+    fpslabel.setText(fpsnumber);
     stage.act(delta);
     stage.draw();
     }
@@ -236,6 +243,7 @@ public class PlayerGUI implements Screen {
 
     @Override
     public void dispose() {
+        stage.dispose();
 
     }
 }

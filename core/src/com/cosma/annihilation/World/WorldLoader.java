@@ -85,9 +85,8 @@ class WorldLoader {
                         if("light1".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             PointLight pl1 = new PointLight(rayHandler, 90, new Color(1,1,1,0.6f), 7,dimension[0],dimension[1]);
-                            pl1.setStaticLight(false);
+                            pl1.setStaticLight(true);
                             Filter filter = new Filter();
-
                             filter.maskBits = CollisionID.CAST_SHADOW;
                             pl1.setContactFilter(filter);
                             pl1.setSoftnessLength(0.3f);

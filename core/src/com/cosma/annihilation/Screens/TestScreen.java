@@ -1,35 +1,19 @@
 package com.cosma.annihilation.Screens;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.utils.viewport.*;
-import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Gui.OnScreenGui;
 import com.cosma.annihilation.Gui.PlayerGUI;
-import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.PlayerControlSystem;
-import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.World.WorldBuilder;
 
 public class TestScreen implements Screen, InputProcessor {
 
     private WorldBuilder worldBuilder;
-    private OnScreenGui gui;
     private InputMultiplexer im;
     private PlayerGUI playerGUI;
-    Stage guiStage;
     public  TestScreen() {
 
-//        camera = new OrthographicCamera();
-//        gui = new OnScreenGui(camera);
         worldBuilder = new WorldBuilder();
         im = new InputMultiplexer();
         playerGUI = new PlayerGUI();
@@ -51,26 +35,12 @@ public class TestScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         worldBuilder.update(delta);
         playerGUI.render(delta);
-        //Gui render
-//        gui.draw();
-//        if(StateManager.debugModeGui){
-//            gui.setDebugAll(true);
-//        }else gui.setDebugAll(false);
-//        gui.getCamera().update();
-//        gui.act(delta);
-//        gui.actlab();
-
-
         }
 
     @Override
     public void resize(int width, int height) {
         worldBuilder.resize(width,height);
         playerGUI.resize(width,height);
-//        gui.getViewport().update(width, height,true);
-//        gui.getViewport().apply(true);
-//        gui.getCamera().update();
-
     }
 
 
