@@ -26,8 +26,6 @@ public class TestScreen implements Screen, InputProcessor {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(im);
-        System.out.println(Gdx.graphics.getHeight());
-        System.out.println(Gdx.graphics.getWidth());
     }
 
     @Override
@@ -83,7 +81,7 @@ public class TestScreen implements Screen, InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
-               System.out.println(screenX + " " + screenY);
+//               System.out.println(screenX + " " + screenY);
 
         return false;
     }

@@ -2,6 +2,7 @@ package com.cosma.annihilation.Gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
@@ -10,6 +11,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
+import com.cosma.annihilation.Items.WeaponItem;
+import com.cosma.annihilation.Utils.AssetsLoader;
 
 import java.util.ArrayList;
 
@@ -23,9 +26,14 @@ public class InventoryWindow extends Window {
         super(title, skin);
         dragAndDrop = new DragAndDrop();
         this.skin = skin;
+
+
+
+
         createEquipementTable();
         createinventoryTable();
         loadInventory();
+
     }
 
     public void createEquipementTable() {
@@ -35,12 +43,14 @@ public class InventoryWindow extends Window {
         InventorySlot headInventorySlot = new InventorySlot();
         InventorySlot bodyInventorySlot = new InventorySlot();
         InventorySlot legsInventorySlot = new InventorySlot();
-        InventorySlot leftInventorySlot = new InventorySlot();
+        InventorySlot leftInventorySlot = new InventorySlot(
+                InventoryItem.ItemUseType.WEAPON_TWOHAND.getValue(),new Image((Texture)AssetsLoader.getResource("stack_default")));
         InventorySlot rightInventorySlot = new InventorySlot();
-
-//        ItemFactory itemFactory = new ItemFactory();
-//        rightInventorySlot.add(itemFactory.getItem(InventoryItem.ItemID.BOX));
-//        legsInventorySlot.add(itemFactory.getWeapon(InventoryItem.ItemID.MP44));
+        dragAndDrop.addTarget(new InventorySlotTarget(headInventorySlot));
+        dragAndDrop.addTarget(new InventorySlotTarget(bodyInventorySlot));
+        dragAndDrop.addTarget(new InventorySlotTarget(legsInventorySlot));
+        dragAndDrop.addTarget(new InventorySlotTarget(leftInventorySlot));
+        dragAndDrop.addTarget(new InventorySlotTarget(rightInventorySlot));
 
         equipmentSlotsTable.add();
         equipmentSlotsTable.add(headInventorySlot).size(50,50).pad(2);
@@ -71,7 +81,6 @@ public class InventoryWindow extends Window {
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
             inventorySlotsTable.add(inventorySlot).size(50,50).pad(2);
             if(i == 6 || i == 12 || i == 18  )inventorySlotsTable.row();
-
         }
         this.add(inventorySlotsTable);
 
@@ -92,9 +101,11 @@ public class InventoryWindow extends Window {
         Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
         for(int i = 0; i < cells.size; i++){
             InventorySlot inventorySlot = ((InventorySlot)cells.get(i).getActor());
-            if(inventorySlot == null) continue;;
+            if(inventorySlot == null) continue;
+
             int itemNumber = inventorySlot.getItemsNumber();
             if(itemNumber> 0){
+
                 items.add(new InventoryItemLocation(i,inventorySlot.getInventoryItem().getItemID().toString(),itemNumber));
             }
         }
@@ -120,18 +131,22 @@ public class InventoryWindow extends Window {
 
     }
 
+
+
     public void saveInventory(){
         Json json = new Json();
-        FileHandle file = Gdx.files.local("save/saveInv.json");
+        FileHandle file = Gdx.files.local("save/savePlayerEquip.json");
+        FileHandle file1 = Gdx.files.local("save/saveInventory.json");
         file.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
-
+        file1.writeString(json.prettyPrint(getInventory(inventorySlotsTable)),false);
     }
     public void loadInventory(){
         Json json = new Json();
-        ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal("save/saveInv.json"));
-        Array<InventoryItemLocation> list1= json.fromJson(Array.class, Gdx.files.internal("save/saveInv.json"));
-        System.out.println(list1);
-        fillInventory(equipmentSlotsTable,list1,dragAndDrop);
+        Json json1 = new Json();
+        Array<InventoryItemLocation> list = json.fromJson(Array.class, Gdx.files.local("save/savePlayerEquip.json"));
+        Array<InventoryItemLocation> list1 = json1.fromJson(Array.class, Gdx.files.local("save/saveInventory.json"));
+        fillInventory(equipmentSlotsTable,list,dragAndDrop);
+        fillInventory(inventorySlotsTable,list1,dragAndDrop);
        
     }
 

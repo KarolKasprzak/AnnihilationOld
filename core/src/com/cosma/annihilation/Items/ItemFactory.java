@@ -31,6 +31,7 @@ public class ItemFactory {
         ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(WEAPON_ITEM_PATH));
         ArrayList<JsonValue> list1 = json.fromJson(ArrayList.class, Gdx.files.internal(STANDARD_ITEM_PATH));
 
+
         itemMap = new Hashtable<ItemID, Object>();
         json.setIgnoreUnknownFields(true);
 
@@ -45,17 +46,54 @@ public class ItemFactory {
 
     }
 
-    public InventoryItem getItem(ItemID itemID) {
+
+    public <T> T getItemT(ItemID itemID) {
+        Class type = itemMap.get(itemID).getClass();
+        if (type == InventoryItem.class) {
             InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
-            return (InventoryItem) item;
+            return (T) (InventoryItem) item;
+        }
+        if (type == WeaponItem.class) {
+            WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
+            return (T) (WeaponItem) item;
+        }
+        return null;
+    }
+
+//    public InventoryItem getItem(ItemID itemID) {
+//
+//        InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
+//        return  item;
+//    }
+
+
+    public InventoryItem getItem(ItemID itemID) {
+        Class type = itemMap.get(itemID).getClass();
+        if (type == InventoryItem.class) {
+            InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
+            return (InventoryItem) (InventoryItem) item;
+        }
+        if (type == WeaponItem.class) {
+            WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
+            return (InventoryItem) (WeaponItem) item;
+        }
+        return null;
     }
 
     public WeaponItem getWeapon(ItemID itemID) {
-        WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
-        return  item;
+        Class type = itemMap.get(itemID).getClass();
+        if (type == InventoryItem.class) {
+            InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
+            return (WeaponItem) (InventoryItem) item;
+        }
+        if (type == WeaponItem.class) {
+            WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
+            return (WeaponItem) item;
+        }
+        return  null;
     }
-}
 
+}
 
 //        System.out.println(list);
 

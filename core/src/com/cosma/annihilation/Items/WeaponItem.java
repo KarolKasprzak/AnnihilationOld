@@ -10,8 +10,8 @@ public class WeaponItem extends InventoryItem {
 
     public WeaponItem(){}
 
-    public WeaponItem(String textureName,ItemID itemID,int damage){
-        super(textureName,itemID);
+    public WeaponItem(String textureName,ItemID itemID,int damage,int itemAttributes, int itemUseType, int itemValue, String name,boolean stackable){
+        super(textureName,itemID,itemAttributes,itemUseType,itemValue,name,stackable);
         this.damage = damage;
     }
 

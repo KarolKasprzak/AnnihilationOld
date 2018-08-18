@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Utils.StateManager;
@@ -26,7 +27,8 @@ public class PlayerGUI implements Screen {
     private ImageButton actionButtonLeft;
     private ImageButton actionButtonRight;
     private TextButton debugButton;
-    private TextButton debugButtonGui;
+    private TextButton saveButton;
+    private TextButton loadButton;
     private TextButton menuButton;
     private InventoryWindow inventoryWindow;
     private  ProgressBar healthBar;
@@ -137,6 +139,27 @@ public class PlayerGUI implements Screen {
 
 
         //Table
+        saveButton = new TextButton("save",skin);
+        saveButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inventoryWindow.saveInventory();
+                return true;
+            }
+        });
+        loadButton = new TextButton("load",skin);
+        loadButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inventoryWindow.loadInventory();
+                return true;
+            }
+        });
+
+
+
+
+
         menuButton = new TextButton("Character menu", skin);
         menuButton.addListener(new ChangeListener() {
             @Override
@@ -146,21 +169,6 @@ public class PlayerGUI implements Screen {
                 } else
                     inventoryWindow.setVisible(false);
             }
-        });
-        debugButtonGui = new TextButton("Debug mode GUI", skin);
-        debugButtonGui.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if(debugButtonGui.isChecked()){
-                    debugButtonGui.setText("Debug mode - enabled");
-                    StateManager.debugModeGui = true;
-                }
-                else {
-                    debugButtonGui.setText("Debug mode GUI");
-                    StateManager.debugModeGui = false;
-                }
-            }
-
         });
         debugButton = new TextButton("Debug mode ", skin);
 
@@ -183,8 +191,11 @@ public class PlayerGUI implements Screen {
         table.add(debugButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
         table.add(menuButton).padTop(10).padRight(10).right().width(150).height(50);
         table.row();
+        table.add(saveButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
+        table.row();
+        table.add(loadButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
+        table.row();
         table.add(fpslabel).padTop(10).padLeft(10).left().width(150).height(50);
-
         table.row();
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15).size(300);
         bTable.add(actionButtonUp).width(150).height(150).center().colspan(3);

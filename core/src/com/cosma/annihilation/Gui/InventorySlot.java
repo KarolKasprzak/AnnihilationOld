@@ -13,15 +13,16 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.AssetsLoader;
 
-public class InventorySlot extends Stack {
+public class InventorySlot extends Stack implements InventorySlotObservable {
     private int itemsAmount = 0;
-    private int itemType = 0;
-    private int itemTypeFilter = 0;
+    private int itemTypeFilter;
     private Image backgroundImage;
     private Label itemsAmountLabel;
     private Stack stack;
+    private Array<InventorySlotObserver> observers;
 
     public InventorySlot(){
+        observers = new Array<InventorySlotObserver>();
         stack = new Stack();
         backgroundImage = new Image();
         Image backgroundImageStandard = new Image( (Texture) AssetsLoader.getResource("stack_default"));
@@ -30,13 +31,14 @@ public class InventorySlot extends Stack {
         this.add(stack);
         Skin skin = new Skin(Gdx.files.internal("UI/skin/pixthulhu-ui.json"));
         itemsAmountLabel = new Label(String.valueOf(itemsAmount),skin);
+        itemsAmountLabel.setFontScale(0.5f);
         itemsAmountLabel.setAlignment(Align.bottomRight);
         itemsAmountLabel.setVisible(false);
         this.add(itemsAmountLabel);
     }
     public InventorySlot(int itemTypeFilter,Image backgroundImage) {
         this();
-        itemTypeFilter = itemTypeFilter;
+        this.itemTypeFilter = itemTypeFilter;
         this.backgroundImage = backgroundImage;
         stack.add(backgroundImage);
 
@@ -45,7 +47,8 @@ public class InventorySlot extends Stack {
     public boolean doesAcceptItemUseType(int itemType){
         if( itemTypeFilter == 0 ){
             return true;
-        }else {
+        }else
+            {
             return (( itemTypeFilter & itemType) == itemType);
         }
     }
@@ -75,9 +78,9 @@ public class InventorySlot extends Stack {
 //            _defaultBackground.add(_customBackgroundDecal);
 //        }
         checkVisibilityOfItemCount();
-//        if( sendRemoveNotification ){
-//            notify(this, InventorySlotObserver.SlotEvent.REMOVED_ITEM);
-//        }
+        if( sendRemoveNotification ){
+            notify(this, InventorySlotObserver.SlotEvent.REMOVED_ITEM);
+        }
 
     }
 
@@ -88,9 +91,9 @@ public class InventorySlot extends Stack {
 //            _defaultBackground.getChildren().pop();
 //        }
         checkVisibilityOfItemCount();
-//        if( sendAddNotification ){
-//            notify(this, InventorySlotObserver.SlotEvent.ADDED_ITEM);
-//        }
+        if( sendAddNotification ){
+            notify(this, InventorySlotObserver.SlotEvent.ADDED_ITEM);
+        }
     }
 
     public InventoryItem getInventoryItem(){
@@ -145,10 +148,36 @@ public class InventorySlot extends Stack {
             return;
         }
 
-//        if( !actor.equals(defaultStack) && !actor.equals(itemsNumberLabel) ) {
-//            incrementItemCount(true);
-//        }
+        if( !actor.equals(stack) && !actor.equals(itemsAmountLabel) ) {
+            incrementItemCount(true);
+        }
     }
 
 
+    @Override
+    public void addObserver(InventorySlotObserver inventorySlotObserver)  {
+        observers.add(inventorySlotObserver);
+    }
+
+    @Override
+    public void removeObserver(InventorySlotObserver inventorySlotObserver)  {
+        observers.removeValue(inventorySlotObserver, true);
+    }
+
+    @Override
+    public void removeAllObservers() {
+        for(InventorySlotObserver observer: observers){
+            observers.removeValue(observer, true);
+        }
+
+    }
+
+    @Override
+    public void notify(final InventorySlot slot, InventorySlotObserver.SlotEvent event) {
+        for(InventorySlotObserver observer: observers){
+
+            observer.onNotify(slot, event);
+        }
+
+    }
 }
