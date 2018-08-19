@@ -54,7 +54,6 @@ public class AnimationSystem extends IteratingSystem {
                 animatedBox2DSprite.setScale(1.4f);
                 box2DSprite = new Box2DSprite(tex3);
                 box2DSprite.setScale(1.4f);
-
         }
 
     @Override
@@ -74,9 +73,16 @@ public class AnimationSystem extends IteratingSystem {
             }
         }
         if(!StateManager.climbing){
-           box2DSprite.setTexture(tex1);
+            box2DSprite.setTexture(tex1);
             fixture.setUserData(box2DSprite);
+           if(!StateManager.playerDirection){
+               box2DSprite.setFlip(true,false);
+           }else{
+               box2DSprite.setFlip(false,false);
+           }
         }
 
+
+     //----------------------Player equip render--------------------
     }
 }

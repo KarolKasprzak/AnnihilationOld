@@ -18,8 +18,9 @@ public class StateManager {
     public static boolean canMoveOnSide = true;
     public static boolean canClimbDown = false;
 
-    // false = right side
-    public static boolean playerDirection = false;
+    // false = left side
+    // true = right side
+    public static boolean playerDirection = true;
     public static boolean Open = false;
-    // true = left side
+
     }

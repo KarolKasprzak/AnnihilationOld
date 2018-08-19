@@ -33,10 +33,16 @@ public class ItemFactory {
 
 
         itemMap = new Hashtable<ItemID, Object>();
-        json.setIgnoreUnknownFields(true);
+//        json.setIgnoreUnknownFields(true);
+
 
         for (JsonValue jsonValue : list) {
             WeaponItem weaponItem = json.readValue(WeaponItem.class, jsonValue);
+            weaponItem.setAutomatic(jsonValue.getBoolean("automatic"));
+            weaponItem.setAmmoInMagazine(jsonValue.getInt("ammoInMagazine"));
+            weaponItem.setMaxAmmoInMagazine(jsonValue.getInt("maxAmmoInMagazine"));
+            weaponItem.setReloadTime(jsonValue.getFloat("reloadTime"));
+            weaponItem.setAccuracy(jsonValue.getFloat("accuracy"));
             itemMap.put(weaponItem.getItemID(), weaponItem);
         }
         for (JsonValue jsonValue : list1) {
@@ -45,26 +51,6 @@ public class ItemFactory {
         }
 
     }
-
-
-    public <T> T getItemT(ItemID itemID) {
-        Class type = itemMap.get(itemID).getClass();
-        if (type == InventoryItem.class) {
-            InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
-            return (T) (InventoryItem) item;
-        }
-        if (type == WeaponItem.class) {
-            WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
-            return (T) (WeaponItem) item;
-        }
-        return null;
-    }
-
-//    public InventoryItem getItem(ItemID itemID) {
-//
-//        InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
-//        return  item;
-//    }
 
 
     public InventoryItem getItem(ItemID itemID) {
@@ -80,18 +66,6 @@ public class ItemFactory {
         return null;
     }
 
-    public WeaponItem getWeapon(ItemID itemID) {
-        Class type = itemMap.get(itemID).getClass();
-        if (type == InventoryItem.class) {
-            InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
-            return (WeaponItem) (InventoryItem) item;
-        }
-        if (type == WeaponItem.class) {
-            WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
-            return (WeaponItem) item;
-        }
-        return  null;
-    }
 
 }
 

@@ -21,19 +21,15 @@ public class InventoryWindow extends Window {
     private Table inventorySlotsTable;
     private Table equipmentSlotsTable;
     private Skin skin;
+    private InventorySlot weaponInventorySlot;
 
     public InventoryWindow(String title, Skin skin) {
         super(title, skin);
         dragAndDrop = new DragAndDrop();
         this.skin = skin;
-
-
-
-
         createEquipementTable();
         createinventoryTable();
         loadInventory();
-
     }
 
     public void createEquipementTable() {
@@ -43,20 +39,20 @@ public class InventoryWindow extends Window {
         InventorySlot headInventorySlot = new InventorySlot();
         InventorySlot bodyInventorySlot = new InventorySlot();
         InventorySlot legsInventorySlot = new InventorySlot();
-        InventorySlot leftInventorySlot = new InventorySlot(
+        weaponInventorySlot = new InventorySlot(
                 InventoryItem.ItemUseType.WEAPON_TWOHAND.getValue(),new Image((Texture)AssetsLoader.getResource("stack_default")));
         InventorySlot rightInventorySlot = new InventorySlot();
         dragAndDrop.addTarget(new InventorySlotTarget(headInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(bodyInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(legsInventorySlot));
-        dragAndDrop.addTarget(new InventorySlotTarget(leftInventorySlot));
+        dragAndDrop.addTarget(new InventorySlotTarget(weaponInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(rightInventorySlot));
 
         equipmentSlotsTable.add();
         equipmentSlotsTable.add(headInventorySlot).size(50,50).pad(2);
         equipmentSlotsTable.add();
         equipmentSlotsTable.row();
-        equipmentSlotsTable.add(leftInventorySlot).size(50,50).pad(2);
+        equipmentSlotsTable.add(weaponInventorySlot).size(50,50).pad(2);
         equipmentSlotsTable.add(bodyInventorySlot).size(50,50).pad(2);
         equipmentSlotsTable.add(rightInventorySlot).size(50,50).pad(2);
         equipmentSlotsTable.row();
@@ -84,7 +80,6 @@ public class InventoryWindow extends Window {
         }
         this.add(inventorySlotsTable);
 
-
     }
 
     public static void clearInventoryItems(Table targetTable){
@@ -92,7 +87,7 @@ public class InventoryWindow extends Window {
         for( int i = 0; i < cells.size; i++){
             InventorySlot inventorySlot = (InventorySlot)cells.get(i).getActor();
             if( inventorySlot == null ) continue;
-            inventorySlot.clearAllInventoryItems(false);
+            inventorySlot.clearAllInventoryItems();
         }
     }
 
@@ -110,8 +105,6 @@ public class InventoryWindow extends Window {
             }
         }
         return items;
-
-
     }
     public static  void fillInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop dragAndDrop ){
         clearInventoryItems(targetTable);
@@ -120,7 +113,6 @@ public class InventoryWindow extends Window {
             InventoryItemLocation itemLocation = inventoryItems.get(i);
             InventoryItem.ItemID itemID = InventoryItem.ItemID.valueOf(itemLocation.getItemID());
             InventorySlot inventorySlot = ((InventorySlot)cells.get(itemLocation.getTableIndex()).getActor());
-
             for( int index = 0; index < itemLocation.getItemsAmount(); index++){
                 InventoryItem item = ItemFactory.getInstance().getItem(itemID);
                 item.setName(targetTable.getName());
@@ -130,8 +122,6 @@ public class InventoryWindow extends Window {
         }
 
     }
-
-
 
     public void saveInventory(){
         Json json = new Json();
@@ -150,12 +140,11 @@ public class InventoryWindow extends Window {
        
     }
 
-
-
-
-
-
-
-
+    public WeaponItem getActiveWeapon(){
+        if (weaponInventorySlot.getInventoryItem() == null) {
+            return null;
+        }
+        return (WeaponItem) weaponInventorySlot.getInventoryItem();
+    }
 
 }

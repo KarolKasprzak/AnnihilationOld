@@ -11,8 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cosma.annihilation.Items.InventoryItem;
+import com.cosma.annihilation.Items.ItemFactory;
+import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerGUI implements Screen {
@@ -22,6 +26,8 @@ public class PlayerGUI implements Screen {
     private Skin skin;
     private Label fpslabel;
     private String fpsnumber;
+    private ImageButton actionButtonR1;
+    private ImageButton actionButtonR2;
     private ImageButton actionButtonUp;
     private ImageButton actionButtonDown;
     private ImageButton actionButtonLeft;
@@ -31,7 +37,10 @@ public class PlayerGUI implements Screen {
     private TextButton loadButton;
     private TextButton menuButton;
     private InventoryWindow inventoryWindow;
-    private  ProgressBar healthBar;
+    private CharacterWindow characterWindow;
+    private CraftingWindow craftingWindow;
+    private MenuWindow menuWindow;
+    private ProgressBar healthBar;
     public  PlayerGUI(){
 
         camera = new OrthographicCamera();
@@ -44,14 +53,17 @@ public class PlayerGUI implements Screen {
         createHUD();
         createInventoryWindow();
 
-
     }
 
     private void createInventoryWindow(){
         inventoryWindow = new InventoryWindow("Inventory", skin);
-        float x = stage.getWidth() * 0.6f;
-        float y = stage.getHeight() * 0.8f;
+        inventoryWindow.setDebug(true);
+//        inventoryWindow.setFillParent(true);
+
+        float x = stage.getWidth() * 0.9f;
+        float y = stage.getHeight() * 0.9f;
         inventoryWindow.setSize(x,y);
+
         inventoryWindow.setPosition(stage.getWidth()/2-(x/2),stage.getHeight()/2-(y/2));
         inventoryWindow.setZIndex(10);
         inventoryWindow.setMovable(false);
@@ -60,6 +72,25 @@ public class PlayerGUI implements Screen {
     }
     private void createActionButton(){
         fpslabel = new Label(fpsnumber,skin);
+        actionButtonR1 = new ImageButton(skin,"default");
+        actionButtonR1.addListener(new InputListener(){
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if(inventoryWindow.getActiveWeapon() == null){
+                }else {
+                    System.out.println(inventoryWindow.getActiveWeapon().isAutomatic());
+                    System.out.println(inventoryWindow.getActiveWeapon().getAccuracy());
+                    System.out.println(inventoryWindow.getActiveWeapon().getMaxAmmoInMagazine());
+                    System.out.println("dmg" + inventoryWindow.getActiveWeapon().getDamage());
+
+                }
+
+                return true;
+            }
+        });
+        actionButtonR2 = new ImageButton(skin,"default");
+
         actionButtonUp = new ImageButton(skin,"default");
         actionButtonUp.addListener(new InputListener()
         {
@@ -135,10 +166,7 @@ public class PlayerGUI implements Screen {
         stage.addActor(table);
         stage.addActor(bTable);
 
-
-
-
-        //Table
+        //Table actor
         saveButton = new TextButton("save",skin);
         saveButton.addListener(new InputListener(){
             @Override
@@ -155,10 +183,6 @@ public class PlayerGUI implements Screen {
                 return true;
             }
         });
-
-
-
-
 
         menuButton = new TextButton("Character menu", skin);
         menuButton.addListener(new ChangeListener() {
@@ -197,12 +221,15 @@ public class PlayerGUI implements Screen {
         table.row();
         table.add(fpslabel).padTop(10).padLeft(10).left().width(150).height(50);
         table.row();
+        //-------------------Action button table------------------------------------------------
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15).size(300);
         bTable.add(actionButtonUp).width(150).height(150).center().colspan(3);
+        bTable.add(actionButtonR1).expandX().right().padBottom(15).padLeft(15).size(150).padRight(25);
         bTable.row();
         bTable.add(actionButtonLeft).width(150).height(150).left().pad(10);
         bTable.add(actionButtonDown).width(150).height(150).left().pad(10);
         bTable.add(actionButtonRight).width(150).height(150).left().pad(10);
+        bTable.add(actionButtonR2).expandX().right().padBottom(15).padLeft(15).size(150).padRight(50);
         table.row();
 
 

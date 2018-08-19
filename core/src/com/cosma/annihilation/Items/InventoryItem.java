@@ -15,14 +15,14 @@ public class InventoryItem extends Image {
     private int itemValue;
     private ItemID itemID;
     private float weight;
-    private String name;
+    private String itemName;
     private String itemShortDescription;
     private String textureName;
     private Texture texture;
     private boolean stackable;
 
     public enum ItemID {
-        MP44,BOX;
+        MP44,BOX,P38;
     }
 
 
@@ -71,7 +71,7 @@ public class InventoryItem extends Image {
 
     public InventoryItem(){}
 
-    public InventoryItem(String textureName,ItemID itemID,int itemAttributes, int itemUseType, int itemValue, String name,boolean stackable){
+    public InventoryItem(String textureName,ItemID itemID,int itemAttributes, int itemUseType, int itemValue,String itemName,boolean stackable,String itemShortDescription){
            this.textureName = textureName;
            this.itemID = itemID;
            texture = (Texture)AssetsLoader.getResource(textureName);
@@ -79,8 +79,9 @@ public class InventoryItem extends Image {
            this.itemAttributes = itemAttributes;
            this.itemUseType = itemUseType;
            this.itemValue = itemValue;
-           this.name = name;
+           this.itemName = itemName;
            this.stackable = stackable;
+           this.itemShortDescription = itemShortDescription;
 
     }
     public InventoryItem(InventoryItem inventoryItem){
@@ -89,11 +90,11 @@ public class InventoryItem extends Image {
         this.itemAttributes = inventoryItem.getItemAttributes();
         this.itemUseType = inventoryItem.getItemUseType();
         this.itemValue = inventoryItem.getItemValue();
-        this.itemShortDescription = inventoryItem.getItemShortDescription();
-        this.name = inventoryItem.getName();
+        this.itemName = inventoryItem.getItemName();
         texture = (Texture)AssetsLoader.getResource(textureName);
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
         this.stackable = inventoryItem.isStackable();
+        this.itemShortDescription = inventoryItem.getItemShortDescription();
     }
     public int getItemValue() {
         return itemValue;
@@ -113,7 +114,7 @@ public class InventoryItem extends Image {
     public float getItemWeight(){
         return weight;
     }
-    public String getItemName() {return name;}
+    public String getItemName() {return itemName;}
     public void setItemWeight(float weight){
         this.weight = weight;
     }

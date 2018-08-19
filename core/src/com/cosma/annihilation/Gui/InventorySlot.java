@@ -13,16 +13,16 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.AssetsLoader;
 
-public class InventorySlot extends Stack implements InventorySlotObservable {
+public class InventorySlot extends Stack {
     private int itemsAmount = 0;
     private int itemTypeFilter;
     private Image backgroundImage;
     private Label itemsAmountLabel;
     private Stack stack;
-    private Array<InventorySlotObserver> observers;
+
 
     public InventorySlot(){
-        observers = new Array<InventorySlotObserver>();
+
         stack = new Stack();
         backgroundImage = new Image();
         Image backgroundImageStandard = new Image( (Texture) AssetsLoader.getResource("stack_default"));
@@ -71,29 +71,25 @@ public class InventorySlot extends Stack implements InventorySlotObservable {
         }
     }
 
-    public void decrementItemCount(boolean sendRemoveNotification) {
+    public void decrementItemCount() {
         itemsAmount--;
        itemsAmountLabel.setText(String.valueOf(itemsAmount));
 //        if( _defaultBackground.getChildren().size == 1 ){
 //            _defaultBackground.add(_customBackgroundDecal);
 //        }
         checkVisibilityOfItemCount();
-        if( sendRemoveNotification ){
-            notify(this, InventorySlotObserver.SlotEvent.REMOVED_ITEM);
-        }
+
 
     }
 
-    public void incrementItemCount(boolean sendAddNotification) {
+    public void incrementItemCount() {
         itemsAmount++;
         itemsAmountLabel.setText(String.valueOf(itemsAmount));
 //        if( _defaultBackground.getChildren().size > 1 ){
 //            _defaultBackground.getChildren().pop();
 //        }
         checkVisibilityOfItemCount();
-        if( sendAddNotification ){
-            notify(this, InventorySlotObserver.SlotEvent.ADDED_ITEM);
-        }
+
     }
 
     public InventoryItem getInventoryItem(){
@@ -112,7 +108,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable {
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems =  arrayChildren.size - 2;
             for(int i = 0; i < numInventoryItems; i++) {
-                decrementItemCount(true);
+                decrementItemCount();
                 items.add(arrayChildren.pop());
             }
         }
@@ -128,12 +124,12 @@ public class InventorySlot extends Stack implements InventorySlotObservable {
     }
 
 
-    public void clearAllInventoryItems(boolean sendRemoveNotifications) {
+    public void clearAllInventoryItems() {
         if( hasItem() ){
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems =  getItemsNumber();
             for(int i = 0; i < numInventoryItems; i++) {
-                decrementItemCount(sendRemoveNotifications);
+
                 arrayChildren.pop();
             }
         }
@@ -149,35 +145,8 @@ public class InventorySlot extends Stack implements InventorySlotObservable {
         }
 
         if( !actor.equals(stack) && !actor.equals(itemsAmountLabel) ) {
-            incrementItemCount(true);
+            incrementItemCount();
         }
     }
 
-
-    @Override
-    public void addObserver(InventorySlotObserver inventorySlotObserver)  {
-        observers.add(inventorySlotObserver);
-    }
-
-    @Override
-    public void removeObserver(InventorySlotObserver inventorySlotObserver)  {
-        observers.removeValue(inventorySlotObserver, true);
-    }
-
-    @Override
-    public void removeAllObservers() {
-        for(InventorySlotObserver observer: observers){
-            observers.removeValue(observer, true);
-        }
-
-    }
-
-    @Override
-    public void notify(final InventorySlot slot, InventorySlotObserver.SlotEvent event) {
-        for(InventorySlotObserver observer: observers){
-
-            observer.onNotify(slot, event);
-        }
-
-    }
 }

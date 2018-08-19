@@ -73,7 +73,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;
                 StateManager.climbing = false;
-                StateManager.playerDirection=false;
+                StateManager.playerDirection=true;
                 float speedX = desiredSpeed - vec.x;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
@@ -84,7 +84,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                 float desiredSpeed = -player.velocity;
                 float speedX = desiredSpeed - vec.x;
                 StateManager.climbing = false;
-                StateManager.playerDirection=true;
+                StateManager.playerDirection=false;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
