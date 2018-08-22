@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.BodyID;
@@ -38,7 +39,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.world = world;
         world.setContactListener(this);
-
+        //Filter for one way wall
         goTroughFilter = new Filter();
         goTroughFilter.maskBits = CollisionID.CATEGORY_SCENERY;
         goTroughFilter.groupIndex = -1;
@@ -56,7 +57,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             StateManager.onGround = true;
         } else StateManager.onGround = false;
 
-        //Player position on ladder
+        //Setting player on ladder center
         if (StateManager.climbing) {
             float b1 = playerBody.getPosition().x;
             float b2 = ladderX;
@@ -94,8 +95,17 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     }
     @Override
     public void beginContact(Contact contact) {
+
+
+
+
+
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
+        //--------------------Getting contact list for action detect--------------
+//        if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
+//        SnapshotArray<Contact> contacts = new SnapshotArray<Contact>();
+//        contacts.add(contact);
 
         //-----------------------Interaction-----------------------------//
         if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
@@ -112,7 +122,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
            }
         }
 
-//        -----------------------Jumping & Climb-----------------------------
+        //-----------------------Jumping & Climb contacts-----------------------------
         if(fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor())  {
             player.getComponent(PlayerComponent.class).numFootContacts++;
         }
@@ -185,7 +195,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             player.getComponent(PlayerComponent.class).numFootContacts--;
         }
 
-        //------------------------Ladder--------------
+        //------------------------Ladder contacts--------------
         if(fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.GROUND ||
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.GROUND)  {
 
@@ -218,7 +228,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
     }
-
+    //Action delay method
     private void delayJump(float delay){
         Timer.schedule(new Timer.Task() {
             @Override

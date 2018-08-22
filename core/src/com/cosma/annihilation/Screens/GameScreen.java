@@ -7,17 +7,15 @@ import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Systems.PlayerControlSystem;
 import com.cosma.annihilation.World.WorldBuilder;
 
-public class TestScreen implements Screen, InputProcessor {
+public class GameScreen implements Screen, InputProcessor {
 
     private WorldBuilder worldBuilder;
     private InputMultiplexer im;
-    private PlayerGUI playerGUI;
-    public  TestScreen() {
+    public GameScreen() {
 
         worldBuilder = new WorldBuilder();
         im = new InputMultiplexer();
-        playerGUI = new PlayerGUI();
-        im.addProcessor(playerGUI.getStage());
+        im.addProcessor(worldBuilder.getPlayerHudStage());
         im.addProcessor( worldBuilder.getEngine().getSystem(PlayerControlSystem.class));
         im.addProcessor(this);
 
@@ -32,13 +30,11 @@ public class TestScreen implements Screen, InputProcessor {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         worldBuilder.update(delta);
-        playerGUI.render(delta);
         }
 
     @Override
     public void resize(int width, int height) {
         worldBuilder.resize(width,height);
-        playerGUI.resize(width,height);
     }
 
 

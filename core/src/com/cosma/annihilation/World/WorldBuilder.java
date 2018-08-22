@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Entities.PlayerEntity;
+import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
@@ -34,12 +36,14 @@ public class WorldBuilder implements Disposable, EntityListener {
     private TiledMap tiledMap;
     private WorldLoader worldLoader;
     private RayHandler rayHandler;
+    private PlayerGUI playerGUI;
 
         public WorldBuilder(){
         initializeEngine();
 
         // add all entity
         worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
+        playerGUI = new PlayerGUI(engine);
     }
     public void initializeEngine(){
         //Create camera
@@ -76,15 +80,19 @@ public class WorldBuilder implements Disposable, EntityListener {
         viewport.apply();
         engine.update(delta);
         camera.update();
-
+        playerGUI.render(delta);
         }
 
     public void resize(int w, int h) {
         viewport.update(w, h, true);
+        playerGUI.resize(w,h);
         }
     public OrthographicCamera getCamera() {
             return  camera;
             }
+    public Stage getPlayerHudStage()        {
+            return playerGUI.getStage();
+    }
 
     private void debugInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) camera.translate(0, 1);

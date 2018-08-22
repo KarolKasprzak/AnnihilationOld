@@ -1,5 +1,8 @@
 package com.cosma.annihilation.Gui;
 
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
@@ -9,11 +12,14 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
@@ -41,35 +47,45 @@ public class PlayerGUI implements Screen {
     private CraftingWindow craftingWindow;
     private MenuWindow menuWindow;
     private ProgressBar healthBar;
-    public  PlayerGUI(){
+    private Engine engine;
+    private Entity player;
 
+
+    public  PlayerGUI(Engine engine){
+
+        this.engine = engine;
         camera = new OrthographicCamera();
         camera.update();
         viewport = new ScreenViewport(camera);
         stage = new Stage(viewport);
         viewport.apply(true);
         skin = new Skin(Gdx.files.internal("UI/skin/pixthulhu-ui.json"));
+        //Create HUD
         createActionButton();
         createHUD();
         createInventoryWindow();
-
+        //Get player entity
+        player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
     }
 
     private void createInventoryWindow(){
         inventoryWindow = new InventoryWindow("Inventory", skin);
         inventoryWindow.setDebug(true);
 //        inventoryWindow.setFillParent(true);
-
         float x = stage.getWidth() * 0.9f;
         float y = stage.getHeight() * 0.9f;
         inventoryWindow.setSize(x,y);
-
         inventoryWindow.setPosition(stage.getWidth()/2-(x/2),stage.getHeight()/2-(y/2));
         inventoryWindow.setZIndex(10);
         inventoryWindow.setMovable(false);
         inventoryWindow.setVisible(false);
         stage.addActor(inventoryWindow);
+
     }
+
+    //TODO
+    private void getArmourParameter(){}
+
     private void createActionButton(){
         fpslabel = new Label(fpsnumber,skin);
         actionButtonR1 = new ImageButton(skin,"default");
