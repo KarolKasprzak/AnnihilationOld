@@ -3,6 +3,7 @@ package com.cosma.annihilation.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
@@ -30,6 +31,11 @@ public class AssetsLoader {
         files.put("mp44", new AssetsHelper("ui/icon/stg44.png", Texture.class));
         files.put("p38", new AssetsHelper("ui/icon/p38.png", Texture.class));
         files.put("stack_default", new AssetsHelper("UI/icon/stack_default.png", Texture.class));
+        files.put("player_move", new AssetsHelper("gfx/player_move.atlas", TextureAtlas.class));
+        files.put("player_move_start", new AssetsHelper("gfx/player.atlas", TextureAtlas.class));
+        files.put("player_stand", new AssetsHelper("gfx/Player1.png", Texture.class));
+
+
 
 
 

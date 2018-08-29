@@ -26,63 +26,78 @@ public class AnimationSystem extends IteratingSystem {
     private ComponentMapper<BodyComponent> bodyMapper;
     private Body playerBody;
     AnimatedBox2DSprite animatedBox2DSprite;
-    AnimatedSprite animatedSprite;
+    AnimatedBox2DSprite animatedBox2DSprite1;
+    AnimatedSprite playerWalkSpriteAnim;
     AnimatedSprite animatedSprite1;
+    Texture playerStand;
     Texture tex1;
-    Texture tex2;
-    Texture tex3;
-    Texture tex4;
-    Texture tex5;
+
     Box2DSprite box2DSprite;
+    TextureRegion textureRegion;
+    TextureAtlas textureAtlas1;
+    TextureAtlas textureAtlas2;
     public AnimationSystem() {
         super(Family.all(PlayerComponent.class).get(), Constants.ANIMATION);
-
-        tex1 = (Texture) AssetsLoader.getResource("pl_1");
-        tex2 = (Texture) AssetsLoader.getResource("pl_2");
-        tex3 = (Texture) AssetsLoader.getResource("pl_3");
-        tex4 = (Texture) AssetsLoader.getResource("pl_4");
-        tex5 = (Texture) AssetsLoader.getResource("pl_5");
+        textureAtlas1 = (TextureAtlas) AssetsLoader.getResource("player_move");
+        textureAtlas2 = (TextureAtlas) AssetsLoader.getResource("player_move_start");
+        playerStand = (Texture) AssetsLoader.getResource("player_stand");
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-        TextureAtlas textureAtlas = new TextureAtlas(Gdx.files.internal("character/unnamed.atlas"));
-        Animation climbAnimation = new Animation(1 / 3f,textureAtlas.getRegions());
 
-        climbAnimation.setPlayMode(Animation.PlayMode.LOOP);
-        animatedSprite1 = new AnimatedSprite(climbAnimation);
+        Animation walkAnimation = new Animation(1 / 10f,textureAtlas1.getRegions(),Animation.PlayMode.LOOP);
+        Animation startwalkanimation = new Animation(1 / 10f,textureAtlas2.getRegions(),Animation.PlayMode.LOOP);
+        animatedSprite1 = new AnimatedSprite(walkAnimation);
+        AnimatedSprite animatedSprite = new AnimatedSprite(startwalkanimation);
                 animatedBox2DSprite = new AnimatedBox2DSprite(animatedSprite1);
-                animatedBox2DSprite.setAnimation(climbAnimation);
-                animatedBox2DSprite.setScale(1.4f);
-                box2DSprite = new Box2DSprite(tex3);
-                box2DSprite.setScale(1.4f);
+                animatedBox2DSprite1 = new AnimatedBox2DSprite(animatedSprite);
+                animatedBox2DSprite.setScale(1f);
+                box2DSprite = new Box2DSprite(playerStand);
+                box2DSprite.setScale(1f);
         }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    protected void processEntity(Entity entity, float deltaTime)
+    {
 
         playerBody = bodyMapper.get(entity).body;
         Fixture fixture = playerBody.getFixtureList().get(3);
+
+
         if(StateManager.climbing){
-            float velocityY =  fixture.getBody().getLinearVelocity().y;
+            float velocityY  =  fixture.getBody().getLinearVelocity().y;
             if(velocityY != 0  ){
-
                 fixture.setUserData(animatedBox2DSprite);
-
             }else {
-                               box2DSprite.setTexture(tex3);
+                               box2DSprite.setTexture(playerStand);
                                fixture.setUserData(box2DSprite);
             }
         }
-        if(!StateManager.climbing){
-            box2DSprite.setTexture(tex1);
+        if(!StateManager.climbing) {
+            float velocityX = fixture.getBody().getLinearVelocity().x;
+            box2DSprite.setTexture(playerStand);
             fixture.setUserData(box2DSprite);
-           if(!StateManager.playerDirection){
-               box2DSprite.setFlip(true,false);
-           }else{
-               box2DSprite.setFlip(false,false);
-           }
+            if (velocityX != 0) {
+                fixture.setUserData(animatedBox2DSprite);
+            }
+
+            if (!StateManager.playerDirection) {
+                box2DSprite.setFlip(true, false);
+                if(!animatedBox2DSprite.isFlipX()) {
+                    animatedBox2DSprite.flipFrames(true, false);
+                }
+
+            } else {
+                box2DSprite.setFlip(false, false);
+                if(animatedBox2DSprite.isFlipX()) {
+                    System.out.println("adsasd");
+                    animatedBox2DSprite.flipFrames(true, false);
+                }
+
+//                animatedBox2DSprite.flipFrames(false, false, true);
+
+
+            }
         }
-
-
      //----------------------Player equip render--------------------
     }
 }

@@ -64,7 +64,7 @@ public class PlayerEntity {
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Sprite render fixture
         PolygonShape playerSensorShape = new PolygonShape();
-        playerSensorShape.setAsBox(1f/2,2f/2, new Vector2(0,0),0);
+        playerSensorShape.setAsBox(2f/2,2f/2, new Vector2(0,0),0);
         FixtureDef playerRenderFixture = new FixtureDef();
         playerRenderFixture.shape = playerSensorShape;
         playerRenderFixture.isSensor = true;
