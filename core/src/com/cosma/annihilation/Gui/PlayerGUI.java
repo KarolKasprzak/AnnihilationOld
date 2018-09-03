@@ -88,6 +88,7 @@ public class PlayerGUI implements Screen {
 
     private void createActionButton(){
         fpslabel = new Label(fpsnumber,skin);
+        //---------R1-----------
         actionButtonR1 = new ImageButton(skin,"default");
         actionButtonR1.addListener(new InputListener(){
 
@@ -105,8 +106,24 @@ public class PlayerGUI implements Screen {
                 return true;
             }
         });
+        //---------R2-----------
         actionButtonR2 = new ImageButton(skin,"default");
+        actionButtonR2.addListener(new InputListener()
+        {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
+                StateManager.goUp = true;
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                StateManager.goUp = false;
+            }
+
+        });
+        //---------UP-----------
         actionButtonUp = new ImageButton(skin,"default");
         actionButtonUp.addListener(new InputListener()
         {
@@ -123,6 +140,7 @@ public class PlayerGUI implements Screen {
             }
 
         });
+        //---------DOWN-----------
         actionButtonDown = new ImageButton(skin,"default");
         actionButtonDown.addListener(new InputListener()
         {
@@ -139,6 +157,7 @@ public class PlayerGUI implements Screen {
             }
 
         });
+        //---------LEFT-----------
         actionButtonLeft = new ImageButton(skin,"default");
         actionButtonLeft.addListener(new InputListener()
         {
@@ -154,6 +173,7 @@ public class PlayerGUI implements Screen {
             }
 
         });
+        //---------RIGHT-----------
         actionButtonRight = new ImageButton(skin,"default");
         actionButtonRight.addListener(new InputListener()
         {

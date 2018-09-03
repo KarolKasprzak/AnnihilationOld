@@ -102,7 +102,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        //--------------------Getting contact list for action detect--------------
+//        --------------------Getting contact list for action detect--------------
 //        if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
 //        SnapshotArray<Contact> contacts = new SnapshotArray<Contact>();
 //        contacts.add(contact);
