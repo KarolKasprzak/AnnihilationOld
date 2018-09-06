@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.StateManager;
@@ -102,23 +103,15 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-//        --------------------Getting contact list for action detect--------------
-//        if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
-//        SnapshotArray<Contact> contacts = new SnapshotArray<Contact>();
-//        contacts.add(contact);
 
+        //TODO
         //-----------------------Interaction-----------------------------//
         if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
                 || fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.CONTAINER)  {
-            Entity entity;
            if(fa.getUserData() == BodyID.CONTAINER){
-               entity = (Entity) fa.getBody().getUserData();
-//               System.out.println(entity.getComponent(BodyComponent.class).SizeX);
-
+               player.getComponent(PlayerComponent.class).collisionEntity = (Entity) fa.getBody().getUserData();
             }else{
-               entity = (Entity) fb.getBody().getUserData();
-
-
+               player.getComponent(PlayerComponent.class).collisionEntity = (Entity) fb.getBody().getUserData();
            }
         }
 
@@ -173,17 +166,11 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
-        //-----------------------Interaction-----------------------------
+        //TODO
+        //-----------------------Interaction-----------------------------//
         if(fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
                 || fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.CONTAINER)  {
-            Entity entity;
-            if(fa.getUserData() == BodyID.CONTAINER){
-                entity = (Entity) fa.getBody().getUserData();
-                entity.getComponent(ContainerComponent.class).showIcon = false;
-            }else{
-                entity = (Entity) fb.getBody().getUserData();
-                entity.getComponent(ContainerComponent.class).showIcon = false;
-            }
+                player.getComponent(PlayerComponent.class).collisionEntity = null;
         }
 
 

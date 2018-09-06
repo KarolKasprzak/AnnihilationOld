@@ -2,7 +2,6 @@ package com.cosma.annihilation.Entities;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.*;
@@ -30,8 +29,12 @@ public class EntityFactory {
             ContainerComponent containerComponent = new ContainerComponent();
             InventoryComponent inventoryComponent = new InventoryComponent();
             TransformComponent transformComponent = new TransformComponent();
+            ActionComponent actionComponent = new ActionComponent();
+            actionComponent.hasMultipleAction = true;
 
 
+            //-----------Body Component-----------------------------------------
+            containerComponent.name = "box";
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             bodyDef.position.set(x,y);
@@ -69,11 +72,13 @@ public class EntityFactory {
             touchSensorFixture.isSensor = true;
             touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
             bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
+            //-----------Body Component End-----------------------------------------
 
             entity.add(bodyComponent);
             entity.add(containerComponent);
             entity.add(inventoryComponent);
             entity.add(transformComponent);
+            entity.add(actionComponent);
             this.engine.addEntity(entity);
 
             return entity;

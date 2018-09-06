@@ -29,7 +29,7 @@ public class InventorySlot extends Stack {
         stack.add(backgroundImageStandard);
         stack.setName("background");
         this.add(stack);
-        Skin skin = new Skin(Gdx.files.internal("UI/skin/pixthulhu-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("interface/skin/pixthulhu-ui.json"));
         itemsAmountLabel = new Label(String.valueOf(itemsAmount),skin);
         itemsAmountLabel.setFontScale(0.5f);
         itemsAmountLabel.setAlignment(Align.bottomRight);

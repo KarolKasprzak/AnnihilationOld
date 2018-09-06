@@ -1,5 +1,8 @@
 package com.cosma.annihilation.Utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+
 public class StateManager {
     public static boolean canJump = true;
     public static boolean onGround = false;
@@ -23,4 +26,6 @@ public class StateManager {
     public static boolean playerDirection = true;
     public static boolean Open = false;
 
+
+    public static Skin skin = new Skin(Gdx.files.internal("interface/skin/pixthulhu-ui.json"));
     }

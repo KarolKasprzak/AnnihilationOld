@@ -28,7 +28,7 @@ public class AssetsLoader {
         files.put("pl_4", new AssetsHelper("character/player_front4.png", Texture.class));
         files.put("pl_5", new AssetsHelper("character/player_front5.png", Texture.class));
         files.put("hand_icon", new AssetsHelper("gfx/icon/handicon.png", Texture.class));
-        files.put("mp44", new AssetsHelper("interface/icon/stg44.png", Texture.class));
+        files.put("mp44", new AssetsHelper("interface/icon/stg.png", Texture.class));
         files.put("p38", new AssetsHelper("interface/icon/p38.png", Texture.class));
         files.put("stack_default", new AssetsHelper("interface/icon/stack_default.png", Texture.class));
         files.put("player_move", new AssetsHelper("gfx/player_move.atlas", TextureAtlas.class));

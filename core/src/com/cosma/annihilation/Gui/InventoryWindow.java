@@ -39,8 +39,7 @@ public class InventoryWindow extends Window {
         InventorySlot headInventorySlot = new InventorySlot();
         InventorySlot bodyInventorySlot = new InventorySlot();
         InventorySlot legsInventorySlot = new InventorySlot();
-        weaponInventorySlot = new InventorySlot(
-                InventoryItem.ItemUseType.WEAPON_TWOHAND.getValue(),new Image((Texture)AssetsLoader.getResource("stack_default")));
+        weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_TWOHAND.getValue(),new Image((Texture)AssetsLoader.getResource("stack_default")));
         InventorySlot rightInventorySlot = new InventorySlot();
         dragAndDrop.addTarget(new InventorySlotTarget(headInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(bodyInventorySlot));
@@ -125,16 +124,16 @@ public class InventoryWindow extends Window {
 
     public void saveInventory(){
         Json json = new Json();
-        FileHandle file = Gdx.files.local("save/savePlayerEquip.json");
-        FileHandle file1 = Gdx.files.local("save/saveInventory.json");
+        FileHandle file = Gdx.files.internal("save/savePlayerEquip.json");
+        FileHandle file1 = Gdx.files.internal("save/saveInventory.json");
         file.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
         file1.writeString(json.prettyPrint(getInventory(inventorySlotsTable)),false);
     }
     public void loadInventory(){
         Json json = new Json();
         Json json1 = new Json();
-        Array<InventoryItemLocation> list = json.fromJson(Array.class, Gdx.files.local("save/savePlayerEquip.json"));
-        Array<InventoryItemLocation> list1 = json1.fromJson(Array.class, Gdx.files.local("save/saveInventory.json"));
+        Array<InventoryItemLocation> list = json.fromJson(Array.class, Gdx.files.internal("save/savePlayerEquip.json"));
+        Array<InventoryItemLocation> list1 = json1.fromJson(Array.class, Gdx.files.internal("save/saveInventory.json"));
         fillInventory(equipmentSlotsTable,list,dragAndDrop);
         fillInventory(inventorySlotsTable,list1,dragAndDrop);
        
