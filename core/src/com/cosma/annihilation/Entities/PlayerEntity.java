@@ -23,8 +23,6 @@ public class PlayerEntity {
     public  PlayerEntity(Engine engine, World world) {
 
 
-
-
         Entity entity = new Entity();
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();

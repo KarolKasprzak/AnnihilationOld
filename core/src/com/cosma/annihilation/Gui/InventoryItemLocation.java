@@ -25,4 +25,16 @@ public class InventoryItemLocation {
     public int getItemsAmount() {
         return itemsAmount;
     }
+
+    public void setTableIndex(int tableIndex) {
+        this.tableIndex = tableIndex;
+    }
+
+    public void setItemID(String itemID) {
+        this.itemID = itemID;
+    }
+
+    public void setItemsAmount(int itemsAmount) {
+        this.itemsAmount = itemsAmount;
+    }
 }

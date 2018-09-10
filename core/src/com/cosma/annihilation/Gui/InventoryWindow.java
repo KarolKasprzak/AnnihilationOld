@@ -124,10 +124,15 @@ public class InventoryWindow extends Window {
 
     public void saveInventory(){
         Json json = new Json();
-        FileHandle file = Gdx.files.internal("save/savePlayerEquip.json");
-        FileHandle file1 = Gdx.files.internal("save/saveInventory.json");
-        file.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
-        file1.writeString(json.prettyPrint(getInventory(inventorySlotsTable)),false);
+//        FileHandle file = Gdx.files.internal("save/savePlayerEquip.json");
+//        FileHandle file1 = Gdx.files.internal("save/saveInventory.json");
+
+        FileHandle file2 = Gdx.files.local("save12.json");
+
+
+        file2.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
+//        file.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
+//        file1.writeString(json.prettyPrint(getInventory(inventorySlotsTable)),false);
     }
     public void loadInventory(){
         Json json = new Json();

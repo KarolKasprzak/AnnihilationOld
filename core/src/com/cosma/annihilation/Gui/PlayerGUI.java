@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -55,6 +56,7 @@ public class PlayerGUI implements Screen {
     private ProgressBar healthBar;
     private Engine engine;
     private Entity player;
+    private Entity colidedEntinty;
     private Boolean isActionWindowOpen = false;
 
 
@@ -74,17 +76,17 @@ public class PlayerGUI implements Screen {
         createActionButton();
         createHUD();
         createInventoryWindow();
-        createActionSelectWindow();
+
         //Get player entity
         player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
     }
-
-    private void createActionSelectWindow(){
-        actionSelectWindow = new ActionSelectWindow("Action",skin);
-        actionSelectWindow.setSize(stage.getWidth() * 0.2f,stage.getHeight() * 0.3f);
-        actionSelectWindow.setVisible(false);
-        stage.addActor(actionSelectWindow);
-    }
+     //---------------------Future---------
+//    private void createActionSelectWindow(){
+//        actionSelectWindow = new ActionSelectWindow("Action",skin);
+//        actionSelectWindow.setSize(stage.getWidth() * 0.3f,stage.getHeight() * 0.4f);
+//        actionSelectWindow.setVisible(false);
+//        stage.addActor(actionSelectWindow);
+//    }
 
 
 
@@ -218,10 +220,24 @@ public class PlayerGUI implements Screen {
 
         }
             else{
-                if(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ActionComponent.class).hasMultipleAction){
-                    actionSelectWindow.setVisible(true);
-                    
-                }
+
+            //-----------------------------Action list
+            if (player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ActionComponent.class).openBoxAction) {
+                System.out.println("open box");
+                ContainerWindow containerWindow= new ContainerWindow("ss",skin,8);
+                containerWindow.setSize(500,500);
+                InventoryWindow.fillInventory(containerWindow.containerSlotsTable,player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).itemLocations,containerWindow.dragAndDrop);
+                stage.addActor(containerWindow);
+
+
+            }
+            if (player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ActionComponent.class).openDoorAction) {
+                System.out.println("open door");
+            }
+
+
+
+
                 System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).name);
                 //---------------------PickUP------------------
     //                    System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
@@ -317,6 +333,7 @@ public class PlayerGUI implements Screen {
 
 
     }
+
 
     public Stage getStage() {
         return stage;

@@ -4,11 +4,17 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Gui.InventoryItemLocation;
+import com.cosma.annihilation.Items.InventoryItem;
+import com.cosma.annihilation.Utils.ActionID;
 import com.cosma.annihilation.Utils.AssetsLoader;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.CollisionID;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
+
+import java.util.Hashtable;
 
 public class EntityFactory {
     private Engine engine;
@@ -18,7 +24,7 @@ public class EntityFactory {
         this.engine = engine;
         }
 
-        public Entity createBoxEntity(float x, float y){
+        public Entity createBoxEntity(float x, float y, Array<InventoryItemLocation> itemList){
             Entity entity = engine.createEntity();
 
             Texture mainTexture = (Texture) AssetsLoader.getResource("box");
@@ -30,11 +36,11 @@ public class EntityFactory {
             InventoryComponent inventoryComponent = new InventoryComponent();
             TransformComponent transformComponent = new TransformComponent();
             ActionComponent actionComponent = new ActionComponent();
-            actionComponent.hasMultipleAction = true;
 
-
-            //-----------Body Component-----------------------------------------
+            actionComponent.openBoxAction = true;
             containerComponent.name = "box";
+            containerComponent.itemLocations = itemList;
+            //----------Body Component----------------------
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             bodyDef.position.set(x,y);
@@ -72,8 +78,7 @@ public class EntityFactory {
             touchSensorFixture.isSensor = true;
             touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
             bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
-            //-----------Body Component End-----------------------------------------
-
+            //-----------Body Component End----------------------
             entity.add(bodyComponent);
             entity.add(containerComponent);
             entity.add(inventoryComponent);

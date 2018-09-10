@@ -1,6 +1,9 @@
 package com.cosma.annihilation.Gui;
 
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Utils.StateManager;
+
 
 public class ActionSelectWindow extends Window {
     private Skin skin;
@@ -9,11 +12,19 @@ public class ActionSelectWindow extends Window {
         super(title, skin);
         this.skin = skin;
         list = new List(skin);
-        list.setFillParent(true);
-        String[] myList = {"Select", "player", "wall", "ladder"};
-        list.setItems(myList);
+        list.setDebug(true);
+//        list.setFillParent(true);
+
+        Array<Label> labels = new Array<Label>();
+        Label act1 = new Label("action 1", StateManager.skin);
+        act1.setText("act");
+        Label act2 = new Label("action 2", StateManager.skin);
+        labels.add(act1,act2);
+        list.setItems(labels);
+
         this.add(list);
 
     }
+
 }
 

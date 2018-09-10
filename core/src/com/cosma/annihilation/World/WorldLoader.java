@@ -15,10 +15,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Entities.PlayerEntity;
+import com.cosma.annihilation.Gui.InventoryItemLocation;
 import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Constants;
@@ -119,7 +121,9 @@ class WorldLoader {
                         }
                         if("spawn_box".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
-                            entityFactory.createBoxEntity(dimension[0],dimension[1]);
+                            entityFactory.createBoxEntity(dimension[0],dimension[1],getItemForContainer(mo));
+                            if(getItemForContainer(mo).size > 0)
+                            System.out.println(getItemForContainer(mo).get(0).getItemID());
                         }
                     }
                 }
@@ -228,6 +232,27 @@ class WorldLoader {
             bodyDef.position.set(pos);
             bodyDef.angle = -angle;
         }
+
+        private Array<InventoryItemLocation> getItemForContainer(MapObject mapObject){
+            MapProperties properties = mapObject.getProperties();
+            Array<InventoryItemLocation> itemList = new Array<InventoryItemLocation>();
+            InventoryItemLocation item1 = new InventoryItemLocation();
+            InventoryItemLocation item2 = new InventoryItemLocation();
+            if (properties.containsKey("item1")) {
+                item1.setItemID(properties.get("item1", String.class));
+                item1.setItemsAmount(properties.get("item1size", Integer.class));
+                item1.setTableIndex(1);
+                itemList.add(item1);
+            }
+            if (properties.containsKey("item2")) {
+                item2.setItemID(properties.get("item2", String.class));
+                item2.setItemsAmount(properties.get("item2size", Integer.class));
+                item2.setTableIndex(2);
+                itemList.add(item2);
+            }
+            return itemList;
+        }
+
         private float[] getDimension(MapObject mapObject){
             MapProperties properties = mapObject.getProperties();
             String[] dimension = {"x","y","width","height","rotation"};

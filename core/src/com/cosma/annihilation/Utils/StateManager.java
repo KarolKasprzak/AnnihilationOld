@@ -27,5 +27,6 @@ public class StateManager {
     public static boolean Open = false;
 
 
-    public static Skin skin = new Skin(Gdx.files.internal("interface/skin/pixthulhu-ui.json"));
+//    public static Skin skin = new Skin(Gdx.files.internal("interface/skin/pixthulhu-ui.json"));
+    public static Skin skin = new Skin(Gdx.files.internal("interface/comadore/uiskin.json"));
     }
