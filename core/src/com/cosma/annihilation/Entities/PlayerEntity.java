@@ -18,7 +18,6 @@ import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class PlayerEntity {
-//    private  Engine engine;
 
     public  PlayerEntity(Engine engine, World world) {
 
@@ -29,6 +28,7 @@ public class PlayerEntity {
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TransformComponent transformComponent = new TransformComponent();
         HealthComponent healthComponent= new HealthComponent();
+        healthComponent.hp = 67;
         //Player body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

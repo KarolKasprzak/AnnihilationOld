@@ -122,8 +122,8 @@ class WorldLoader {
                         if("spawn_box".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             entityFactory.createBoxEntity(dimension[0],dimension[1],getItemForContainer(mo));
-                            if(getItemForContainer(mo).size > 0)
-                            System.out.println(getItemForContainer(mo).get(0).getItemID());
+//                            if(getItemForContainer(mo).size > 0)
+//                            System.out.println(getItemForContainer(mo).get(0).getItemID());
                         }
                     }
                 }

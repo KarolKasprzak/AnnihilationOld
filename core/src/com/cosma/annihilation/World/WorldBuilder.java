@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Entities.PlayerEntity;
+import com.cosma.annihilation.Entities.TestEntity;
 import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
@@ -70,7 +71,6 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(lightRenderSystem);
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new SaveSystem(world));
-
 
     }
 

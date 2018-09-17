@@ -64,7 +64,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             float b2 = ladderX;
 
             if (b1 == b2) {
-                System.out.println((b1 + b2));
             } else {
                 if (b1 < (b2 - 0.03f)) {
                     playerBody.setLinearVelocity(1, 0);
@@ -79,7 +78,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
               if (playerBody.getPosition().y > ladderY-(ladderHeight/2-2)) {
                   playerBody.getFixtureList().get(0).setFilterData(goTroughFilter);
                 if (playerBody.getPosition().y < ladderY-(ladderHeight/2-2)) {
-                    System.out.println(ladderY);
+
                     playerBody.getFixtureList().get(0).setFilterData(normalFilter);
                 }
             } else {
@@ -135,7 +134,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 ladderHeight = (Float) fa.getBody().getUserData();
             }
                 else {
-                    System.out.println(fa.getBody().getPosition());
+
                     ladderX = fb.getBody().getPosition().x;
                     ladderY = fb.getBody().getPosition().y;
                     ladderHeight = (Float) fb.getBody().getUserData();

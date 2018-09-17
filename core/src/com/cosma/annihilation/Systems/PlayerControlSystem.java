@@ -53,7 +53,6 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
             if (Gdx.input.isKeyPressed(Input.Keys.UP)|| StateManager.goUp) {
                 StateManager.climbing = true;
                 if(playerBody.body.getLinearVelocity().x == 0f) {
-                    System.out.println(playerBody.body.getLinearVelocity().x);
                     playerBody.body.setLinearVelocity(new Vector2(0, 1));
                 }
             }

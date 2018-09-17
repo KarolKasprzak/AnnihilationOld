@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -21,15 +22,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cosma.annihilation.Components.ActionComponent;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.ContainerComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Entities.TestEntity;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
+import com.cosma.annihilation.Utils.Serializer;
 import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerGUI implements Screen {
@@ -58,7 +59,7 @@ public class PlayerGUI implements Screen {
     private Entity player;
     private Entity colidedEntinty;
     private Boolean isActionWindowOpen = false;
-
+    Serializer serializer;
 
 
     private  ActionSelectWindow actionSelectWindow;
@@ -76,7 +77,7 @@ public class PlayerGUI implements Screen {
         createActionButton();
         createHUD();
         createInventoryWindow();
-
+        serializer= new Serializer(engine);
         //Get player entity
         player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
     }
@@ -127,6 +128,11 @@ public class PlayerGUI implements Screen {
         actionButtonR2.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+                System.out.println("load");
+
+                serializer.load();
+
 
                 StateManager.goUp = true;
                 return true;
@@ -216,7 +222,9 @@ public class PlayerGUI implements Screen {
 //            System.out.println("dmg" + inventoryWindow.getActiveWeapon().getDamage());
 //        }
         if(player.getComponent(PlayerComponent.class).collisionEntity == null){
-            System.out.println("null");
+            System.out.println("save");
+
+            serializer.save();
 
         }
             else{
@@ -238,8 +246,8 @@ public class PlayerGUI implements Screen {
 
 
 
-                System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).name);
-                //---------------------PickUP------------------
+            System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).name);
+            //---------------------PickUP------------------
     //                    System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
     //                    WeldJointDef weldJoint = new WeldJointDef();
     //                    weldJoint.bodyA = player.getComponent(BodyComponent.class).body;
