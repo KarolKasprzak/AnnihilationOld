@@ -52,42 +52,44 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     @Override
     public void update(float deltaTime) {
-        player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        playerBody = player.getComponent(BodyComponent.class).body;
-        if (player.getComponent(PlayerComponent.class).numFootContacts >= 1) {
-            StateManager.onGround = true;
-        } else StateManager.onGround = false;
+       if(!StateManager.pause) {
+           player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+           playerBody = player.getComponent(BodyComponent.class).body;
+           if (player.getComponent(PlayerComponent.class).numFootContacts >= 1) {
+               StateManager.onGround = true;
+           } else StateManager.onGround = false;
 
-        //Setting player on ladder center
-        if (StateManager.climbing) {
-            float b1 = playerBody.getPosition().x;
-            float b2 = ladderX;
+           //Setting player on ladder center
+           if (StateManager.climbing) {
+               float b1 = playerBody.getPosition().x;
+               float b2 = ladderX;
 
-            if (b1 == b2) {
-            } else {
-                if (b1 < (b2 - 0.03f)) {
-                    playerBody.setLinearVelocity(1, 0);
-                }
-                if (b1 > (b2 + 0.03f)) {
-                    playerBody.setLinearVelocity(-1, 0);
-                }
-            }
-        }
-        //Player go through wall
-        if (StateManager.climbing) {
-              if (playerBody.getPosition().y > ladderY-(ladderHeight/2-2)) {
-                  playerBody.getFixtureList().get(0).setFilterData(goTroughFilter);
-                if (playerBody.getPosition().y < ladderY-(ladderHeight/2-2)) {
+               if (b1 == b2) {
+               } else {
+                   if (b1 < (b2 - 0.03f)) {
+                       playerBody.setLinearVelocity(1, 0);
+                   }
+                   if (b1 > (b2 + 0.03f)) {
+                       playerBody.setLinearVelocity(-1, 0);
+                   }
+               }
+           }
+           //Player go through wall
+           if (StateManager.climbing) {
+               if (playerBody.getPosition().y > ladderY - (ladderHeight / 2 - 2)) {
+                   playerBody.getFixtureList().get(0).setFilterData(goTroughFilter);
+                   if (playerBody.getPosition().y < ladderY - (ladderHeight / 2 - 2)) {
 
-                    playerBody.getFixtureList().get(0).setFilterData(normalFilter);
-                }
-            } else {
-                     playerBody.getFixtureList().get(0).setFilterData(normalFilter);
-            }
-        } else {
+                       playerBody.getFixtureList().get(0).setFilterData(normalFilter);
+                   }
+               } else {
+                   playerBody.getFixtureList().get(0).setFilterData(normalFilter);
+               }
+           } else {
 
-            playerBody.getFixtureList().get(0).setFilterData(normalFilter);
-        }
+               playerBody.getFixtureList().get(0).setFilterData(normalFilter);
+           }
+       }
     }
 
     @Override

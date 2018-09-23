@@ -9,6 +9,7 @@ public class StateManager {
     public static boolean climbing = false;
     public static boolean canClimb = false;
     public static float playerHP = 1;
+    public static boolean pause = false;
     //------Control-----
     public static boolean goLeft = false;
     public static boolean goRight = false;

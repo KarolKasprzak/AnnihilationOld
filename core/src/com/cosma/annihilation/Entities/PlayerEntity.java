@@ -2,32 +2,30 @@ package com.cosma.annihilation.Entities;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Utils.AssetsLoader;
-import com.cosma.annihilation.Utils.BodyID;
-import com.cosma.annihilation.Utils.CollisionID;
-import com.cosma.annihilation.Utils.Constants;
-import net.dermetfan.gdx.graphics.g2d.AnimatedBox2DSprite;
-import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
-import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
+import com.cosma.annihilation.Utils.*;
 
-public class PlayerEntity {
+public class PlayerEntity  {
+    Entity entity;
+
+    public Entity getEntity() {
+        return entity;
+    }
 
     public  PlayerEntity(Engine engine, World world) {
 
 
-        Entity entity = new Entity();
+        entity = new Entity();
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TransformComponent transformComponent = new TransformComponent();
         HealthComponent healthComponent= new HealthComponent();
+        SerializationComponent typeComponent = new SerializationComponent();
+        typeComponent.type = EntityID.PLAYER;
+
         healthComponent.hp = 67;
         //Player body
         BodyDef bodyDef = new BodyDef();
@@ -69,6 +67,7 @@ public class PlayerEntity {
         playerRenderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(playerRenderFixture);
         //Add entity
+        entity.add(typeComponent);
         entity.add(healthComponent);
         entity.add(transformComponent);
         entity.add(playerComponent);

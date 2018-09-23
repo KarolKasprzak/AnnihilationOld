@@ -5,32 +5,19 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Entities.TestEntity;
-import com.cosma.annihilation.Items.InventoryItem;
-import com.cosma.annihilation.Items.ItemFactory;
-import com.cosma.annihilation.Items.WeaponItem;
-import com.cosma.annihilation.Utils.Serializer;
+import com.cosma.annihilation.Utils.Serialization.Serializer;
 import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerGUI implements Screen {
@@ -49,6 +36,7 @@ public class PlayerGUI implements Screen {
     private TextButton debugButton;
     private TextButton saveButton;
     private TextButton loadButton;
+    private TextButton pauseButton;
     private TextButton menuButton;
     private InventoryWindow inventoryWindow;
     private CharacterWindow characterWindow;
@@ -59,13 +47,11 @@ public class PlayerGUI implements Screen {
     private Entity player;
     private Entity colidedEntinty;
     private Boolean isActionWindowOpen = false;
-    Serializer serializer;
+    private Serializer serializer;
+    private World world;
 
-
-    private  ActionSelectWindow actionSelectWindow;
-
-    public  PlayerGUI(Engine engine){
-
+    public  PlayerGUI(Engine engine,World world){
+        this.world = world;
         this.engine = engine;
         camera = new OrthographicCamera();
         camera.update();
@@ -77,23 +63,12 @@ public class PlayerGUI implements Screen {
         createActionButton();
         createHUD();
         createInventoryWindow();
-        serializer= new Serializer(engine);
+        serializer= new Serializer(engine,world);
         //Get player entity
         player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
     }
-     //---------------------Future---------
-//    private void createActionSelectWindow(){
-//        actionSelectWindow = new ActionSelectWindow("Action",skin);
-//        actionSelectWindow.setSize(stage.getWidth() * 0.3f,stage.getHeight() * 0.4f);
-//        actionSelectWindow.setVisible(false);
-//        stage.addActor(actionSelectWindow);
-//    }
-
-
 
     private void createInventoryWindow(){
-
-
         inventoryWindow = new InventoryWindow("Inventory", skin);
         inventoryWindow.setDebug(true);
 //        inventoryWindow.setFillParent(true);
@@ -105,7 +80,6 @@ public class PlayerGUI implements Screen {
         inventoryWindow.setMovable(false);
         inventoryWindow.setVisible(false);
         stage.addActor(inventoryWindow);
-
     }
 
     //TODO
@@ -222,9 +196,22 @@ public class PlayerGUI implements Screen {
 //            System.out.println("dmg" + inventoryWindow.getActiveWeapon().getDamage());
 //        }
         if(player.getComponent(PlayerComponent.class).collisionEntity == null){
-            System.out.println("save");
 
-            serializer.save();
+//            EntitySerializer serializer = new EntitySerializer();
+//            Json json = new Json();
+//            json.setUsePrototypes(false);
+//            json.setSerializer(Entity.class, serializer);
+//
+//            for(Entity entity : engine.getEntities()){
+//                json.toJson(entity);
+//            }
+//            System.out.println(json.toString());
+//            engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+//            System.out.println(json.prettyPrint(player));
+//           System.out.println(json.prettyPrint(engine.getEntitiesFor(Family.all(ContainerComponent.class).get()).first()));
+
+
+//            serializer.serializeEntity(player);
 
         }
             else{
@@ -278,6 +265,18 @@ public class PlayerGUI implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 inventoryWindow.saveInventory();
+                System.out.println("save");
+                serializer.save();
+                return true;
+            }
+        });
+        pauseButton = new TextButton("pause",skin);
+        pauseButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if(!StateManager.pause)
+                StateManager.pause = true;
+                else StateManager.pause = false;
                 return true;
             }
         });
@@ -286,6 +285,8 @@ public class PlayerGUI implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 inventoryWindow.loadInventory();
+                System.out.println("load");
+                serializer.load();
                 return true;
             }
         });
@@ -324,6 +325,8 @@ public class PlayerGUI implements Screen {
         table.add(saveButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
         table.row();
         table.add(loadButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
+        table.row();
+        table.add(pauseButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
         table.row();
         table.add(fpslabel).padTop(10).padLeft(10).left().width(150).height(50);
         table.row();

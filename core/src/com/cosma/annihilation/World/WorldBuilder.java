@@ -44,7 +44,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         // add all entity
         worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
-        playerGUI = new PlayerGUI(engine);
+        playerGUI = new PlayerGUI(engine,world);
     }
     public void initializeEngine(){
         //Create camera

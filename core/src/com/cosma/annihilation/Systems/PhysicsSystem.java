@@ -6,35 +6,26 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.ContactFilter;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TransformComponent;
-import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.StateManager;
 
 
 public class PhysicsSystem extends IteratingSystem {
-    // create variables to stabilize speed
     private static final float MAX_STEP_TIME = 1/45f;
     private static float accumulator = 0f;
-    // variable for our box2d world and bodies
     private World world;
     private Array<Entity> bodiesQueue;
-    // component mappers
     private ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
     private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 
     @SuppressWarnings("unchecked")
     public PhysicsSystem(World world) {
-        // System for all Entities that have B2dBodyComponent and TransformComponent
         super(Family.all(BodyComponent.class, TransformComponent.class).get());
         this.world = world;
         this.bodiesQueue = new Array<Entity>();
-
     }
 
     @Override
@@ -42,31 +33,22 @@ public class PhysicsSystem extends IteratingSystem {
         super.update(deltaTime);
         float frameTime = Math.min(deltaTime, 0.25f);
         accumulator += frameTime;
-        if(accumulator >= MAX_STEP_TIME) {
+        if(accumulator >= MAX_STEP_TIME &! StateManager.pause) {
             world.step(MAX_STEP_TIME, 6, 2);
             accumulator -= MAX_STEP_TIME;
-
-            //Loop through all Entities and update our components
-
         }
         for (Entity entity : bodiesQueue) {
-            // get components
             TransformComponent tfm = transformMapper.get(entity);
             BodyComponent bodyComp = bodyMapper.get(entity);
-            // get position from body
             Vector2 position = bodyComp.body.getPosition();
-            // update our transform to match body position
             tfm.position.x = position.x;
             tfm.position.y = position.y;
             tfm.rotation = bodyComp.body.getAngle() * MathUtils.radiansToDegrees;
         }
-        // empty queue
         bodiesQueue.clear();
     }
-
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        // add Items to queue
         bodiesQueue.add(entity);
 
 
