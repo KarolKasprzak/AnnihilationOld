@@ -36,7 +36,6 @@ public class Serializer{
     }
 
     public void save(){
-        System.out.println("engine " + engine.getEntities().size());
         EngineWrapper engineWrapper = new EngineWrapper();
         engineWrapper.fillArray(engine);
         file.writeString(json.prettyPrint(engineWrapper),false);
@@ -44,17 +43,19 @@ public class Serializer{
     }
 
     public void load(){
+        System.out.println(world.getBodyCount());
         StateManager.pause = true;
         for(Entity entity: engine.getEntitiesFor(Family.all(BodyComponent.class).get())){
             world.destroyBody(entity.getComponent(BodyComponent.class).body);
         }
+        System.out.println(world.getBodyCount());
         engine.removeAllEntities();
-        StateManager.pause = false;
             ArrayList<EntityWrapper> entityList = json.fromJson(EngineWrapper.class, Gdx.files.internal("save/save.json")).getEntityList();
             for (EntityWrapper entityWrapper : entityList) {
                 createEntity(entityWrapper);
             }
-
+        StateManager.pause = false;
+        System.out.println(world.getBodyCount());
     }
 
     public void setPosition (Entity entity){
@@ -66,29 +67,29 @@ public class Serializer{
 
     public void createEntity(EntityWrapper entityWrapper) {
         SerializationComponent serialization = (SerializationComponent) entityWrapper.getEntitysMap().get("SerializationComponent");
-        EntityID id = serialization.type;
-        Entity entity = entityFactory.getEntity(id);
-        for (Component component : entityWrapper.getEntitysMap().values()){
-            entity.add(component);
-        }
-        engine.addEntity(entity);
-        setPosition(entity);
-//        if(serialization.type.equals(EntityID.PLAYER)){
-//            Entity entity1 = entityFactory.getEntity(EntityID.PLAYER);
-//            engine.addEntity(entity1);
-//            for(Component component: entityWrapper.getEntitysMap().values()){
-//                entity1.add(component);
-//            }
-//            setPosition(entity1);
+//        EntityID id = serialization.type;
+//        Entity entity = entityFactory.getEntity(id);
+//        for (Component component : entityWrapper.getEntitysMap().values()){
+//            entity.add(component);
 //        }
-//        if(serialization.type.equals(EntityID.BOX)){
-//            Entity entity1 = entityFactory.createBox();
-//            engine.addEntity(entity1);
-//            for(Component component: entityWrapper.getEntitysMap().values()){
-//                entity1.add(component);
-//            }
-//            setPosition(entity1);
-//    }
+//        engine.addEntity(entity);
+//        setPosition(entity);
+        if(serialization.type.equals(EntityID.PLAYER)){
+            Entity entity = entityFactory.getEntity(EntityID.PLAYER);
+            engine.addEntity(entity);
+            for(Component component: entityWrapper.getEntitysMap().values()){
+                entity.add(component);
+            }
+            setPosition(entity);
+        }
+        if(serialization.type.equals(EntityID.BOX)){
+            Entity entity = entityFactory.createBox();
+            engine.addEntity(entity);
+            for(Component component: entityWrapper.getEntitysMap().values()){
+                entity.add(component);
+            }
+            setPosition(entity);
+    }
 //        if(serialization.type.equals(EntityID.PLAYER)){
 //            PlayerEntity playerEntity = new PlayerEntity(engine,world);
 //            for(Component component: entityWrapper.getEntitysMap().values()){

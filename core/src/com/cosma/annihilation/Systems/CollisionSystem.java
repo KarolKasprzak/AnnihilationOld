@@ -39,14 +39,15 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         goTroughFilter.groupIndex = -1;
         normalFilter = new Filter();
         normalFilter.categoryBits = CollisionID.NO_SHADOW;
-        player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        playerBody = player.getComponent(BodyComponent.class).body;
+
 
     }
 
     @Override
     public void update(float deltaTime) {
-       if(!StateManager.pause) {
+       player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+       playerBody = player.getComponent(BodyComponent.class).body;
+
            if (player.getComponent(PlayerComponent.class).numFootContacts >= 1) {
                StateManager.onGround = true;
            } else StateManager.onGround = false;
@@ -82,7 +83,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                playerBody.getFixtureList().get(0).setFilterData(normalFilter);
            }
        }
-    }
+
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -106,7 +107,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             //-----------------------Jumping & Climb contacts-----------------------------
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
                 player.getComponent(PlayerComponent.class).numFootContacts++;
-                System.out.println(player.getComponent(PlayerComponent.class).numFootContacts);
             }
             //Ladder climb down
             if (fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.GROUND ||
@@ -167,7 +167,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
                 StateManager.onGround = false;
                 player.getComponent(PlayerComponent.class).numFootContacts--;
-                System.out.println(player.getComponent(PlayerComponent.class).numFootContacts);
             }
 
             //------------------------Ladder contacts--------------

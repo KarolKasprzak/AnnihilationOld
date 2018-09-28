@@ -31,7 +31,6 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         public WorldBuilder(){
         initializeEngine();
-
         // add all entity
         worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
         playerGUI = new PlayerGUI(engine,world);
