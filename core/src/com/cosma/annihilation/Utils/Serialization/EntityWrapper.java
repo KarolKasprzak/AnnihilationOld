@@ -21,7 +21,6 @@ public class EntityWrapper {
             map.put(component.getClass().getSimpleName(),component);
         }
     }
-
     public OrderedMap<String,Component> getEntitysMap() {
         return map;
     }

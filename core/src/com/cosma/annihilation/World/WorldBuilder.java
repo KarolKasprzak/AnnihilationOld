@@ -5,27 +5,17 @@ import com.badlogic.ashley.core.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cosma.annihilation.Components.TextureComponent;
-import com.cosma.annihilation.Entities.EntityFactory;
-import com.cosma.annihilation.Entities.PlayerEntity;
-import com.cosma.annihilation.Entities.TestEntity;
 import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetsLoader;
-import com.cosma.annihilation.Utils.BodyID;
 import com.cosma.annihilation.Utils.Constants;
-import com.cosma.annihilation.Utils.StateManager;
-import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class WorldBuilder implements Disposable, EntityListener {
 

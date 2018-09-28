@@ -5,7 +5,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Utils.*;
+import com.cosma.annihilation.Utils.Enums.BodyID;
+import com.cosma.annihilation.Utils.Enums.CollisionID;
+import com.cosma.annihilation.Utils.Enums.EntityID;
 
 public class PlayerEntity  {
     Entity entity;

@@ -7,11 +7,11 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.InventoryItemLocation;
-import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.*;
+import com.cosma.annihilation.Utils.Enums.BodyID;
+import com.cosma.annihilation.Utils.Enums.CollisionID;
+import com.cosma.annihilation.Utils.Enums.EntityID;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
-
-import java.util.Hashtable;
 
 public class EntityFactory {
     private Engine engine;

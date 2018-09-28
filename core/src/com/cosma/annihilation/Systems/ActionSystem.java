@@ -5,8 +5,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -14,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Utils.BodyID;
+import com.cosma.annihilation.Utils.Enums.BodyID;
 
 public class ActionSystem extends IteratingSystem {
     private ComponentMapper<BodyComponent> bodyMapper;

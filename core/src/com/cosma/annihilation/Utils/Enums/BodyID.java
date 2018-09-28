@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Utils;
+package com.cosma.annihilation.Utils.Enums;
 
 public enum  BodyID {
     PLAYER_FOOT,

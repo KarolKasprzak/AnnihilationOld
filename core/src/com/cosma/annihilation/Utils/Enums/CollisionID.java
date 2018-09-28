@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Utils;
+package com.cosma.annihilation.Utils.Enums;
 
 public class CollisionID {
     public static final short CAST_SHADOW = 0x0001;

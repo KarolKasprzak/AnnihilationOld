@@ -1,18 +1,14 @@
 package com.cosma.annihilation.World;
 
-import box2dLight.ConeLight;
 import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.*;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -21,8 +17,8 @@ import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Entities.PlayerEntity;
 import com.cosma.annihilation.Gui.InventoryItemLocation;
-import com.cosma.annihilation.Utils.BodyID;
-import com.cosma.annihilation.Utils.CollisionID;
+import com.cosma.annihilation.Utils.Enums.BodyID;
+import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Constants;
 
 class WorldLoader {
