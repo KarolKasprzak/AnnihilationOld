@@ -11,13 +11,12 @@ import com.cosma.annihilation.Utils.Enums.EntityID;
 
 public class PlayerEntity  {
     Entity entity;
-
+    Class classf;
     public Entity getEntity() {
         return entity;
     }
 
     public  PlayerEntity(Engine engine, World world) {
-
 
         entity = new Entity();
         BodyComponent bodyComponent = new BodyComponent();
@@ -26,8 +25,8 @@ public class PlayerEntity  {
         TransformComponent transformComponent = new TransformComponent();
         HealthComponent healthComponent= new HealthComponent();
         SerializationComponent typeComponent = new SerializationComponent();
+        typeComponent.className = this.getClass().getName();
         typeComponent.type = EntityID.PLAYER;
-
         healthComponent.hp = 67;
         //Player body
         BodyDef bodyDef = new BodyDef();

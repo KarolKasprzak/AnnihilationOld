@@ -12,8 +12,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
-import com.cosma.annihilation.Entities.PlayerEntity;
-import com.cosma.annihilation.Entities.TestEntityFactory;
 import com.cosma.annihilation.Utils.Enums.EntityID;
 import com.cosma.annihilation.Utils.StateManager;
 import java.util.ArrayList;
@@ -24,86 +22,62 @@ public class Serializer{
     private World world;
     private Json json;
     private FileHandle file;
-    private TestEntityFactory entityFactory;
+    private EntityFactory entityFactory;
 
     public Serializer(Engine engine,World world){
         this.engine = engine;
         this.world = world;
         json = new Json();
         json.setUsePrototypes(false);
-        entityFactory = new TestEntityFactory(world,engine);
-        file = Gdx.files.local("save/save.json");
+        entityFactory = new EntityFactory(world, engine);
+        file = Gdx.files.local("save.json");
+
     }
 
     public void save(){
         EngineWrapper engineWrapper = new EngineWrapper();
         engineWrapper.fillArray(engine);
         file.writeString(json.prettyPrint(engineWrapper),false);
-        System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class).numFootContacts);
     }
 
     public void load(){
+        System.out.println(engine.getEntities().size());
         System.out.println(world.getBodyCount());
         StateManager.pause = true;
         for(Entity entity: engine.getEntitiesFor(Family.all(BodyComponent.class).get())){
             world.destroyBody(entity.getComponent(BodyComponent.class).body);
         }
-        System.out.println(world.getBodyCount());
         engine.removeAllEntities();
-            ArrayList<EntityWrapper> entityList = json.fromJson(EngineWrapper.class, Gdx.files.internal("save/save.json")).getEntityList();
+            ArrayList<EntityWrapper> entityList = json.fromJson(EngineWrapper.class, Gdx.files.local("save.json")).getEntityList();
             for (EntityWrapper entityWrapper : entityList) {
                 createEntity(entityWrapper);
             }
         StateManager.pause = false;
+        System.out.println(engine.getEntities().size());
         System.out.println(world.getBodyCount());
     }
 
-    public void setPosition (Entity entity){
+    private void setPosition (Entity entity){
         Vector2 position = entity.getComponent(TransformComponent.class).position;
         float angle = entity.getComponent(TransformComponent.class).rotation * MathUtils.degreesToRadians;
         entity.getComponent(BodyComponent.class).body.setTransform(position,angle);
     }
 
-
-    public void createEntity(EntityWrapper entityWrapper) {
+    private void createEntity(EntityWrapper entityWrapper) {
         SerializationComponent serialization = (SerializationComponent) entityWrapper.getEntitysMap().get("SerializationComponent");
-//        EntityID id = serialization.type;
-//        Entity entity = entityFactory.getEntity(id);
-//        for (Component component : entityWrapper.getEntitysMap().values()){
-//            entity.add(component);
-//        }
-//        engine.addEntity(entity);
-//        setPosition(entity);
-        if(serialization.type.equals(EntityID.PLAYER)){
-            Entity entity = entityFactory.getEntity(EntityID.PLAYER);
-            engine.addEntity(entity);
-            for(Component component: entityWrapper.getEntitysMap().values()){
-                entity.add(component);
-            }
-            setPosition(entity);
+        EntityID id = serialization.type;
+        Entity entity = null;
+        switch(id){
+            case PLAYER:
+                 entity = entityFactory.createPlayerEntity();
+                break;
+            case BOX:
+                 entity = entityFactory.createBoxEntityTest();
+                 break;
         }
-        if(serialization.type.equals(EntityID.BOX)){
-            Entity entity = entityFactory.createBox();
-            engine.addEntity(entity);
-            for(Component component: entityWrapper.getEntitysMap().values()){
-                entity.add(component);
-            }
-            setPosition(entity);
+        for (Component component : entityWrapper.getEntitysMap().values()) {
+            entity.add(component);
+        }
+        setPosition(entity);
     }
-//        if(serialization.type.equals(EntityID.PLAYER)){
-//            PlayerEntity playerEntity = new PlayerEntity(engine,world);
-//            for(Component component: entityWrapper.getEntitysMap().values()){
-//                playerEntity.getEntity().add(component);
-//            }
-//            setPosition(playerEntity.getEntity());
-//        }
-//        if(serialization.type.equals(EntityID.BOX)){
-//            EntityFactory entityFactory = new EntityFactory(world,engine);
-//            Entity entity = entityFactory.createBoxEntityTest();
-//            for(Component component: entityWrapper.getEntitysMap().values()){
-//                entity.add(component);
-//            }
-//            setPosition(entity);
-    }
-
 }
