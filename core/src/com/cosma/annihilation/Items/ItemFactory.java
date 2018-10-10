@@ -11,12 +11,9 @@ import java.util.Hashtable;
 
 
 public class ItemFactory {
-    private Json json = new Json();
     private Hashtable<ItemID, Object> itemMap;
     private static ItemFactory instance = null;
-    private final String WEAPON_ITEM_PATH = "json/items/weapons/weapons.json";
     private final String ARMOUR_ITEM_PATH = "json/items/armours/armours.json";
-    private final String STANDARD_ITEM_PATH = "json/items/standard/items.json";
 
 
     public static ItemFactory getInstance() {
@@ -27,8 +24,11 @@ public class ItemFactory {
         return instance;
     }
 
-    public ItemFactory() {
+    private ItemFactory() {
+        String WEAPON_ITEM_PATH = "json/items/weapons/weapons.json";
+        Json json = new Json();
         ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(WEAPON_ITEM_PATH));
+        String STANDARD_ITEM_PATH = "json/items/standard/items.json";
         ArrayList<JsonValue> list1 = json.fromJson(ArrayList.class, Gdx.files.internal(STANDARD_ITEM_PATH));
 
 

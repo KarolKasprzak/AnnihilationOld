@@ -98,9 +98,9 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             if (fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
                     || fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.CONTAINER) {
                 if (fa.getUserData() == BodyID.CONTAINER) {
-                    player.getComponent(PlayerComponent.class).collisionEntity = (Entity) fa.getBody().getUserData();
+//                    player.getComponent(PlayerComponent.class).collisionEntity = (Entity) fa.getBody().getUserData();
                 } else {
-                    player.getComponent(PlayerComponent.class).collisionEntity = (Entity) fb.getBody().getUserData();
+//                    player.getComponent(PlayerComponent.class).collisionEntity = (Entity) fb.getBody().getUserData();
                 }
             }
 
@@ -159,7 +159,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             //-----------------------Interaction-----------------------------//
             if (fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.CONTAINER
                     || fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.CONTAINER) {
-                player.getComponent(PlayerComponent.class).collisionEntity = null;
+//                player.getComponent(PlayerComponent.class).collisionEntity = null;
             }
 
 

@@ -25,7 +25,6 @@ public class PlayerEntity  {
         TransformComponent transformComponent = new TransformComponent();
         HealthComponent healthComponent= new HealthComponent();
         SerializationComponent typeComponent = new SerializationComponent();
-        typeComponent.className = this.getClass().getName();
         typeComponent.type = EntityID.PLAYER;
         healthComponent.hp = 67;
         //Player body

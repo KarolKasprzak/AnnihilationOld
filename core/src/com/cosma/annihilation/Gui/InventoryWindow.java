@@ -3,6 +3,8 @@ package com.cosma.annihilation.Gui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
@@ -17,11 +19,12 @@ import com.cosma.annihilation.Utils.AssetsLoader;
 import java.util.ArrayList;
 
 public class InventoryWindow extends Window {
-    private DragAndDrop dragAndDrop;
-    private Table inventorySlotsTable;
-    private Table equipmentSlotsTable;
+    public DragAndDrop dragAndDrop;
+    public Table inventorySlotsTable;
+    public Table equipmentSlotsTable;
     private Skin skin;
     private InventorySlot weaponInventorySlot;
+
 
     public InventoryWindow(String title, Skin skin) {
         super(title, skin);
@@ -29,13 +32,14 @@ public class InventoryWindow extends Window {
         this.skin = skin;
         createEquipementTable();
         createinventoryTable();
-        loadInventory();
+//        loadInventory();
+        this.setDebug(true);
+        this.debugAll().debugTable();
     }
+
 
     public void createEquipementTable() {
         equipmentSlotsTable = new Table();
-        equipmentSlotsTable.setDebug(false);
-
         InventorySlot headInventorySlot = new InventorySlot();
         InventorySlot bodyInventorySlot = new InventorySlot();
         InventorySlot legsInventorySlot = new InventorySlot();
@@ -58,11 +62,10 @@ public class InventoryWindow extends Window {
         equipmentSlotsTable.add();
         equipmentSlotsTable.add(legsInventorySlot).size(50,50).pad(2);
         equipmentSlotsTable.add();
-        this.add(equipmentSlotsTable);
         equipmentSlotsTable.center();
         equipmentSlotsTable.pad(20);
+        this.add(equipmentSlotsTable);
         this.row();
-
     }
 
     public void createinventoryTable() {
@@ -129,7 +132,6 @@ public class InventoryWindow extends Window {
 
         FileHandle file2 = Gdx.files.local("save12.json");
 
-
         file2.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
 //        file.writeString(json.prettyPrint(getInventory(equipmentSlotsTable)),false);
 //        file1.writeString(json.prettyPrint(getInventory(inventorySlotsTable)),false);
@@ -150,5 +152,4 @@ public class InventoryWindow extends Window {
         }
         return (WeaponItem) weaponInventorySlot.getInventoryItem();
     }
-
 }

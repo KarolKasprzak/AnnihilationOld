@@ -34,6 +34,7 @@ public class AssetsLoader {
         files.put("player_move", new AssetsHelper("gfx/player_move.atlas", TextureAtlas.class));
         files.put("player_move_start", new AssetsHelper("gfx/player.atlas", TextureAtlas.class));
         files.put("player_stand", new AssetsHelper("gfx/Player1.png", Texture.class));
+        files.put("tablet", new AssetsHelper("gfx/tablet.png", Texture.class));
 
 
 
