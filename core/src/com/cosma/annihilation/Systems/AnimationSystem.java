@@ -30,6 +30,7 @@ public class AnimationSystem extends IteratingSystem {
     AnimatedSprite playerWalkSpriteAnim;
     AnimatedSprite animatedSprite1;
     Texture playerStand;
+    Texture playerWeaponStand;
     Texture tex1;
     Animation walkAnimation;
     Animation startwalkanimation;
@@ -37,11 +38,13 @@ public class AnimationSystem extends IteratingSystem {
     TextureRegion textureRegion;
     TextureAtlas textureAtlas1;
     TextureAtlas textureAtlas2;
+    private PlayerComponent playerComponent;
     public AnimationSystem() {
         super(Family.all(PlayerComponent.class).get(), Constants.ANIMATION);
         textureAtlas1 = (TextureAtlas) AssetsLoader.getResource("player_move");
         textureAtlas2 = (TextureAtlas) AssetsLoader.getResource("player_move_start");
         playerStand = (Texture) AssetsLoader.getResource("player_stand");
+        playerWeaponStand = (Texture) AssetsLoader.getResource("player_weapon");
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
 
@@ -57,6 +60,7 @@ public class AnimationSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime)
     {
+        playerComponent = playerMapper.get(entity);
 
         playerBody = bodyMapper.get(entity).body;
         Fixture fixture = playerBody.getFixtureList().get(3);
@@ -69,12 +73,17 @@ public class AnimationSystem extends IteratingSystem {
             }else {
                                box2DSprite.setTexture(playerStand);
                                fixture.setUserData(box2DSprite);
+
             }
         }
         if(!StateManager.climbing) {
             float velocityX = fixture.getBody().getLinearVelocity().x;
             box2DSprite.setTexture(playerStand);
             fixture.setUserData(box2DSprite);
+            if(!playerComponent.weaponHidden){
+                box2DSprite.setTexture(playerWeaponStand);
+                fixture.setUserData(box2DSprite);
+            }
             if (velocityX != 0) {
                 fixture.setUserData(animatedBox2DSprite);
                 animatedBox2DSprite.setAnimation(walkAnimation);

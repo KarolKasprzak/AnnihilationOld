@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Gui;
+package com.cosma.annihilation.Gui.Inventory;
 
 public class InventoryItemLocation {
     private int tableIndex;

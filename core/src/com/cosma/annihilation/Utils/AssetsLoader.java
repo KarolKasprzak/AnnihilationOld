@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.HashMap;
 
@@ -35,7 +36,8 @@ public class AssetsLoader {
         files.put("player_move_start", new AssetsHelper("gfx/player.atlas", TextureAtlas.class));
         files.put("player_stand", new AssetsHelper("gfx/Player1.png", Texture.class));
         files.put("tablet", new AssetsHelper("gfx/tablet.png", Texture.class));
-
+        files.put("skin", new AssetsHelper("interface/comadore/uiskin.json", Skin.class));
+        files.put("player_weapon", new AssetsHelper("gfx/player_weapons_stand.png", Texture.class));
 
 
 
@@ -45,6 +47,11 @@ public class AssetsLoader {
         for(AssetsHelper asset : files.values()){
             manager.load(asset.path,asset.type);
         }
+
+//        manager.load("images_packed/gameatlas.atlas", TextureAtlas.class);
+//        manager.load("interface/comadore/uiskin.json", Skin.class, new SkinLoader.SkinParameter("images_packed/gameatlas.atlas"));
+
+
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load("Map/2/map1.tmx", TiledMap.class);
         manager.finishLoading();

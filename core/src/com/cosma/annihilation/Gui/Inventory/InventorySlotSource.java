@@ -1,6 +1,5 @@
-package com.cosma.annihilation.Gui;
+package com.cosma.annihilation.Gui.Inventory;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 
@@ -21,7 +20,7 @@ public class InventorySlotSource extends DragAndDrop.Source {
 
 
         sourceSlot = (InventorySlot)getActor().getParent();
-        sourceSlot.decrementItemCount();
+        sourceSlot.removeItem();
         payload.setDragActor(getActor());
 //        dragAndDrop.setDragActorPosition(-x, -y + getActor().getHeight());
 

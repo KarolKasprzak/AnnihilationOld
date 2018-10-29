@@ -9,21 +9,21 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.Serialization.Serializer;
 
 public class TabletWindow extends Window {
 
     private Skin skin;
     private InventoryWindow inventoryWindow;
     private MenuWindow menuWindow;
-    private Table screenTable;
     private Table windowTable;
     private TextButton exitButton;
     private TextButton inventoryButton;
     private TextButton menuButton;
     private Engine engine;
-    private World world;
+    private Serializer serializer;
 
-    public TabletWindow(String title, Skin skin) {
+    TabletWindow(String title, Skin skin,World world, Engine engine) {
         super(title, skin);
         TextureRegionDrawable background = new TextureRegionDrawable(new TextureRegion((Texture) AssetsLoader.getResource("tablet")));
         this.setBackground(background);
@@ -31,18 +31,21 @@ public class TabletWindow extends Window {
         this.skin = skin;
         this.setVisible(false);
         this.debugAll();
+        this.engine = engine;
 
-        inventoryWindow = new InventoryWindow("",skin);
+        serializer = new Serializer(engine,world);
+
+        inventoryWindow = new InventoryWindow("",skin,engine);
         inventoryWindow.setVisible(false);
         inventoryWindow.setZIndex(10);
 
-        menuWindow = new MenuWindow("",skin);
+        menuWindow = new MenuWindow("",skin,this);
         menuWindow.setVisible(false);
 
-        createButons(this);
-        addAction();
+        createButtons(this);
+        addButtonsAction();
 
-        screenTable = new Table();
+        Table screenTable = new Table();
         screenTable.setDebug(true);
         this.add(screenTable);
 
@@ -53,14 +56,11 @@ public class TabletWindow extends Window {
         verticalGroup.addActor(menuButton);
         verticalGroup.addActor(exitButton);
 
-
         screenTable.add(windowTable).size(800,700);
         screenTable.add(verticalGroup);
-//        screenTable.row();
-//        screenTable.add(inventoryButton).size(100,50);
     }
 
-    private void createButons(final TabletWindow menu){
+    private void createButtons(final TabletWindow menu){
         exitButton = new TextButton("Exit",skin);
 
         menuButton = new TextButton("Menu", skin);
@@ -68,7 +68,25 @@ public class TabletWindow extends Window {
         inventoryButton = new TextButton("Inventory",skin);
 
     }
-    private void addAction(){
+
+    void saveGame(){
+        inventoryWindow.saveInventory(engine);
+        serializer.save();
+    }
+
+
+    void autoSave(){
+        //TODO
+    }
+
+    void loadGame(){
+        serializer.load();
+        inventoryWindow.loadInventory(engine);
+    }
+
+
+
+    private void addButtonsAction(){
         final TabletWindow menu = this;
 
         menuButton.addListener(new InputListener(){
@@ -108,10 +126,6 @@ public class TabletWindow extends Window {
     }
 
 
-    public void setEngineAndWorld(Engine engine,World world){
-        this.engine = engine;
-        this.world = world;
-    }
 
     public void openinventoryWindow() {
         //        inventoryWindow = new InventoryWindow("Inventory", skin);

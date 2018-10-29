@@ -25,6 +25,6 @@ public class HealthSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         float hp = healthMapper.get(entity).hp;
         float maxHP = healthMapper.get(entity).maxHP;
-        StateManager.playerHP = hp;
+
     }
 }

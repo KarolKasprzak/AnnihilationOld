@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Gui;
+package com.cosma.annihilation.Gui.Inventory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,13 +13,13 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.AssetsLoader;
 
-public class InventorySlot extends Stack {
+public class InventorySlot extends Stack implements InventorySlotObservable{
     private int itemsAmount = 0;
     private int itemTypeFilter;
     private Image backgroundImage;
     private Label itemsAmountLabel;
     private Stack stack;
-
+    private Array<InventorySlotObserver> observers;
 
     public InventorySlot(){
 
@@ -30,11 +30,15 @@ public class InventorySlot extends Stack {
         stack.setName("background");
         this.add(stack);
         Skin skin = new Skin(Gdx.files.internal("interface/skin/pixthulhu-ui.json"));
+
         itemsAmountLabel = new Label(String.valueOf(itemsAmount),skin);
         itemsAmountLabel.setFontScale(0.5f);
         itemsAmountLabel.setAlignment(Align.bottomRight);
         itemsAmountLabel.setVisible(false);
         this.add(itemsAmountLabel);
+
+        observers = new Array<InventorySlotObserver>();
+
     }
     public InventorySlot(int itemTypeFilter,Image backgroundImage) {
         this();
@@ -71,25 +75,19 @@ public class InventorySlot extends Stack {
         }
     }
 
-    public void decrementItemCount() {
+    public void removeItem() {
         itemsAmount--;
-       itemsAmountLabel.setText(String.valueOf(itemsAmount));
-//        if( _defaultBackground.getChildren().size == 1 ){
-//            _defaultBackground.add(_customBackgroundDecal);
-//        }
+        itemsAmountLabel.setText(String.valueOf(itemsAmount));
         checkVisibilityOfItemCount();
-
+        notifyObservers(this, InventorySlotObserver.InventorySlotEvent.REMOVED_ITEM);
 
     }
 
-    public void incrementItemCount() {
+    public void addItem() {
         itemsAmount++;
         itemsAmountLabel.setText(String.valueOf(itemsAmount));
-//        if( _defaultBackground.getChildren().size > 1 ){
-//            _defaultBackground.getChildren().pop();
-//        }
         checkVisibilityOfItemCount();
-
+        notifyObservers(this,InventorySlotObserver.InventorySlotEvent.ADDED_ITEM);
     }
 
     public InventoryItem getInventoryItem(){
@@ -102,13 +100,14 @@ public class InventorySlot extends Stack {
         }
         return actor;
     }
+
     public Array<Actor> getAllInventoryItems() {
         Array<Actor> items = new Array<Actor>();
         if( hasItem() ){
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems =  arrayChildren.size - 2;
             for(int i = 0; i < numInventoryItems; i++) {
-                decrementItemCount();
+                removeItem();
                 items.add(arrayChildren.pop());
             }
         }
@@ -123,30 +122,43 @@ public class InventorySlot extends Stack {
         return 0;
     }
 
-
     public void clearAllInventoryItems() {
         if( hasItem() ){
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems =  getItemsNumber();
             for(int i = 0; i < numInventoryItems; i++) {
-
+                removeItem();
+                checkVisibilityOfItemCount();
                 arrayChildren.pop();
             }
         }
     }
 
-
     @Override
     public void add(Actor actor) {
         super.add(actor);
-
         if( itemsAmountLabel == null ){
             return;
         }
-
         if( !actor.equals(stack) && !actor.equals(itemsAmountLabel) ) {
-            incrementItemCount();
+            addItem();
         }
     }
 
+    @Override
+    public void register(InventorySlotObserver inventorySlotObserver) {
+         observers.add(inventorySlotObserver);
+    }
+
+    @Override
+    public void unregister(InventorySlotObserver inventorySlotObserver) {
+         observers.removeValue(inventorySlotObserver, true);
+    }
+
+    @Override
+    public void notifyObservers(InventorySlot inventorySlot, InventorySlotObserver.InventorySlotEvent event) {
+        for (InventorySlotObserver observer: observers){
+            observer.onNotify(inventorySlot,event);
+        }
+    }
 }

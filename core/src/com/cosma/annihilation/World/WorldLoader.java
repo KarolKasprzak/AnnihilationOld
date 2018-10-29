@@ -4,7 +4,6 @@ import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.*;
@@ -15,15 +14,15 @@ import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
-import com.cosma.annihilation.Entities.PlayerEntity;
-import com.cosma.annihilation.Gui.InventoryItemLocation;
+import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Constants;
 
+import java.util.ArrayList;
+
 class WorldLoader {
-    private Entity player;
-    private Body playerBody;
+
     private  Engine engine;
     private  World world;
     private  TiledMap gameMap;
@@ -36,33 +35,28 @@ class WorldLoader {
         this.gameMap = gameMap;
         this.rayHandler = rayHandler;
         entityFactory = new EntityFactory(world,engine);
-        createEntitys();
+        entityFactory.createPlayerEntity();
         //Get player entity
-        player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        playerBody = player.getComponent(BodyComponent.class).body;
         loadMap();
-
 
     }
     void loadMap(){
 
-        //Player backlight
-        PointLight pl2 = new PointLight(rayHandler, 45, new Color(1,1,1,0.3f), 1.8f,0,0);
-        pl2.attachToBody(playerBody);
-        pl2.setIgnoreAttachedBody(true);
-        pl2.setStaticLight(false);
-        pl2.setXray(true);
-        pl2.setSoftnessLength(0.3f);
-        pl2.setSoft(true);
-
+//        //Player backlight
+//        PointLight pl2 = new PointLight(rayHandler, 45, new Color(1,1,1,0.3f), 1.8f,0,0);
+//        pl2.attachToBody(playerBody);
+//        pl2.setIgnoreAttachedBody(true);
+//        pl2.setStaticLight(false);
+//        pl2.setXray(true);
+//        pl2.setSoftnessLength(0.3f);
+//        pl2.setSoft(true);
 
                     MapLayers layers = gameMap.getLayers();
                     MapLayer layer = layers.get("object");
                     for(MapObject mo : layer.getObjects()){
                         if("spawn".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
-                            Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                            Body playerBody =  player.getComponent(BodyComponent.class).body;
+                            Body playerBody = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(BodyComponent.class).body;
                             playerBody.setTransform(dimension[0],dimension[1],0);
                         }
                         if("ladder".equals(mo.getName())){
@@ -123,9 +117,6 @@ class WorldLoader {
                         }
                     }
                 }
-
-
-
 
         private Body createBoxBody(float x, float y, float width, float height,boolean dynamic,int selectType,float rotation) {
                 BodyDef bodyDef = new BodyDef();
@@ -196,12 +187,6 @@ class WorldLoader {
                 return ladderBody;
 
         }
-
-        private void createEntitys(){
-            PlayerEntity playerEntity = new PlayerEntity(engine,world);
-        }
-
-
 
         private void setRotatedPosition(BodyDef bodyDef,float x, float y, float width, float height,float rotation){
             float DEGTORAD = 0.0174532925199432957f;

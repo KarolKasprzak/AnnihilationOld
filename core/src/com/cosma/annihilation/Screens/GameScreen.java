@@ -1,9 +1,11 @@
 package com.cosma.annihilation.Screens;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.math.Vector3;
-import com.cosma.annihilation.Gui.PlayerGUI;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Systems.PlayerControlSystem;
 import com.cosma.annihilation.World.WorldBuilder;
 
@@ -11,14 +13,14 @@ public class GameScreen implements Screen, InputProcessor {
 
     private WorldBuilder worldBuilder;
     private InputMultiplexer im;
-    public GameScreen() {
 
-        worldBuilder = new WorldBuilder();
+    public GameScreen(Annihilation game) {
+
+        worldBuilder = new WorldBuilder(game.isGameLoaded());
         im = new InputMultiplexer();
         im.addProcessor(worldBuilder.getPlayerHudStage());
-        im.addProcessor( worldBuilder.getEngine().getSystem(PlayerControlSystem.class));
+        im.addProcessor(worldBuilder.getEngine().getSystem(PlayerControlSystem.class));
         im.addProcessor(this);
-
     }
 
     @Override
@@ -75,8 +77,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
+//        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+//        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
 //               System.out.println(screenX + " " + screenY);
 
         return false;

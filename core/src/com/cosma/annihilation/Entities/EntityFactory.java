@@ -7,12 +7,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Gui.InventoryItemLocation;
+import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.*;
+import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityID;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
+
+import java.util.ArrayList;
 
 public class EntityFactory {
     private Engine engine;
@@ -34,7 +37,7 @@ public class EntityFactory {
         SerializationComponent serializationComponent = new SerializationComponent();
         serializationComponent.type = EntityID.BOX;
 
-        actionComponent.openBoxAction = true;
+        actionComponent.action = ActionID.OPEN;
         containerComponent.name = "box";
         containerComponent.itemLocations = itemList;
         //----------Body Component----------------------
@@ -91,7 +94,7 @@ public class EntityFactory {
         SerializationComponent serializationComponent = new SerializationComponent();
         serializationComponent.type = EntityID.BOX;
 
-        actionComponent.openBoxAction = true;
+        actionComponent.action = ActionID.OPEN;
         containerComponent.name = "box";
         //----------Body Component----------------------
         BodyDef bodyDef = new BodyDef();
@@ -135,18 +138,22 @@ public class EntityFactory {
 
     public Entity createPlayerEntity(){
         Entity entity = new Entity();
+
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TransformComponent transformComponent = new TransformComponent();
         HealthComponent healthComponent= new HealthComponent();
         SerializationComponent typeComponent = new SerializationComponent();
+        PlayerDateComponent playerDateComponent = new PlayerDateComponent();
+
         typeComponent.type = EntityID.PLAYER;
         healthComponent.hp = 67;
+        playerComponent.collisionEntityList = new ArrayList<Entity>();
+
         //Player body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(1, 1);
         bodyComponent.body = world.createBody(bodyDef);
         bodyComponent.body.setFixedRotation(true);
         //Body physic fixture
@@ -183,6 +190,7 @@ public class EntityFactory {
         playerRenderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(playerRenderFixture);
         //Add entity
+        entity.add(playerDateComponent);
         entity.add(typeComponent);
         entity.add(healthComponent);
         entity.add(transformComponent);

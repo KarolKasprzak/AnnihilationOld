@@ -3,6 +3,7 @@ package com.cosma.annihilation.Gui;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
@@ -13,11 +14,17 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Utils.Serialization.Serializer;
+import com.cosma.annihilation.Components.ContainerComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Systems.ActionSystem;
+import com.cosma.annihilation.Systems.ShootingSystem;
+import com.cosma.annihilation.Utils.Enums.ActionID;
+import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.StateManager;
 
 public class PlayerGUI implements Screen {
@@ -25,27 +32,33 @@ public class PlayerGUI implements Screen {
     private Skin skin;
     private Label fpsLabel;
     private String fpsNumber;
-    private ImageButton actionButtonR1;
-    private ImageButton actionButtonR2;
+    private ImageButton actionButtonRightUp;
+    private ImageButton actionButtonRightDown;
     private ImageButton actionButtonUp;
     private ImageButton actionButtonDown;
     private ImageButton actionButtonLeft;
     private ImageButton actionButtonRight;
     private TextButton debugButton;
     private TextButton menuButton;
-    private TabletWindow menuWindow;
-    private CharacterWindow characterWindow;
-    private CraftingWindow craftingWindow;
+    private TabletWindow tabletWindow;
     private ProgressBar healthBar;
     private Engine engine;
     private Entity player;
-    private Serializer serializer;
     private World world;
+    private Signal<GameEvent> signal;
+    private Label actionNameDisplayed;
+    private ContainerWindow containerWindow;
+
+    private boolean rightUpButtonPressed = false;
+
 
     public  PlayerGUI(Engine engine,World world){
         this.world = world;
         this.engine = engine;
         skin = StateManager.skin;
+        signal = new Signal<GameEvent>();
+        signal.add(engine.getSystem(ActionSystem.class));
+        signal.add(engine.getSystem(ShootingSystem.class));
 
         Camera camera = new OrthographicCamera();
         camera.update();
@@ -53,57 +66,69 @@ public class PlayerGUI implements Screen {
         stage = new Stage(viewport);
         viewport.apply(true);
 
-        createActionButton();
+        createButtonView();
+        actionButtonController();
+
         createHUD();
-        createMenuWindow();
+        createTabletWindow();
 
-        serializer= new Serializer(engine,world);
-        player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        containerWindow = new ContainerWindow("",skin,4);
+        containerWindow.setVisible(false);
     }
 
-    private void createMenuWindow(){
-        menuWindow = new TabletWindow("", skin);
-        menuWindow.setEngineAndWorld(engine,world);
-        menuWindow.setMovable(false);
-        menuWindow.setVisible(false);
-        stage.addActor(menuWindow);
+    private void createTabletWindow(){
+        tabletWindow = new TabletWindow("", skin,world,engine);
+        tabletWindow.setMovable(false);
+        tabletWindow.setVisible(false);
+        stage.addActor(tabletWindow);
     }
 
-    private void createActionButton(){
-        fpsLabel = new Label(fpsNumber, skin);
-        //---------R1-----------
-        actionButtonR1 = new ImageButton(skin, "default");
-        actionButtonR1.addListener(new InputListener() {
+    public void loadGame(){
+        tabletWindow.loadGame();
+    }
+
+
+    private void actionButtonController(){
+
+        actionButtonRightUp.addListener(new ActorGestureListener(){
 
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                R1ButtonAction();
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                super.tap(event, x, y, count, button);
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                if(player.getComponent(PlayerComponent.class).weaponHidden){
+                    signal.dispatch(GameEvent.PERFORM_ACTION);
+                }else
+                signal.dispatch(GameEvent.WEAPON_SHOOT);
+            }
+
+            @Override
+            public boolean longPress(Actor actor, float x, float y) {
+
+                signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
                 return true;
             }
         });
-        //---------R2-----------
-        actionButtonR2 = new ImageButton(skin, "default");
-        actionButtonR2.addListener(new InputListener() {
+
+
+        actionButtonRightDown.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
-                System.out.println("load");
 
-                serializer.load();
+                Json json = new Json();
 
 
+                System.out.println(json.prettyPrint(player.getComponent(PlayerComponent.class).collisionEntityList));
                 StateManager.goUp = true;
                 return true;
             }
-
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 StateManager.goUp = false;
             }
-
         });
-        //---------UP-----------
-        actionButtonUp = new ImageButton(skin,"default");
+
         actionButtonUp.addListener(new InputListener()
         {
             @Override
@@ -120,8 +145,7 @@ public class PlayerGUI implements Screen {
             }
 
         });
-        //---------DOWN-----------
-        actionButtonDown = new ImageButton(skin,"default");
+
         actionButtonDown.addListener(new InputListener()
         {
             @Override
@@ -137,8 +161,7 @@ public class PlayerGUI implements Screen {
             }
 
         });
-        //---------LEFT-----------
-        actionButtonLeft = new ImageButton(skin,"default");
+
         actionButtonLeft.addListener(new InputListener()
         {
             @Override
@@ -153,8 +176,7 @@ public class PlayerGUI implements Screen {
             }
 
         });
-        //---------RIGHT-----------
-        actionButtonRight = new ImageButton(skin,"default");
+
         actionButtonRight.addListener(new InputListener()
         {
             @Override
@@ -169,69 +191,46 @@ public class PlayerGUI implements Screen {
             }
 
         });
-
     }
-    private void R1ButtonAction(){
-//        if(inventoryWindow.getActiveWeapon() == null){
-//        }else {
-//            System.out.println(inventoryWindow.getActiveWeapon().isAutomatic());
-//            System.out.println(inventoryWindow.getActiveWeapon().getAccuracy());
-//            System.out.println(inventoryWindow.getActiveWeapon().getMaxAmmoInMagazine());
-//            System.out.println("dmg" + inventoryWindow.getActiveWeapon().getDamage());
-//        }
 
+    private void createButtonView(){
+        fpsLabel = new Label(fpsNumber, skin);
 
-//            EntitySerializer serializer = new EntitySerializer();
-//            Json json = new Json();
-//            json.setUsePrototypes(false);
-//            json.setSerializer(Entity.class, serializer);
-//
-//            for(Entity entity : engine.getEntities()){
-//                json.toJson(entity);
-//            }
-//            System.out.println(json.toString());
-//            engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-//            System.out.println(json.prettyPrint(player));
-//           System.out.println(json.prettyPrint(engine.getEntitiesFor(Family.all(ContainerComponent.class).get()).first()));
+        actionNameDisplayed = new Label("",skin);
 
+        actionButtonRightUp = new ImageButton(skin, "default");
 
-//            serializer.serializeEntity(player);
+        actionButtonRightDown = new ImageButton(skin, "default");
 
-//        }
-//            else{
-//
-//            //-----------------------------Action list
-//            if (player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ActionComponent.class).openBoxAction) {
-//                System.out.println("open box");
-//                ContainerWindow containerWindow= new ContainerWindow("ss",skin,8);
-//                containerWindow.setSize(500,500);
-//                InventoryWindow.fillInventory(containerWindow.containerSlotsTable,player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).itemLocations,containerWindow.dragAndDrop);
-//                stage.addActor(containerWindow);
-//
-//
-//            }
-//            if (player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ActionComponent.class).openDoorAction) {
-//                System.out.println("open door");
-//            }
-//
-//
-//
-//
-//            System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).name);
-            //---------------------PickUP------------------
-    //                    System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
-    //                    WeldJointDef weldJoint = new WeldJointDef();
-    //                    weldJoint.bodyA = player.getComponent(BodyComponent.class).body;
-    //                    weldJoint.bodyB = player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body;
-    //                    weldJoint.localAnchorA.set(new Vector2(1, 0));
-    //                    if(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size == 1){
-    //                        System.out.println("drop");
-    //                        player.getComponent(BodyComponent.class).body.getWorld().destroyJoint(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().get(0).joint);
-    //                    }
-    //                    player.getComponent(BodyComponent.class).body.getWorld().createJoint(weldJoint);
-//                System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
+        actionButtonUp = new ImageButton(skin,"default");
 
+        actionButtonDown = new ImageButton(skin,"default");
+
+        actionButtonLeft = new ImageButton(skin,"default");
+
+        actionButtonRight = new ImageButton(skin,"default");
     }
+
+
+    public void showLootWindow(Entity entity){
+              System.out.println("open box");
+              containerWindow.setVisible(true);
+              containerWindow.setSize(500,500);
+              InventoryWindow.fillInventory(containerWindow.containerSlotsTable,entity.getComponent(ContainerComponent.class).itemLocations,containerWindow.dragAndDrop);
+              stage.addActor(containerWindow);
+    }
+
+    public void setDisplayedActionName(ActionID actionID) {
+        switch(actionID){
+            case NOTHING:
+                actionNameDisplayed.setText("");
+                break;
+            case OPEN:
+                actionNameDisplayed.setText("Open box");
+                break;
+        }
+    }
+
     private void createHUD(){
         Table table = new Table();
         table.center();
@@ -240,17 +239,17 @@ public class PlayerGUI implements Screen {
         bTable.bottom().left();
         bTable.setFillParent(true);
 
+
         stage.addActor(table);
         stage.addActor(bTable);
-
 
         menuButton = new TextButton("Menu", skin);
         menuButton.addListener(new InputListener(){
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if(!menuWindow.isVisible()){
-                   menuWindow.setVisible(true);
+                if(!tabletWindow.isVisible()){
+                   tabletWindow.setVisible(true);
                 }
                 return true;
             }
@@ -272,8 +271,8 @@ public class PlayerGUI implements Screen {
 
         });
 
-
-        table.add(debugButton).padTop(10).padLeft(10).left().width(150).height(50).expandX();
+        table.add(debugButton).padTop(10).padLeft(10).left().width(150).height(50);
+        table.add(actionNameDisplayed).center().expandX();;
         table.add(menuButton).padTop(10).padRight(10).right().width(150).height(50);
         table.row();
         table.add(fpsLabel).padTop(10).padLeft(10).left().width(150).height(50);
@@ -281,18 +280,14 @@ public class PlayerGUI implements Screen {
         //-------------------Action button table------------------------------------------------
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15).size(300);
         bTable.add(actionButtonUp).width(150).height(150).center().colspan(3);
-        bTable.add(actionButtonR1).expandX().right().padBottom(15).padLeft(15).size(150).padRight(25);
+        bTable.add(actionButtonRightUp).expandX().right().padBottom(15).padLeft(15).size(150).padRight(25);
         bTable.row();
         bTable.add(actionButtonLeft).width(150).height(150).left().pad(10);
         bTable.add(actionButtonDown).width(150).height(150).left().pad(10);
         bTable.add(actionButtonRight).width(150).height(150).left().pad(10);
-        bTable.add(actionButtonR2).expandX().right().padBottom(15).padLeft(15).size(150).padRight(50);
+        bTable.add(actionButtonRightDown).expandX().right().padBottom(15).padLeft(15).size(150).padRight(50);
         table.row();
-
-
-
     }
-
 
     public Stage getStage() {
         return stage;
@@ -300,7 +295,6 @@ public class PlayerGUI implements Screen {
 
     @Override
     public void show() {
-
     }
 
     @Override
@@ -318,23 +312,35 @@ public class PlayerGUI implements Screen {
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {    }
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {    }
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {    }
 
     @Override
-    public void dispose() {
-        stage.dispose();
-
+    public void dispose() {stage.dispose();
     }
+
 }
+
+//            System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).name);
+//---------------------PickUP------------------
+//                    System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
+//                    WeldJointDef weldJoint = new WeldJointDef();
+//                    weldJoint.bodyA = player.getComponent(BodyComponent.class).body;
+//                    weldJoint.bodyB = player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body;
+//                    weldJoint.localAnchorA.set(new Vector2(1, 0));
+//                    if(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size == 1){
+//                        System.out.println("drop");
+//                        player.getComponent(BodyComponent.class).body.getWorld().destroyJoint(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().get(0).joint);
+//                    }
+//                    player.getComponent(BodyComponent.class).body.getWorld().createJoint(weldJoint);
+//                System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
+
+//    }
+
+
+

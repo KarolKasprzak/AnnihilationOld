@@ -25,28 +25,30 @@ public class WorldBuilder implements Disposable, EntityListener {
     private OrthographicCamera camera;
     private Viewport viewport;
     private TiledMap tiledMap;
-    private WorldLoader worldLoader;
     private RayHandler rayHandler;
     private PlayerGUI playerGUI;
 
-        public WorldBuilder(){
-        initializeEngine();
-        // add all entity
-        worldLoader = new WorldLoader(engine,world,tiledMap,rayHandler);
+        public WorldBuilder(Boolean isGameLoaded){
+        runEngine();
+        new WorldLoader(engine, world, tiledMap, rayHandler);
         playerGUI = new PlayerGUI(engine,world);
+        engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
+        if(isGameLoaded){
+            playerGUI.loadGame();
+        }
     }
-    public void initializeEngine(){
-        //Create camera
+    private void runEngine(){
+
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
         viewport.apply(true);
         camera.update();
-        //Load map
+
         tiledMap = AssetsLoader.manager.get("Map/2/map1.tmx", TiledMap.class);
-        //Create a pooled engine & world
+
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
         engine = new PooledEngine();
-        //Add all the relevant systems our engine should run
+
         LightRenderSystem lightRenderSystem = new LightRenderSystem(camera,world);
         this.rayHandler = lightRenderSystem.getRayHandler();
         engine.addSystem(new RenderSystem(camera,world));
@@ -59,8 +61,8 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new HealthSystem());
         engine.addSystem(lightRenderSystem);
         engine.addSystem(new DebugRenderSystem(camera,world));
-        engine.addSystem(new SaveSystem(world));
-
+        engine.addSystem(new ActionSystem(world));
+        engine.addSystem(new ShootingSystem(world));
     }
 
     public void update(float delta) {
