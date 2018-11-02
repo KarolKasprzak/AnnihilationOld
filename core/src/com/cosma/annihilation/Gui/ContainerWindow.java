@@ -1,26 +1,35 @@
 package com.cosma.annihilation.Gui;
 
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.cosma.annihilation.Components.ContainerComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Components.PlayerDateComponent;
+import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Gui.Inventory.InventorySlot;
 import com.cosma.annihilation.Gui.Inventory.InventorySlotTarget;
+import com.badlogic.gdx.utils.Array;
+
 
 class ContainerWindow extends Window {
     DragAndDrop dragAndDrop;
     Table containerSlotsTable;
-    private Skin skin;
     private int itemSlotNumber;
     private TextButton takeAllButton;
     private TextButton closeButton;
     private ContainerWindow containerWindow;
-    private  ActorGestureListener listener;
-    ContainerWindow(String title, Skin skin, int itemSlotNumber) {
+    private ActorGestureListener listener;
+    private Engine engine;
+    ContainerWindow(String title, Skin skin, int itemSlotNumber, final Engine engine) {
         super(title, skin);
-        this.skin = skin;
         this.itemSlotNumber = itemSlotNumber;
+        this.engine = engine;
+
         containerWindow = this;
 
         dragAndDrop = new DragAndDrop();
@@ -32,15 +41,57 @@ class ContainerWindow extends Window {
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 super.tap(event, x, y, count, button);
                 if(count >= 2){
-                    InventorySlot actor = ( InventorySlot) event.getListenerActor();
-
+                    InventorySlot slot = ( InventorySlot) event.getListenerActor();
+                    moveItemToPlayerEquipment(slot);
                 }
             }
         };
 
-
         createContainerTable();
+    }
 
+    private void moveItemToPlayerEquipment(InventorySlot inventorySlot){
+        if(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size <= 24){
+            InventoryItemLocation inventoryItemLocation = new InventoryItemLocation();
+                inventoryItemLocation.setTableIndex(findEmptySlotInEquipment());
+                inventoryItemLocation.setItemsAmount(inventorySlot.getItemsNumber());
+                inventoryItemLocation.setItemID(inventorySlot.getInventoryItem().getItemID().toString());
+
+            engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.add(inventoryItemLocation);
+
+            for(InventoryItemLocation item: engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
+                    .processedEntity.getComponent(ContainerComponent.class).itemLocations){
+                if(item.getItemID().equals(inventorySlot.getInventoryItem().getItemID().toString())){
+                    if(item.getItemsAmount() == inventorySlot.getItemsNumber()){
+                        engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
+                                .processedEntity.getComponent(ContainerComponent.class).itemLocations.removeValue(item,true);
+                    }
+                }
+            }
+            inventorySlot.clearAllItems();
+
+        }
+    }
+
+
+
+    private int findEmptySlotInEquipment() {
+        int n = 0;
+        Array<InventoryItemLocation> inventoryItem = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem;
+
+        Array<Integer> numbers = new Array<Integer>();
+
+        for (InventoryItemLocation item : inventoryItem) {
+            numbers.add(item.getTableIndex());
+        }
+
+        for(int i = 0; i <= 24; i++){
+            if(!numbers.contains(i,true)){
+                n = i;
+                break;
+            }
+        }
+        return  n;
     }
 
     private void createContainerTable() {
@@ -68,9 +119,6 @@ class ContainerWindow extends Window {
             }
         });
     }
-
-
-
 }
 
 

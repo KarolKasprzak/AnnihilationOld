@@ -122,7 +122,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
         return 0;
     }
 
-    public void clearAllInventoryItems() {
+    public void clearAllItems() {
         if( hasItem() ){
             SnapshotArray<Actor> arrayChildren = this.getChildren();
             int numInventoryItems =  getItemsNumber();

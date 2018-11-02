@@ -21,6 +21,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Components.PlayerDateComponent;
+import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.Enums.ActionID;
@@ -72,7 +75,7 @@ public class PlayerGUI implements Screen {
         createHUD();
         createTabletWindow();
 
-        containerWindow = new ContainerWindow("",skin,4);
+        containerWindow = new ContainerWindow("",skin,4,engine);
         containerWindow.setVisible(false);
     }
 
@@ -104,7 +107,6 @@ public class PlayerGUI implements Screen {
 
             @Override
             public boolean longPress(Actor actor, float x, float y) {
-
                 signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
                 return true;
             }
@@ -114,12 +116,13 @@ public class PlayerGUI implements Screen {
         actionButtonRightDown.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-
-
-                Json json = new Json();
-
-
-                System.out.println(json.prettyPrint(player.getComponent(PlayerComponent.class).collisionEntityList));
+                InventoryItemLocation inventoryItemLocation = new InventoryItemLocation();
+                inventoryItemLocation.setItemID(InventoryItem.ItemID.MP44.toString());
+                inventoryItemLocation.setItemsAmount(1);
+                inventoryItemLocation.setTableIndex(2);
+                System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size);
+                engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.add(inventoryItemLocation);
+                System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size);
                 StateManager.goUp = true;
                 return true;
             }

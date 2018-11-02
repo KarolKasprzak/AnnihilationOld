@@ -37,7 +37,6 @@ public class TabletWindow extends Window {
 
         inventoryWindow = new InventoryWindow("",skin,engine);
         inventoryWindow.setVisible(false);
-        inventoryWindow.setZIndex(10);
 
         menuWindow = new MenuWindow("",skin,this);
         menuWindow.setVisible(false);
@@ -100,15 +99,17 @@ public class TabletWindow extends Window {
         exitButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                windowTable.clearChildren();
                 menu.setVisible(false);
                 return true;
             }
         });
 
-        inventoryButton.addListener(new InputListener(){
+        inventoryButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-            clearAndAddWindow(inventoryWindow);
+                clearAndAddWindow(inventoryWindow);
+                inventoryWindow.loadInventory(engine);
                 return true;
             }
         });
@@ -117,6 +118,7 @@ public class TabletWindow extends Window {
     private void clearAndAddWindow(Window window){
         if(windowTable.hasChildren()){
             windowTable.clearChildren();
+            inventoryWindow.saveInventory(engine);
             windowTable.add(window);
             window.setVisible(true);
         }else {

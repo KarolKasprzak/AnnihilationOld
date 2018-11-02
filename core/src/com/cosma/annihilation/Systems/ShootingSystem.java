@@ -31,11 +31,11 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         playerComponent = playerMapper.get(entity);
     }
 
-    private void weaponTakeOut(){
-        playerComponent.weaponHidden = !playerComponent.weaponHidden;
+    private void weaponTakeOut() {
+        if (playerComponent.activeWeapon != null) {
+            playerComponent.weaponHidden = !playerComponent.weaponHidden;
         }
-
-
+    }
 
     private void weaponShoot(){
         if(playerComponent.activeWeapon != null && !playerComponent.weaponHidden){

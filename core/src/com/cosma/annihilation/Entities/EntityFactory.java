@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Utils.*;
 import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.BodyID;
@@ -18,12 +19,29 @@ import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 import java.util.ArrayList;
 
 public class EntityFactory {
+
+    private static EntityFactory instance = null;
     private Engine engine;
     private World world;
-     public EntityFactory(World world, Engine engine){
+
+    public EntityFactory(World world, Engine engine) {
         this.world = world;
         this.engine = engine;
+    }
+
+    public EntityFactory() {
+
+    }
+
+    public static EntityFactory getInstance() {
+        if (instance == null) {
+            System.out.println("eror");
+            instance = new EntityFactory();
         }
+
+        return instance;
+    }
+
 
     public Entity createBoxEntity(float x, float y, Array<InventoryItemLocation> itemList) {
         Entity entity = new Entity();
@@ -136,20 +154,22 @@ public class EntityFactory {
         return entity;
     }
 
-    public Entity createPlayerEntity(){
+    public Entity createPlayerEntity() {
         Entity entity = new Entity();
 
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TransformComponent transformComponent = new TransformComponent();
-        HealthComponent healthComponent= new HealthComponent();
+        HealthComponent healthComponent = new HealthComponent();
         SerializationComponent typeComponent = new SerializationComponent();
         PlayerDateComponent playerDateComponent = new PlayerDateComponent();
 
         typeComponent.type = EntityID.PLAYER;
         healthComponent.hp = 67;
         playerComponent.collisionEntityList = new ArrayList<Entity>();
+        playerDateComponent.inventoryItem = new Array<InventoryItemLocation>();
+        playerDateComponent.equippedItem = new Array<InventoryItemLocation>();
 
         //Player body
         BodyDef bodyDef = new BodyDef();
@@ -158,7 +178,7 @@ public class EntityFactory {
         bodyComponent.body.setFixedRotation(true);
         //Body physic fixture
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1f/2, 2f/2);
+        shape.setAsBox(1f / 2, 2f / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
@@ -167,7 +187,7 @@ public class EntityFactory {
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
-        bodySensorShape.setAsBox(0.5f/2,1.9f/2);
+        bodySensorShape.setAsBox(0.5f / 2, 1.9f / 2);
         FixtureDef centerFixtureDef = new FixtureDef();
         centerFixtureDef.shape = bodySensorShape;
         centerFixtureDef.isSensor = true;
@@ -175,15 +195,15 @@ public class EntityFactory {
         bodyComponent.body.createFixture(centerFixtureDef).setUserData(BodyID.PLAYER_CENTER);
         //Foot sensor fixture
         PolygonShape footSensorShape = new PolygonShape();
-        footSensorShape.setAsBox(0.5f/2,0.5f/2, new Vector2(0,-1),0);
+        footSensorShape.setAsBox(0.5f / 2, 0.5f / 2, new Vector2(0, -1), 0);
         FixtureDef footFixtureDef = new FixtureDef();
         footFixtureDef.shape = footSensorShape;
         footFixtureDef.isSensor = true;
-        footFixtureDef.filter.categoryBits = CollisionID.NO_SHADOW ;
+        footFixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Sprite render fixture
         PolygonShape playerSensorShape = new PolygonShape();
-        playerSensorShape.setAsBox(2f/2,2f/2, new Vector2(0,0),0);
+        playerSensorShape.setAsBox(2f / 2, 2f / 2, new Vector2(0, 0), 0);
         FixtureDef playerRenderFixture = new FixtureDef();
         playerRenderFixture.shape = playerSensorShape;
         playerRenderFixture.isSensor = true;
@@ -201,5 +221,5 @@ public class EntityFactory {
         return entity;
     }
 
-    }
+}
 

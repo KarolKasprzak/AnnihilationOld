@@ -29,7 +29,7 @@ public class Serializer{
         this.world = world;
         json = new Json();
         json.setUsePrototypes(false);
-        entityFactory = new EntityFactory(world, engine);
+        entityFactory = EntityFactory.getInstance();
         file = Gdx.files.local("save.json");
 
     }
@@ -69,10 +69,10 @@ public class Serializer{
         Entity entity = null;
         switch(id){
             case PLAYER:
-                 entity = entityFactory.createPlayerEntity();
+                 entity = EntityFactory.getInstance().createPlayerEntity();
                 break;
             case BOX:
-                 entity = entityFactory.createBoxEntityTest();
+                 entity = EntityFactory.getInstance().createBoxEntityTest();
                  break;
         }
         for (Component component : entityWrapper.getEntitysMap().values()) {

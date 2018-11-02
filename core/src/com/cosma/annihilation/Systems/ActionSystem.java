@@ -23,7 +23,6 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     private World world;
     private PlayerComponent playerComponent;
     private PlayerGUI playerGUI;
-    private Entity processedEntity;
 
     public ActionSystem(World world) {
         super(Family.all(PlayerComponent.class).get(),11);
@@ -36,11 +35,12 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
         if(!playerComponent.collisionEntityList.isEmpty()) {
-            processedEntity = playerComponent.collisionEntityList.listIterator().next();
-            playerGUI.setDisplayedActionName(processedEntity.getComponent(ActionComponent.class).action);
+            playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
+
+            playerGUI.setDisplayedActionName(playerComponent.processedEntity.getComponent(ActionComponent.class).action);
         }
             else
-                processedEntity = null;
+                playerComponent.processedEntity = null;
                 playerGUI.setDisplayedActionName(ActionID.NOTHING);
     }
 
@@ -50,8 +50,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent event) {
-        if (event.equals(GameEvent.PERFORM_ACTION) && processedEntity != null) {
-            ActionID action = processedEntity.getComponent(ActionComponent.class).action;
+        if (event.equals(GameEvent.PERFORM_ACTION) && playerComponent.processedEntity != null) {
+            ActionID action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
 
             switch (action) {
                 case OPEN_DOOR:
@@ -65,9 +65,9 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     }
 
     private void openBoxAction(){
-        System.out.println(processedEntity.getComponent(ActionComponent.class).action);
-        if(processedEntity.getComponent(ContainerComponent.class).itemLocations.size>0){
-          playerGUI.showLootWindow(processedEntity);
+        System.out.println(playerComponent.processedEntity.getComponent(ActionComponent.class).action);
+        if(playerComponent.processedEntity.getComponent(ContainerComponent.class).itemLocations.size>0){
+          playerGUI.showLootWindow(playerComponent.processedEntity);
         }
     }
 }

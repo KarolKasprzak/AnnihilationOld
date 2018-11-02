@@ -16,6 +16,7 @@ public class PlayerComponent implements Component,Json.Serializable {
     public boolean weaponHidden = true;
     public ArrayList<Entity> collisionEntityList;
     public WeaponItem activeWeapon;
+    public Entity processedEntity;
 
     @Override
     public void write(Json json) {

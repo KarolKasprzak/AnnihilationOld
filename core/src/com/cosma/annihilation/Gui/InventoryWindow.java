@@ -105,7 +105,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         for( int i = 0; i < cells.size; i++){
             InventorySlot inventorySlot = (InventorySlot)cells.get(i).getActor();
             if( inventorySlot == null ) continue;
-            inventorySlot.clearAllInventoryItems();
+            inventorySlot.clearAllItems();
         }
     }
 

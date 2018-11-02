@@ -35,6 +35,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
         if(isGameLoaded){
             playerGUI.loadGame();
+
         }
     }
     private void runEngine(){
@@ -110,6 +111,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
     @Override
     public void dispose() {
+        world.dispose();
         for (EntitySystem entitySystem : engine.getSystems()) {
             engine.removeSystem(entitySystem);
 
