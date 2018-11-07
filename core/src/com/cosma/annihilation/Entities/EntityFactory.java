@@ -8,7 +8,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
-import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Utils.*;
 import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.BodyID;
@@ -23,29 +22,73 @@ public class EntityFactory {
     private static EntityFactory instance = null;
     private Engine engine;
     private World world;
+    private AssetLoader assetLoader;
 
-    public EntityFactory(World world, Engine engine) {
-        this.world = world;
+
+    private EntityFactory() {
+    }
+
+
+    public void setAssetLoader(AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
+    }
+
+    public void setEngine(Engine engine) {
+
         this.engine = engine;
     }
 
-    public EntityFactory() {
+    public void setWorld(World world) {
 
+        this.world = world;
     }
 
     public static EntityFactory getInstance() {
         if (instance == null) {
-            System.out.println("eror");
             instance = new EntityFactory();
         }
 
         return instance;
     }
 
+    public Entity createBulletEntity(float x, float y, float speed){
+        Entity entity = engine.createEntity();
+
+        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
+        Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
+        BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
+        BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+        bodyComponent.body = world.createBody(bodyDef);
+        bodyComponent.body.setUserData(entity);
+        bodyComponent.body.setBullet(true);
+        //Physic fixture
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(0.02f, 0.01f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 8f;
+        fixtureDef.friction = 1f;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET);
+
+        bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
+
+        bodyComponent.body.setLinearVelocity(speed,0.5f);
+        entity.add(bodyComponent);
+        entity.add(bulletComponent);
+
+        return entity;
+    }
+
+
 
     public Entity createBoxEntity(float x, float y, Array<InventoryItemLocation> itemList) {
         Entity entity = new Entity();
-        Texture mainTexture = (Texture) AssetsLoader.getResource("box");
+        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
         Box2DSprite box2DSprite = new Box2DSprite(mainTexture);
         //Component
         BodyComponent bodyComponent = new BodyComponent();
@@ -102,7 +145,7 @@ public class EntityFactory {
 
     public Entity createBoxEntityTest() {
         Entity entity = new Entity();
-        Texture mainTexture = (Texture) AssetsLoader.getResource("box");
+        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
         Box2DSprite box2DSprite = new Box2DSprite(mainTexture);
         //Component
         BodyComponent bodyComponent = new BodyComponent();

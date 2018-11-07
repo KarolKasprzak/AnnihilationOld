@@ -7,16 +7,18 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Systems.PlayerControlSystem;
+import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.World.WorldBuilder;
 
 public class GameScreen implements Screen, InputProcessor {
 
     private WorldBuilder worldBuilder;
     private InputMultiplexer im;
+    private AssetLoader assetLoader;
 
-    public GameScreen(Annihilation game) {
-
-        worldBuilder = new WorldBuilder(game.isGameLoaded());
+    public GameScreen(Annihilation game, AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
+        worldBuilder = new WorldBuilder(game.isGameLoaded(),assetLoader);
         im = new InputMultiplexer();
         im.addProcessor(worldBuilder.getPlayerHudStage());
         im.addProcessor(worldBuilder.getEngine().getSystem(PlayerControlSystem.class));

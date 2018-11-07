@@ -7,5 +7,6 @@ public enum  BodyID {
     GROUND,
     DESCENT_LADDER,
     LADDER,
-    CONTAINER
+    CONTAINER,
+    BULLET
 }

@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.LoaderOLD;
 
 
 public class MenuScreen implements Screen {
@@ -27,7 +27,7 @@ public class MenuScreen implements Screen {
 
 
     public MenuScreen(final Annihilation game){
-        Skin skin = (Skin) AssetsLoader.getResource("skin");
+        Skin skin = (Skin) LoaderOLD.getResource("skin");
         this.game = game;
         camera = new OrthographicCamera();
         camera.update();

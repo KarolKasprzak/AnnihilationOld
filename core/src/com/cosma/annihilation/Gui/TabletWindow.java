@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.LoaderOLD;
 import com.cosma.annihilation.Utils.Serialization.Serializer;
 
 public class TabletWindow extends Window {
@@ -25,7 +25,7 @@ public class TabletWindow extends Window {
 
     TabletWindow(String title, Skin skin,World world, Engine engine) {
         super(title, skin);
-        TextureRegionDrawable background = new TextureRegionDrawable(new TextureRegion((Texture) AssetsLoader.getResource("tablet")));
+        TextureRegionDrawable background = new TextureRegionDrawable(new TextureRegion((Texture) LoaderOLD.getResource("tablet")));
         this.setBackground(background);
         this.setFillParent(true);
         this.skin = skin;

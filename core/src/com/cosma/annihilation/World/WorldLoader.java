@@ -34,7 +34,9 @@ class WorldLoader {
         this.world = world;
         this.gameMap = gameMap;
         this.rayHandler = rayHandler;
-        entityFactory = new EntityFactory(world,engine);
+        EntityFactory.getInstance().setEngine(engine);
+        EntityFactory.getInstance().setWorld(world);
+        entityFactory = EntityFactory.getInstance();
         entityFactory.createPlayerEntity();
         //Get player entity
         loadMap();

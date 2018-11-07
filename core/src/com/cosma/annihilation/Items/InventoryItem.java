@@ -3,10 +3,9 @@ package com.cosma.annihilation.Items;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.LoaderOLD;
 
 
 public class InventoryItem extends Image {
@@ -74,7 +73,7 @@ public class InventoryItem extends Image {
     public InventoryItem(String textureName,ItemID itemID,int itemAttributes, int itemUseType, int itemValue,String itemName,boolean stackable,String itemShortDescription){
            this.textureName = textureName;
            this.itemID = itemID;
-           texture = (Texture)AssetsLoader.getResource(textureName);
+           texture = (Texture)LoaderOLD.getResource(textureName);
            this.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
            this.itemAttributes = itemAttributes;
            this.itemUseType = itemUseType;
@@ -91,7 +90,7 @@ public class InventoryItem extends Image {
         this.itemUseType = inventoryItem.getItemUseType();
         this.itemValue = inventoryItem.getItemValue();
         this.itemName = inventoryItem.getItemName();
-        texture = (Texture)AssetsLoader.getResource(textureName);
+        texture = (Texture)LoaderOLD.getResource(textureName);
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
         this.stackable = inventoryItem.isStackable();
         this.itemShortDescription = inventoryItem.getItemShortDescription();

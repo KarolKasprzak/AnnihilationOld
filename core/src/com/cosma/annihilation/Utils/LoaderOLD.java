@@ -1,6 +1,7 @@
 package com.cosma.annihilation.Utils;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.HashMap;
 
-public class AssetsLoader {
+public class LoaderOLD {
 
     public  static final AssetManager manager = new AssetManager();
     private static HashMap<String, AssetsHelper> files;

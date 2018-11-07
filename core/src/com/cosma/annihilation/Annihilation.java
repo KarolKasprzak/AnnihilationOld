@@ -4,11 +4,11 @@ import com.badlogic.gdx.Game;
 import com.cosma.annihilation.Screens.GameScreen;
 import com.cosma.annihilation.Screens.MenuScreen;
 import com.cosma.annihilation.Utils.AssetLoader;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.LoaderOLD;
 
 public class Annihilation extends Game {
 
-    private AssetsLoader assetsLoader;
+    private LoaderOLD loaderOLD;
     private AssetLoader assetLoader;
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
@@ -16,21 +16,23 @@ public class Annihilation extends Game {
 
     public Annihilation() {
         super();
-        assetsLoader = new AssetsLoader();
+        loaderOLD = new LoaderOLD();
         assetLoader = new AssetLoader();
     }
 
     @Override
     public void create() {
         isGameLoaded = false;
-        assetsLoader.load();
+        loaderOLD.load();
+        assetLoader.load();
         menuScreen = new MenuScreen(this);
         this.setScreen(menuScreen);
     }
 
     @Override
     public void dispose() {
-        assetsLoader.dispose();
+        loaderOLD.dispose();
+        assetLoader.dispose();
         menuScreen.dispose();
         if(gameScreen != null){
             gameScreen.dispose();
@@ -38,7 +40,7 @@ public class Annihilation extends Game {
     }
 
     public void setGameScreen() {
-        gameScreen = new GameScreen(this);
+        gameScreen = new GameScreen(this, assetLoader);
         this.setScreen(gameScreen);
     }
 

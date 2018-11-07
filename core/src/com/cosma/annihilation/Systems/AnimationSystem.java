@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -13,9 +12,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Utils.AssetsLoader;
-import com.cosma.annihilation.Utils.Constants;
-import com.cosma.annihilation.Utils.StateManager;
+import com.cosma.annihilation.Utils.*;
 import net.dermetfan.gdx.graphics.g2d.AnimatedBox2DSprite;
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
@@ -25,6 +22,7 @@ public class AnimationSystem extends IteratingSystem {
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private Body playerBody;
+    private AssetLoader assetLoader;
     AnimatedBox2DSprite animatedBox2DSprite;
     AnimatedBox2DSprite animatedBox2DSprite1;
     AnimatedSprite playerWalkSpriteAnim;
@@ -39,12 +37,14 @@ public class AnimationSystem extends IteratingSystem {
     TextureAtlas textureAtlas1;
     TextureAtlas textureAtlas2;
     private PlayerComponent playerComponent;
-    public AnimationSystem() {
+
+    public AnimationSystem(AssetLoader assetLoader) {
         super(Family.all(PlayerComponent.class).get(), Constants.ANIMATION);
-        textureAtlas1 = (TextureAtlas) AssetsLoader.getResource("player_move");
-        textureAtlas2 = (TextureAtlas) AssetsLoader.getResource("player_move_start");
-        playerStand = (Texture) AssetsLoader.getResource("player_stand");
-        playerWeaponStand = (Texture) AssetsLoader.getResource("player_weapon");
+        this.assetLoader = assetLoader;
+        textureAtlas1 = (TextureAtlas) LoaderOLD.getResource("player_move");
+        textureAtlas2 = (TextureAtlas) LoaderOLD.getResource("player_move_start");
+        playerStand = (Texture) LoaderOLD.getResource("player_stand");
+        playerWeaponStand = (Texture) LoaderOLD.getResource("player_weapon");
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
 

@@ -13,7 +13,7 @@ import com.cosma.annihilation.Gui.Inventory.*;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.LoaderOLD;
 
 
 public class InventoryWindow extends Window implements InventorySlotObserver {
@@ -59,7 +59,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         InventorySlot bodyInventorySlot = new InventorySlot();
         InventorySlot legsInventorySlot = new InventorySlot();
 
-        weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE.getValue(), new Image((Texture) AssetsLoader.getResource("stack_default")));
+        weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE.getValue(), new Image((Texture) LoaderOLD.getResource("stack_default")));
         weaponInventorySlot.register(this);
 
         InventorySlot rightInventorySlot = new InventorySlot();

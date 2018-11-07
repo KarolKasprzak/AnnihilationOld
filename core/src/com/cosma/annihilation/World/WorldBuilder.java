@@ -12,9 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Systems.*;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 
 public class WorldBuilder implements Disposable, EntityListener {
@@ -27,13 +29,17 @@ public class WorldBuilder implements Disposable, EntityListener {
     private TiledMap tiledMap;
     private RayHandler rayHandler;
     private PlayerGUI playerGUI;
+    private AssetLoader assetLoader;
 
-        public WorldBuilder(Boolean isGameLoaded){
+    public WorldBuilder(Boolean isGameLoaded, AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
         runEngine();
+        EntityFactory.getInstance().setAssetLoader(assetLoader);
         new WorldLoader(engine, world, tiledMap, rayHandler);
-        playerGUI = new PlayerGUI(engine,world);
+        playerGUI = new PlayerGUI(engine, world);
         engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
-        if(isGameLoaded){
+        engine.addEntityListener(this);
+        if (isGameLoaded) {
             playerGUI.loadGame();
 
         }
@@ -45,7 +51,8 @@ public class WorldBuilder implements Disposable, EntityListener {
         viewport.apply(true);
         camera.update();
 
-        tiledMap = AssetsLoader.manager.get("Map/2/map1.tmx", TiledMap.class);
+        tiledMap = assetLoader.manager.get(GfxAssetDescriptors.tiledMap);
+//        tiledMap = LoaderOLD.manager.get("Map/2/map1.tmx", TiledMap.class);
 
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
         engine = new PooledEngine();
@@ -58,12 +65,12 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
-        engine.addSystem(new AnimationSystem());
+        engine.addSystem(new AnimationSystem(assetLoader));
         engine.addSystem(new HealthSystem());
         engine.addSystem(lightRenderSystem);
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new ActionSystem(world));
-        engine.addSystem(new ShootingSystem(world));
+        engine.addSystem(new ShootingSystem(world,assetLoader));
     }
 
     public void update(float delta) {

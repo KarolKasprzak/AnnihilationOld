@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Items.InventoryItem;
-import com.cosma.annihilation.Utils.AssetsLoader;
+import com.cosma.annihilation.Utils.LoaderOLD;
 
 public class InventorySlot extends Stack implements InventorySlotObservable{
     private int itemsAmount = 0;
@@ -25,7 +25,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
 
         stack = new Stack();
         backgroundImage = new Image();
-        Image backgroundImageStandard = new Image( (Texture) AssetsLoader.getResource("stack_default"));
+        Image backgroundImageStandard = new Image( (Texture) LoaderOLD.getResource("stack_default"));
         stack.add(backgroundImageStandard);
         stack.setName("background");
         this.add(stack);
