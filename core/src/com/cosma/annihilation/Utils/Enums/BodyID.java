@@ -8,5 +8,6 @@ public enum  BodyID {
     DESCENT_LADDER,
     LADDER,
     CONTAINER,
-    BULLET
+    BULLET,
+    BULLET_SHELL
 }

@@ -37,7 +37,6 @@ public class TabletWindow extends Window {
 
         inventoryWindow = new InventoryWindow("",skin,engine);
         inventoryWindow.setVisible(false);
-
         menuWindow = new MenuWindow("",skin,this);
         menuWindow.setVisible(false);
 
@@ -51,6 +50,7 @@ public class TabletWindow extends Window {
         windowTable = new Table();
 
         VerticalGroup verticalGroup = new VerticalGroup();
+
         verticalGroup.addActor(inventoryButton);
         verticalGroup.addActor(menuButton);
         verticalGroup.addActor(exitButton);

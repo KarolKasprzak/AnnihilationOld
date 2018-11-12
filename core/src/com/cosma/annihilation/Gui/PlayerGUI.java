@@ -29,6 +29,7 @@ import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.StateManager;
+import com.cosma.annihilation.Utils.Utilities;
 
 public class PlayerGUI implements Screen {
     private Stage stage;
@@ -76,7 +77,10 @@ public class PlayerGUI implements Screen {
         createTabletWindow();
 
         containerWindow = new ContainerWindow("",skin,4,engine);
+        containerWindow.setSize(Utilities.setWindowWidth(0.5f),Utilities.setWindowHeight(0.5f));
         containerWindow.setVisible(false);
+        containerWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.5f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.5f)/2));
+        stage.addActor(containerWindow);
     }
 
     private void createTabletWindow(){
@@ -216,11 +220,8 @@ public class PlayerGUI implements Screen {
 
 
     public void showLootWindow(Entity entity){
-              System.out.println("open box");
               containerWindow.setVisible(true);
-              containerWindow.setSize(500,500);
               InventoryWindow.fillInventory(containerWindow.containerSlotsTable,entity.getComponent(ContainerComponent.class).itemLocations,containerWindow.dragAndDrop);
-              stage.addActor(containerWindow);
     }
 
     public void setDisplayedActionName(ActionID actionID) {

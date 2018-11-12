@@ -46,11 +46,15 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private void weaponShoot(){
         if(playerComponent.activeWeapon != null && !playerComponent.weaponHidden){
-            System.out.println("shoot for " + playerComponent.activeWeapon.getDamage());
-            EntityFactory.getInstance().createBulletEntity(body.getPosition().x+1.2f,body.getPosition().y,25);
-            Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
-            sound.play();
-            System.out.println(getEngine().getEntities().size());
+            if(playerComponent.weaponReady){
+                System.out.println("shoot for " + playerComponent.activeWeapon.getDamage());
+                EntityFactory.getInstance().createBulletEntity(body.getPosition().x+1.1f,body.getPosition().y+0.63f,20);
+                EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x+0.7f,body.getPosition().y+0.63f);
+                Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
+                sound.play();
+            }else{
+                playerComponent.weaponReady = true;
+            }
         }
     }
 

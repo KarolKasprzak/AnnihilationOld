@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Utils.LoaderOLD;
+import com.cosma.annihilation.Utils.Utilities;
 
 
 public class MenuScreen implements Screen {
@@ -43,19 +44,19 @@ public class MenuScreen implements Screen {
 
         TextButton continueGameButton = new TextButton("Continue", skin);
         checkSaveFileExist(continueGameButton);
-        table.add(continueGameButton).size(getButtonWidth(2),getButtonHeight(2));
+        table.add(continueGameButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
         table.row();
 
         TextButton newGameButton = new TextButton("New Game", skin);
-        table.add(newGameButton).size(getButtonWidth(2),getButtonHeight(2));
+        table.add(newGameButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
         table.row();
 
         TextButton optionsButton = new TextButton("Options", skin);
-        table.add(optionsButton).size(getButtonWidth(2),getButtonHeight(2));
+        table.add(optionsButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
         table.row();
 
         TextButton exitGameButton = new TextButton("Exit", skin);
-        table.add(exitGameButton).size(getButtonWidth(2),getButtonHeight(2));
+        table.add(exitGameButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
 
         exitGameButton.addListener(new InputListener(){
 
@@ -126,18 +127,7 @@ public class MenuScreen implements Screen {
         stage.dispose();
     }
 
-    private float getButtonWidth(float scale){
-        float screenWidth = Gdx.app.getGraphics().getWidth();
-        System.out.println(screenWidth);
-        float size = (screenWidth/12.8f)*scale;
-        return size;
-    }
 
-    private float getButtonHeight(float scale){
-        float screenWidth = Gdx.graphics.getHeight();
-        float size = (screenWidth/24)*scale;
-        return size;
-    }
 
     private void checkSaveFileExist(Button button){
         button.setVisible(false);

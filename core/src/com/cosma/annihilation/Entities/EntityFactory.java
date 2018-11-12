@@ -56,6 +56,7 @@ public class EntityFactory {
 
         Texture mainTexture = (Texture) LoaderOLD.getResource("box");
         Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
+        box2DSprite.setScale(12,2);
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 
@@ -83,6 +84,38 @@ public class EntityFactory {
 
         return entity;
     }
+
+    public Entity createBulletShellEntity(float x, float y){
+        Entity entity = engine.createEntity();
+
+        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
+        Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletShell));
+        BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
+        BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+        bodyComponent.body = world.createBody(bodyDef);
+        bodyComponent.body.setUserData(entity);
+        bodyComponent.body.setBullet(true);
+        //Physic fixture
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(0.02f, 0.01f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 8f;
+        fixtureDef.friction = 1f;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET_SHELL);
+
+        bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
+        entity.add(bodyComponent);
+        entity.add(bulletComponent);
+
+        return entity;
+    }
+
 
 
 

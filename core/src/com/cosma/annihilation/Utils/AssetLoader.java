@@ -17,7 +17,9 @@ public class AssetLoader {
     public void load() {
         manager.load(GfxAssetDescriptors.box);
         manager.load(SfxAssetDescriptors.pistolSound);
+        manager.load(GfxAssetDescriptors.bulletShell);
         manager.load(GfxAssetDescriptors.bulletTrace);
+        manager.load(GfxPlayerAssetDescriptors.player_stand_pistol);
 
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load(GfxAssetDescriptors.tiledMap);

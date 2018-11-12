@@ -27,6 +27,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     private Filter goTroughFilter;
     private Filter normalFilter;
     public Array<Body> bodiesToRemove;
+    public Array<Body> bodiesToPeriodRemove;
 
     public CollisionSystem(World world) {
         super(Family.all(PlayerComponent.class).get());
@@ -41,6 +42,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         normalFilter = new Filter();
         normalFilter.categoryBits = CollisionID.NO_SHADOW;
         bodiesToRemove = new Array<Body>();
+        bodiesToPeriodRemove = new Array<Body>();
     }
 
     @Override
@@ -82,6 +84,18 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
                playerBody.getFixtureList().get(0).setFilterData(normalFilter);
            }
+
+//        if(bodiesToPeriodRemove.size > 0 && !world.isLocked()){
+//            for(final Body body: getEngine().getSystem(CollisionSystem.class).bodiesToPeriodRemove){
+//                Timer.schedule(new Timer.Task() {
+//                    @Override
+//                    public void run() {
+//                        world.destroyBody(body);
+//                    }
+//                }, 2);
+//               bodiesToPeriodRemove.removeValue(body,true);
+//            }
+//        }
        }
 
 
@@ -97,6 +111,21 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         addEntityToActionList(fa, fb);
 
+        //Bullet shell contact
+        if(fa.getUserData() == BodyID.BULLET_SHELL ){
+            if (!bodiesToPeriodRemove.contains(fa.getBody(),true)){
+                bodiesToPeriodRemove.add(fa.getBody());
+                getEngine().removeEntity((Entity) fa.getBody().getUserData());
+            }
+        }
+
+        if(fb.getUserData() == BodyID.BULLET_SHELL){
+            if (!bodiesToPeriodRemove.contains(fb.getBody(),true)){
+                bodiesToPeriodRemove.add(fb.getBody());
+                getEngine().removeEntity((Entity) fb.getBody().getUserData());
+            }
+        }
+        //Bullet contact
         if(fa.getUserData() == BodyID.BULLET ){
             if (!bodiesToRemove.contains(fa.getBody(),true)){
                 bodiesToRemove.add(fa.getBody());
@@ -110,7 +139,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 getEngine().removeEntity((Entity) fb.getBody().getUserData());
             }
         }
-
+        //Player ground contact
         if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
             player.getComponent(PlayerComponent.class).numFootContacts++;
         }
@@ -215,6 +244,17 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             }
         }, delay);
     }
+
+    private void removeBodyAfterTime(float delay, final Body body){
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                    world.destroyBody(body);
+            }
+        }, delay);
+    }
+
+
 
     private void addEntityToActionList(Fixture fa, Fixture fb){
         if(fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY  || fb.getUserData() == BodyID.CONTAINER &&  fa.getUserData() == BodyID.PLAYER_BODY){

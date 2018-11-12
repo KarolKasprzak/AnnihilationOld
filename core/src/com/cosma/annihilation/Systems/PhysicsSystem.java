@@ -38,21 +38,12 @@ public class PhysicsSystem extends IteratingSystem {
         if(accumulator >= MAX_STEP_TIME &! StateManager.pause) {
             world.step(MAX_STEP_TIME, 6, 2);
             accumulator -= MAX_STEP_TIME;
-            if(getEngine().getSystem(CollisionSystem.class).bodiesToRemove.size > 6 && !world.isLocked()){
+            if(getEngine().getSystem(CollisionSystem.class).bodiesToRemove.size > 0 && !world.isLocked()){
                 System.out.println(getEngine().getSystem(CollisionSystem.class).bodiesToRemove.size);
                 for(Body body: getEngine().getSystem(CollisionSystem.class).bodiesToRemove){
                     world.destroyBody(body);
                     getEngine().getSystem(CollisionSystem.class).bodiesToRemove.removeValue(body,true);
                 }
-
-
-//                for(int i = 0; i >= getEngine().getSystem(CollisionSystem.class).bodiesToRemove.size; i++  )
-//                {
-//                    System.out.println(i);
-//                    world.destroyBody(getEngine().getSystem(CollisionSystem.class).bodiesToRemove.get(i));
-//                    getEngine().getSystem(CollisionSystem.class).bodiesToRemove.removeIndex(i);
-//
-//                }
             }
 
         }

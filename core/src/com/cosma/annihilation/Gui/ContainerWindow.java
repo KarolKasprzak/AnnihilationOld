@@ -14,6 +14,7 @@ import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Gui.Inventory.InventorySlot;
 import com.cosma.annihilation.Gui.Inventory.InventorySlotTarget;
 import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Utils.Utilities;
 
 
 class ContainerWindow extends Window {
@@ -103,14 +104,14 @@ class ContainerWindow extends Window {
             InventorySlot inventorySlot = new InventorySlot();
             inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
-            containerSlotsTable.add(inventorySlot).size(50, 50).pad(2);
+            containerSlotsTable.add(inventorySlot).size(Utilities.setWindowWidth(0.08f), Utilities.setWindowHeight(0.08f)).pad(2);
             if (i == 6 || i == 12 || i == 18) containerSlotsTable.row();
         }
 
-        this.add(containerSlotsTable).center().fillX().colspan(2);
+        this.add(containerSlotsTable).center().fillX().colspan(2).pad(80);
         this.row();
-        this.add(takeAllButton).bottom().center().size(150, 50);
-        this.add(closeButton).bottom().center().size(150, 50);
+        this.add(takeAllButton).bottom().center().size(Utilities.getButtonWidth(2), Utilities.getButtonHeight(2));
+        this.add(closeButton).bottom().center().size(Utilities.getButtonWidth(2), Utilities.getButtonHeight(2));
         closeButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
