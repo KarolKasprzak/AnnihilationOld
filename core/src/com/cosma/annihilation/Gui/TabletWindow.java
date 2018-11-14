@@ -1,6 +1,7 @@
 package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.World;
@@ -15,7 +16,7 @@ public class TabletWindow extends Window {
 
     private Skin skin;
     private InventoryWindow inventoryWindow;
-    private MenuWindow menuWindow;
+    private OptionsMenuWindow optionsMenuWindow;
     private Table windowTable;
     private TextButton exitButton;
     private TextButton inventoryButton;
@@ -37,8 +38,8 @@ public class TabletWindow extends Window {
 
         inventoryWindow = new InventoryWindow("",skin,engine);
         inventoryWindow.setVisible(false);
-        menuWindow = new MenuWindow("",skin,this);
-        menuWindow.setVisible(false);
+        optionsMenuWindow = new OptionsMenuWindow("",skin,this);
+        optionsMenuWindow.setVisible(false);
 
         createButtons(this);
         addButtonsAction();
@@ -48,6 +49,11 @@ public class TabletWindow extends Window {
         this.add(screenTable);
 
         windowTable = new Table();
+        BackgroundColor backgroundColor = new BackgroundColor("white_color_texture.png");
+        backgroundColor.setColor(2, 179, 228, 255);
+        windowTable.setBackground(backgroundColor);
+
+
 
         VerticalGroup verticalGroup = new VerticalGroup();
 
@@ -55,12 +61,15 @@ public class TabletWindow extends Window {
         verticalGroup.addActor(menuButton);
         verticalGroup.addActor(exitButton);
 
-        screenTable.add(windowTable).size(800,700);
-        screenTable.add(verticalGroup);
+        this.add(windowTable).size(Gdx.graphics.getWidth()*0.67f,Gdx.graphics.getHeight()*0.59f)
+                .padLeft(Gdx.graphics.getWidth()*0.065f).padRight(Gdx.graphics.getWidth()*0.265f).padBottom(Gdx.graphics.getHeight()*0.065f);
+
+       screenTable.add(verticalGroup);
     }
 
     private void createButtons(final TabletWindow menu){
         exitButton = new TextButton("Exit",skin);
+        exitButton.getLabel().setColor(0,82,0,255);
 
         menuButton = new TextButton("Menu", skin);
 
@@ -91,7 +100,7 @@ public class TabletWindow extends Window {
         menuButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-             clearAndAddWindow(menuWindow);
+             clearAndAddWindow(optionsMenuWindow);
                 return true;
             }
         });

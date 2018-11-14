@@ -9,7 +9,7 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> box = new AssetDescriptor<Texture>("box.png", Texture.class);
     public static final AssetDescriptor<Texture> bulletShell = new AssetDescriptor<Texture>("gfx/effect/bullet.png", Texture.class);
     public static final AssetDescriptor<Texture> bulletTrace = new AssetDescriptor<Texture>("gfx/effect/bullet_trace.png", Texture.class);
-    public static final AssetDescriptor<Skin> skin = new AssetDescriptor<Skin>("interface/comadore/uiskin.json", Skin.class);
+    public static final AssetDescriptor<Skin> skin = new AssetDescriptor<Skin>("interface/retro_pc/uiskin.json", Skin.class);
     public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("Map/2/map1.tmx", TiledMap.class);
     private GfxAssetDescriptors(){}
 }

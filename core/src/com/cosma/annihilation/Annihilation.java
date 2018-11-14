@@ -25,7 +25,7 @@ public class Annihilation extends Game {
         isGameLoaded = false;
         loaderOLD.load();
         assetLoader.load();
-        menuScreen = new MenuScreen(this);
+        menuScreen = new MenuScreen(this,assetLoader);
         this.setScreen(menuScreen);
     }
 

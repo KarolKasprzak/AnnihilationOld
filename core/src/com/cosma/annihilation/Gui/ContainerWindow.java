@@ -26,8 +26,10 @@ class ContainerWindow extends Window {
     private ContainerWindow containerWindow;
     private ActorGestureListener listener;
     private Engine engine;
+    private Skin skin;
     ContainerWindow(String title, Skin skin, int itemSlotNumber, final Engine engine) {
         super(title, skin);
+        this.skin = skin;
         this.itemSlotNumber = itemSlotNumber;
         this.engine = engine;
 

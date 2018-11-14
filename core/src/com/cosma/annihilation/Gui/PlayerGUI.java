@@ -26,8 +26,10 @@ import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
+import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.Utils.Utilities;
 
@@ -44,7 +46,6 @@ public class PlayerGUI implements Screen {
     private ImageButton actionButtonRight;
     private TextButton debugButton;
     private TextButton menuButton;
-    private TabletWindow tabletWindow;
     private ProgressBar healthBar;
     private Engine engine;
     private Entity player;
@@ -52,14 +53,16 @@ public class PlayerGUI implements Screen {
     private Signal<GameEvent> signal;
     private Label actionNameDisplayed;
     private ContainerWindow containerWindow;
-
+    private AssetLoader assetLoader;
+    private MenuWindow menuWindow;
     private boolean rightUpButtonPressed = false;
 
 
-    public  PlayerGUI(Engine engine,World world){
+    public  PlayerGUI(Engine engine,World world,AssetLoader assetLoader){
         this.world = world;
         this.engine = engine;
-        skin = StateManager.skin;
+        this.assetLoader = assetLoader;
+        skin = assetLoader.manager.get(GfxAssetDescriptors.skin);
         signal = new Signal<GameEvent>();
         signal.add(engine.getSystem(ActionSystem.class));
         signal.add(engine.getSystem(ShootingSystem.class));
@@ -74,7 +77,7 @@ public class PlayerGUI implements Screen {
         actionButtonController();
 
         createHUD();
-        createTabletWindow();
+        createMenuWindow();
 
         containerWindow = new ContainerWindow("",skin,4,engine);
         containerWindow.setSize(Utilities.setWindowWidth(0.5f),Utilities.setWindowHeight(0.5f));
@@ -83,15 +86,17 @@ public class PlayerGUI implements Screen {
         stage.addActor(containerWindow);
     }
 
-    private void createTabletWindow(){
-        tabletWindow = new TabletWindow("", skin,world,engine);
-        tabletWindow.setMovable(false);
-        tabletWindow.setVisible(false);
-        stage.addActor(tabletWindow);
+    private void createMenuWindow(){
+        menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.8f),Utilities.setWindowHeight(0.5f));
+//        menuWindow.setSize(Utilities.setWindowWidth(0.8f),Utilities.setWindowHeight(0.5f));
+        menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.8f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.5f)/2));
+        menuWindow.setMovable(true);
+        menuWindow.setVisible(false);
+        stage.addActor(menuWindow);
     }
 
     public void loadGame(){
-        tabletWindow.loadGame();
+        menuWindow.loadGame();
     }
 
 
@@ -248,17 +253,19 @@ public class PlayerGUI implements Screen {
         stage.addActor(bTable);
 
         menuButton = new TextButton("Menu", skin);
+        Utilities.setButtonColor(menuButton);
         menuButton.addListener(new InputListener(){
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if(!tabletWindow.isVisible()){
-                   tabletWindow.setVisible(true);
+                if(!menuWindow.isVisible()){
+                   menuWindow.setVisible(true);
                 }
                 return true;
             }
         });
         debugButton = new TextButton("Debug mode ", skin);
+        Utilities.setButtonColor(debugButton);
 
         debugButton.addListener(new ChangeListener() {
             @Override
@@ -275,9 +282,9 @@ public class PlayerGUI implements Screen {
 
         });
 
-        table.add(debugButton).padTop(10).padLeft(10).left().width(150).height(50);
+        table.add(debugButton).padTop(10).padLeft(10).left().width(180).height(50);
         table.add(actionNameDisplayed).center().expandX();;
-        table.add(menuButton).padTop(10).padRight(10).right().width(150).height(50);
+        table.add(menuButton).padTop(10).padRight(10).right().width(180).height(50);
         table.row();
         table.add(fpsLabel).padTop(10).padLeft(10).left().width(150).height(50);
         table.row();
@@ -306,6 +313,7 @@ public class PlayerGUI implements Screen {
     float fpss = Gdx.graphics.getFramesPerSecond();
     fpsNumber = Float.toString(fpss);
     fpsLabel.setText(fpsNumber);
+    fpsLabel.setColor(0,82,0,255);
     stage.act(delta);
     stage.draw();
     }

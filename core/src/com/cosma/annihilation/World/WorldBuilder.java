@@ -36,7 +36,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         runEngine();
         EntityFactory.getInstance().setAssetLoader(assetLoader);
         new WorldLoader(engine, world, tiledMap, rayHandler);
-        playerGUI = new PlayerGUI(engine, world);
+        playerGUI = new PlayerGUI(engine, world,assetLoader);
         engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
         engine.addEntityListener(this);
         if (isGameLoaded) {

@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.cosma.annihilation.Annihilation;
+
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override
@@ -13,6 +13,8 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.hideStatusBar = true;
 		config.useImmersiveMode = true;
+		config.useAccelerometer = false;
+		config.useGyroscope = false;
 		initialize(new Annihilation(), config);
 	}
 }

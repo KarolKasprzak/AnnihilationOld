@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.LoaderOLD;
+import com.cosma.annihilation.Utils.StateManager;
 
 public class InventorySlot extends Stack implements InventorySlotObservable{
     private int itemsAmount = 0;
@@ -29,9 +30,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
         stack.add(backgroundImageStandard);
         stack.setName("background");
         this.add(stack);
-        Skin skin = new Skin(Gdx.files.internal("interface/skin/pixthulhu-ui.json"));
-
-        itemsAmountLabel = new Label(String.valueOf(itemsAmount),skin);
+        itemsAmountLabel = new Label(String.valueOf(itemsAmount),StateManager.skin);
         itemsAmountLabel.setFontScale(0.5f);
         itemsAmountLabel.setAlignment(Align.bottomRight);
         itemsAmountLabel.setVisible(false);
@@ -45,7 +44,6 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
         this.itemTypeFilter = itemTypeFilter;
         this.backgroundImage = backgroundImage;
         stack.add(backgroundImage);
-
     }
 
     public boolean doesAcceptItemUseType(int itemType){
