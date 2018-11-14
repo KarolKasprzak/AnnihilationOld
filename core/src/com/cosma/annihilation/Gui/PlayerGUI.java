@@ -88,7 +88,6 @@ public class PlayerGUI implements Screen {
 
     private void createMenuWindow(){
         menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.8f),Utilities.setWindowHeight(0.5f));
-//        menuWindow.setSize(Utilities.setWindowWidth(0.8f),Utilities.setWindowHeight(0.5f));
         menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.8f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.5f)/2));
         menuWindow.setMovable(true);
         menuWindow.setVisible(false);
@@ -125,13 +124,6 @@ public class PlayerGUI implements Screen {
         actionButtonRightDown.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                InventoryItemLocation inventoryItemLocation = new InventoryItemLocation();
-                inventoryItemLocation.setItemID(InventoryItem.ItemID.MP44.toString());
-                inventoryItemLocation.setItemsAmount(1);
-                inventoryItemLocation.setTableIndex(2);
-                System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size);
-                engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.add(inventoryItemLocation);
-                System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size);
                 StateManager.goUp = true;
                 return true;
             }

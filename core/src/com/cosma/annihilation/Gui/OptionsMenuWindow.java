@@ -11,17 +11,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.cosma.annihilation.Utils.Serialization.Serializer;
 
 class OptionsMenuWindow extends Window {
-    private TabletWindow tabletWindow;
+    private MenuWindow menuWindow;
     private TextButton saveButton;
     private TextButton loadButton;
     private TextButton exitButton;
     private TextButton pauseButton;
     private Skin skin;
 
-    OptionsMenuWindow(String title, Skin skin, TabletWindow tabletWindow) {
+    OptionsMenuWindow(String title, Skin skin, MenuWindow menuWindow) {
         super(title, skin);
         this.skin = skin;
-        this.tabletWindow = tabletWindow;
+        this.menuWindow = menuWindow;
 
         addButtons();
         addAction();
@@ -47,7 +47,7 @@ class OptionsMenuWindow extends Window {
         saveButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                tabletWindow.saveGame();
+                menuWindow.saveGame();
                 return true;
             }
         });
@@ -55,7 +55,7 @@ class OptionsMenuWindow extends Window {
         loadButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                tabletWindow.loadGame();
+                menuWindow.loadGame();
                 return true;
             }
         });
