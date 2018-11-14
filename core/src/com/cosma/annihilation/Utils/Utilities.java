@@ -11,14 +11,14 @@ public class Utilities {
     }
 
     public static float setWindowHeight(float scale){
-        return (Gdx.app.getGraphics().getWidth())*scale;
+        return (Gdx.app.getGraphics().getHeight())*scale;
     }
 
-    public static float getButtonWidth(float scale){
+    public static float setButtonWidth(float scale){
         return (Gdx.app.getGraphics().getWidth()/12.8f)*scale;
     }
 
-    public static float getButtonHeight(float scale){
+    public static float setButtonHeight(float scale){
         return (Gdx.graphics.getHeight()/24)*scale;
     }
 

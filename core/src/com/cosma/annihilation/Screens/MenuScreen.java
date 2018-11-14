@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.LoaderOLD;
 import com.cosma.annihilation.Utils.Utilities;
 
 
@@ -48,22 +47,22 @@ public class MenuScreen implements Screen {
         TextButton continueGameButton = new TextButton("Continue", skin);
         Utilities.setButtonColor(continueGameButton);
         checkSaveFileExist(continueGameButton);
-        table.add(continueGameButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
+        table.add(continueGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
         table.row();
 
         TextButton newGameButton = new TextButton("New Game", skin);
         Utilities.setButtonColor(newGameButton);
-        table.add(newGameButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
+        table.add(newGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
         table.row();
 
         TextButton optionsButton = new TextButton("Options", skin);
         Utilities.setButtonColor(optionsButton);
-        table.add(optionsButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
+        table.add(optionsButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
         table.row();
 
         TextButton exitGameButton = new TextButton("Exit", skin);
         Utilities.setButtonColor(exitGameButton);
-        table.add(exitGameButton).size(Utilities.getButtonWidth(2.2f),Utilities.getButtonHeight(2.2f));
+        table.add(exitGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
 
         exitGameButton.addListener(new InputListener(){
 

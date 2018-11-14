@@ -23,7 +23,7 @@ public class LoaderOLD {
         files.put("bullet", new AssetsHelper("gfx/bullet/bullet.png", Texture.class));
         files.put("ladder", new AssetsHelper("gfx/map_util/ladders_wood.png", Texture.class));
         files.put("ladder2", new AssetsHelper("tiles/ladder_mid.png", Texture.class));
-        files.put("box", new AssetsHelper("box.png", Texture.class));
+        files.put("box", new AssetsHelper("gfx/box.png", Texture.class));
         files.put("pl_1", new AssetsHelper("character/player_front1.png", Texture.class));
         files.put("pl_2", new AssetsHelper("character/player_front2.png", Texture.class));
         files.put("pl_3", new AssetsHelper("character/player_front3.png", Texture.class));

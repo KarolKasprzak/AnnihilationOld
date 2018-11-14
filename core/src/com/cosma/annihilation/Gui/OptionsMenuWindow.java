@@ -1,14 +1,12 @@
 package com.cosma.annihilation.Gui;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.cosma.annihilation.Utils.Serialization.Serializer;
+import com.cosma.annihilation.Utils.Utilities;
 
 class OptionsMenuWindow extends Window {
     private MenuWindow menuWindow;
@@ -30,15 +28,18 @@ class OptionsMenuWindow extends Window {
     private void addButtons(){
 
         saveButton = new TextButton("save",skin);
-        this.add(saveButton).size(150,50);
+        Utilities.setButtonColor(saveButton);
+        this.add(saveButton).size(Utilities.setButtonWidth(1.8f),Utilities.setButtonHeight(1.8f));
         this.row();
 
         loadButton = new TextButton("load",skin);
-        this.add(loadButton).size(150,50);
+        Utilities.setButtonColor(loadButton);
+        this.add(loadButton).size(Utilities.setButtonWidth(1.8f),Utilities.setButtonHeight(1.8f));
         this.row();
 
         exitButton = new TextButton("Exit game",skin);
-        this.add(exitButton).size(150,50);
+        Utilities.setButtonColor(exitButton);
+        this.add(exitButton).size(Utilities.setButtonWidth(1.8f),Utilities.setButtonHeight(1.8f));
         this.row();
     }
 

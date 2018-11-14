@@ -112,8 +112,8 @@ class ContainerWindow extends Window {
 
         this.add(containerSlotsTable).center().fillX().colspan(2).pad(80);
         this.row();
-        this.add(takeAllButton).bottom().center().size(Utilities.getButtonWidth(2), Utilities.getButtonHeight(2));
-        this.add(closeButton).bottom().center().size(Utilities.getButtonWidth(2), Utilities.getButtonHeight(2));
+        this.add(takeAllButton).bottom().center().size(Utilities.setButtonWidth(2), Utilities.setButtonHeight(2));
+        this.add(closeButton).bottom().center().size(Utilities.setButtonWidth(2), Utilities.setButtonHeight(2));
         closeButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

@@ -2,6 +2,7 @@ package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -18,42 +19,41 @@ public class MenuWindow extends Window {
     private TextButton inventoryButton;
     private TextButton menuButton;
     private TextButton characterButton;
-
+    private PlayerGUI playerGUI;
     private Engine engine;
     private Serializer serializer;
 
-    MenuWindow(String title, Skin skin, World world, Engine engine,float x , float y ) {
+    MenuWindow(String title, Skin skin, World world, Engine engine,float x , float y, PlayerGUI playerGUI) {
         super(title, skin);
-        this.setFillParent(false);
+
+        this.playerGUI = playerGUI;
         this.skin = skin;
         this.setVisible(false);
         this.engine = engine;
         this.getTitleLabel().setColor(0,82,0,255);
         this.getTitleLabel().setFontScale(0.8f);
-        this.debugTable();
         this.setSize(x,y);
-
-        windowTable = new Table();
-        this.add(windowTable).center().size(this.getWidth()*0.95f ,this.getHeight()*0.91f);
-
-        inventoryWindow = new InventoryWindow("",skin,engine);
-        inventoryWindow.setVisible(false);
-
-        optionsMenuWindow = new OptionsMenuWindow("",skin,this);
-        optionsMenuWindow.setVisible(false);
-
-        createButtons(this);
-        buttonsLogic();
-
-        windowTable.add(inventoryButton).size(Utilities.getButtonWidth(1.8f), Utilities.getButtonHeight(1.8f)).top();
-        windowTable.add(characterButton).size(Utilities.getButtonWidth(1.8f), Utilities.getButtonHeight(1.8f));
-        windowTable.add(menuButton).size(Utilities.getButtonWidth(1.8f), Utilities.getButtonHeight(1.8f));
-        windowTable.add(exitButton).size(Utilities.getButtonWidth(1.8f), Utilities.getButtonHeight(1.8f));
 
         serializer = new Serializer(engine, world);
 
+        windowTable = new Table();
+        inventoryWindow = new InventoryWindow("",skin,engine);
+        inventoryWindow.setVisible(false);
+        optionsMenuWindow = new OptionsMenuWindow("",skin,this);
+        optionsMenuWindow.setVisible(false);
         inventoryWindow = new InventoryWindow("", skin, engine);
         inventoryWindow.setVisible(false);
+
+        createButtons(this);
+
+        this.add(inventoryButton).size(Utilities.setButtonWidth(1.8f), Utilities.setButtonHeight(1.8f));
+        this.add(characterButton).size(Utilities.setButtonWidth(1.8f), Utilities.setButtonHeight(1.8f));
+        this.add(menuButton).size(Utilities.setButtonWidth(1.8f), Utilities.setButtonHeight(1.8f));
+        this.add(exitButton).size(Utilities.setButtonWidth(1.8f), Utilities.setButtonHeight(1.8f));
+        this.row();
+        this.add(windowTable).center().size(this.getWidth()*0.95f ,this.getHeight()*0.8f).colspan(4);
+
+
 
     }
 
@@ -69,6 +69,8 @@ public class MenuWindow extends Window {
 
         characterButton = new TextButton("Character",skin);
         Utilities.setButtonColor(characterButton);
+
+        buttonsController();
     }
 
     void saveGame(){
@@ -88,7 +90,7 @@ public class MenuWindow extends Window {
 
 
 
-    private void buttonsLogic(){
+    private void buttonsController(){
         final MenuWindow menu = this;
 
         menuButton.addListener(new InputListener(){
@@ -103,6 +105,9 @@ public class MenuWindow extends Window {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 windowTable.clearChildren();
+                for(Actor actor: playerGUI.getStage().getActors()){
+                    actor.setVisible(true);
+                }
                 menu.setVisible(false);
                 return true;
             }
@@ -126,6 +131,7 @@ public class MenuWindow extends Window {
             window.setVisible(true);
         }else {
             windowTable.add(window);
+            inventoryWindow.saveInventory(engine);
             window.setVisible(true);
         }
     }

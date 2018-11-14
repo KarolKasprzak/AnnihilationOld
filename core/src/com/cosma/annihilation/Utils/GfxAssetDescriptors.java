@@ -6,7 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class GfxAssetDescriptors {
-    public static final AssetDescriptor<Texture> box = new AssetDescriptor<Texture>("box.png", Texture.class);
+    public static final AssetDescriptor<Texture> box = new AssetDescriptor<Texture>("gfx/box.png", Texture.class);
     public static final AssetDescriptor<Texture> bulletShell = new AssetDescriptor<Texture>("gfx/effect/bullet.png", Texture.class);
     public static final AssetDescriptor<Texture> bulletTrace = new AssetDescriptor<Texture>("gfx/effect/bullet_trace.png", Texture.class);
     public static final AssetDescriptor<Skin> skin = new AssetDescriptor<Skin>("interface/retro_pc/uiskin.json", Skin.class);

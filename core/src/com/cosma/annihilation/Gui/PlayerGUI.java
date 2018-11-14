@@ -84,11 +84,13 @@ public class PlayerGUI implements Screen {
         containerWindow.setVisible(false);
         containerWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.5f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.5f)/2));
         stage.addActor(containerWindow);
+
+
     }
 
     private void createMenuWindow(){
-        menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.8f),Utilities.setWindowHeight(0.5f));
-        menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.8f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.5f)/2));
+        menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.9f),Utilities.setWindowHeight(0.9f),this);
+        menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.9f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.9f)/2));
         menuWindow.setMovable(true);
         menuWindow.setVisible(false);
         stage.addActor(menuWindow);
@@ -251,7 +253,10 @@ public class PlayerGUI implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if(!menuWindow.isVisible()){
-                   menuWindow.setVisible(true);
+                   for(Actor actor: stage.getActors()){
+                       actor.setVisible(false);
+                   }
+                    menuWindow.setVisible(true);
                 }
                 return true;
             }

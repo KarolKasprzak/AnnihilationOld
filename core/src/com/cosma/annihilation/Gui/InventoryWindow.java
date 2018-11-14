@@ -45,7 +45,9 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
        statsTable = new Table();
        statsTable.center();
        dmgLabel = new Label("dmg:",skin);
+       dmgLabel.setColor(0,82,0,255);
        defLabel = new Label("def:",skin);
+       defLabel.setColor(0,82,0,255);
        statsTable.add(dmgLabel).expand().bottom().fillX().padRight(50);
        statsTable.add(defLabel).right();
        this.add(statsTable);

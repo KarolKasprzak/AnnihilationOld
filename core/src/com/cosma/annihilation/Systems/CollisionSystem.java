@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
-import com.cosma.annihilation.Utils.FixtureUserDate;
 import com.cosma.annihilation.Utils.StateManager;
 
 
