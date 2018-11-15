@@ -21,7 +21,7 @@ public class InventoryItem extends Image {
     private boolean stackable;
 
     public enum ItemID {
-        MP44,BOX,P38;
+        MP44,BOX,P38,AMMO_BOX9MM;
     }
 
 
@@ -48,7 +48,7 @@ public class InventoryItem extends Image {
         ITEM_DAMAGE(4),
         WEAPON_CLOSE(8),
         WEAPON_DISTANCE(16),
-        WAND_ONEHAND(32),
+        AMMUNIION(32),
         WAND_TWOHAND(64),
         ARMOR_SHIELD(128),
         ARMOR_HELMET(256),
@@ -73,8 +73,6 @@ public class InventoryItem extends Image {
     public InventoryItem(String textureName,ItemID itemID,int itemAttributes, int itemUseType, int itemValue,String itemName,boolean stackable,String itemShortDescription){
            this.textureName = textureName;
            this.itemID = itemID;
-           texture = (Texture)LoaderOLD.getResource(textureName);
-           this.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
            this.itemAttributes = itemAttributes;
            this.itemUseType = itemUseType;
            this.itemValue = itemValue;
@@ -90,8 +88,7 @@ public class InventoryItem extends Image {
         this.itemUseType = inventoryItem.getItemUseType();
         this.itemValue = inventoryItem.getItemValue();
         this.itemName = inventoryItem.getItemName();
-        texture = (Texture)LoaderOLD.getResource(textureName);
-        this.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
+
         this.stackable = inventoryItem.isStackable();
         this.itemShortDescription = inventoryItem.getItemShortDescription();
     }

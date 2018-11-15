@@ -14,6 +14,7 @@ import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.LoaderOLD;
+import com.cosma.annihilation.Utils.Utilities;
 
 
 public class InventoryWindow extends Window implements InventorySlotObserver {
@@ -26,14 +27,14 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private InventorySlot weaponInventorySlot;
     private Label dmgLabel;
     private Label defLabel;
-
-
+    private int inventorySize = 16;
+    private float slotSize = Utilities.setWindowHeight(0.1f);
     InventoryWindow(String title, Skin skin, Engine engine) {
         super(title, skin);
         dragAndDrop = new DragAndDrop();
         this.engine = engine;
         this.skin = skin;
-
+        this.debugAll();
 
         createStatsTable();
         createEquipmentTable();
@@ -87,17 +88,22 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         this.row();
     }
 
+    public void setInventorySize(int size){
+        inventorySize = size;
+    }
+
+
     private void createInventoryTable() {
         inventorySlotsTable = new Table();
         inventorySlotsTable.bottom();
         inventorySlotsTable.setDebug(false);
         inventorySlotsTable.setFillParent(false);
 
-        for(int i = 1; i < 25; i++){
+        for(int i = 1; i < 24; i++){
             InventorySlot inventorySlot = new InventorySlot();
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
-            inventorySlotsTable.add(inventorySlot).size(50,50).pad(2);
-            if(i == 6 || i == 12 || i == 18  )inventorySlotsTable.row();
+            inventorySlotsTable.add(inventorySlot).size(slotSize,slotSize).pad(Utilities.setWindowHeight(0.005f));
+            if(i == 8 || i == 16)inventorySlotsTable.row();
         }
         this.add(inventorySlotsTable);
     }
@@ -159,6 +165,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         clearItemsTable(equipmentSlotsTable);
         clearItemsTable(inventorySlotsTable);
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        System.out.println(player.getComponent(PlayerDateComponent.class).equippedItem.size);
         if (player.getComponent(PlayerDateComponent.class).equippedItem != null) {
             Array equipment = player.getComponent(PlayerDateComponent.class).equippedItem;
             fillInventory(equipmentSlotsTable, equipment, dragAndDrop);

@@ -31,17 +31,16 @@ public class MenuWindow extends Window {
         this.setVisible(false);
         this.engine = engine;
         this.getTitleLabel().setColor(0,82,0,255);
-        this.getTitleLabel().setFontScale(0.8f);
         this.setSize(x,y);
 
         serializer = new Serializer(engine, world);
 
         windowTable = new Table();
+        windowTable.setDebug(true);
         inventoryWindow = new InventoryWindow("",skin,engine);
         inventoryWindow.setVisible(false);
         optionsMenuWindow = new OptionsMenuWindow("",skin,this);
         optionsMenuWindow.setVisible(false);
-        inventoryWindow = new InventoryWindow("", skin, engine);
         inventoryWindow.setVisible(false);
 
         createButtons(this);
@@ -52,8 +51,6 @@ public class MenuWindow extends Window {
         this.add(exitButton).size(Utilities.setButtonWidth(1.8f), Utilities.setButtonHeight(1.8f));
         this.row();
         this.add(windowTable).center().size(this.getWidth()*0.95f ,this.getHeight()*0.8f).colspan(4);
-
-
 
     }
 
@@ -105,9 +102,6 @@ public class MenuWindow extends Window {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 windowTable.clearChildren();
-                for(Actor actor: playerGUI.getStage().getActors()){
-                    actor.setVisible(true);
-                }
                 menu.setVisible(false);
                 return true;
             }
@@ -124,18 +118,18 @@ public class MenuWindow extends Window {
     }
 
     private void clearAndAddWindow(Window window){
-        if(windowTable.hasChildren()){
             windowTable.clearChildren();
-            inventoryWindow.saveInventory(engine);
-            windowTable.add(window);
+            //TODO
+//            inventoryWindow.saveInventory(engine);
+            windowTable.add(window).size(this.getWidth()*0.95f ,this.getHeight()*0.8f);
             window.setVisible(true);
-        }else {
-            windowTable.add(window);
-            inventoryWindow.saveInventory(engine);
-            window.setVisible(true);
-        }
     }
 
+
+    private void setWindowSize(Window window){
+        window.setSize(this.getWidth()*0.9f ,this.getHeight()*0.7f);
+        window.setFillParent(true);
+    }
 
 
     public void openinventoryWindow() {

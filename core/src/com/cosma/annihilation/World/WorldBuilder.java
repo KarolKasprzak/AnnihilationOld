@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.PlayerGUI;
+import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -33,6 +34,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
     public WorldBuilder(Boolean isGameLoaded, AssetLoader assetLoader) {
         this.assetLoader = assetLoader;
+        ItemFactory.getInstance().setAssetLoader(assetLoader);
         runEngine();
         EntityFactory.getInstance().setAssetLoader(assetLoader);
         new WorldLoader(engine, world, tiledMap, rayHandler);

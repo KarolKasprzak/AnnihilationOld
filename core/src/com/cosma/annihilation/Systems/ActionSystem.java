@@ -8,10 +8,7 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.cosma.annihilation.Components.ActionComponent;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.ContainerComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
@@ -34,6 +31,12 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
+
+        if (entity.getComponent(PlayerDateComponent.class).inventoryItem.size > 0) {
+            System.out.println("saddsa");
+        }
+
+
         if(!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
 

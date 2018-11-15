@@ -7,9 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> box = new AssetDescriptor<Texture>("gfx/box.png", Texture.class);
+    public static final AssetDescriptor<Texture> ammo = new AssetDescriptor<Texture>("gfx/icon/ammo.png", Texture.class);
     public static final AssetDescriptor<Texture> bulletShell = new AssetDescriptor<Texture>("gfx/effect/bullet.png", Texture.class);
     public static final AssetDescriptor<Texture> bulletTrace = new AssetDescriptor<Texture>("gfx/effect/bullet_trace.png", Texture.class);
     public static final AssetDescriptor<Skin> skin = new AssetDescriptor<Skin>("interface/retro_pc/uiskin.json", Skin.class);
+    public static final AssetDescriptor<Texture> mp44 = new AssetDescriptor<Texture>("gfx/icon/stg.png", Texture.class);
+    public static final AssetDescriptor<Texture> p38 = new AssetDescriptor<Texture>("gfx/icon/p38.png", Texture.class);
     public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("Map/2/map1.tmx", TiledMap.class);
-    private GfxAssetDescriptors(){}
+    private GfxAssetDescriptors(){
+    }
+
+
 }

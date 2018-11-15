@@ -37,8 +37,9 @@ class ContainerWindow extends Window {
 
         dragAndDrop = new DragAndDrop();
         takeAllButton = new TextButton("Take all", skin);
+        Utilities.setButtonColor(takeAllButton);
         closeButton = new TextButton("Close", skin);
-
+        Utilities.setButtonColor(closeButton);
         listener = new ActorGestureListener(){
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
@@ -55,12 +56,15 @@ class ContainerWindow extends Window {
 
     private void moveItemToPlayerEquipment(InventorySlot inventorySlot){
         if(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size <= 24){
+
             InventoryItemLocation inventoryItemLocation = new InventoryItemLocation();
                 inventoryItemLocation.setTableIndex(findEmptySlotInEquipment());
                 inventoryItemLocation.setItemsAmount(inventorySlot.getItemsNumber());
                 inventoryItemLocation.setItemID(inventorySlot.getInventoryItem().getItemID().toString());
 
             engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.add(inventoryItemLocation);
+
+            System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.get(0).getTableIndex());
 
             for(InventoryItemLocation item: engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
                     .processedEntity.getComponent(ContainerComponent.class).itemLocations){
@@ -106,7 +110,7 @@ class ContainerWindow extends Window {
             InventorySlot inventorySlot = new InventorySlot();
             inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
-            containerSlotsTable.add(inventorySlot).size(Utilities.setWindowWidth(0.08f), Utilities.setWindowHeight(0.08f)).pad(2);
+            containerSlotsTable.add(inventorySlot).size(Utilities.setWindowHeight(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.005f));
             if (i == 6 || i == 12 || i == 18) containerSlotsTable.row();
         }
 

@@ -1,17 +1,25 @@
 package com.cosma.annihilation.Items;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Scaling;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.InventoryItem.ItemID;
+import com.cosma.annihilation.Utils.AssetLoader;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
 
 public class ItemFactory {
+
     private Hashtable<ItemID, Object> itemMap;
+    private AssetLoader assetLoader;
     private static ItemFactory instance = null;
     private final String ARMOUR_ITEM_PATH = "json/items/armours/armours.json";
 
@@ -57,16 +65,24 @@ public class ItemFactory {
         Class type = itemMap.get(itemID).getClass();
         if (type == InventoryItem.class) {
             InventoryItem item = new InventoryItem((InventoryItem) itemMap.get(itemID));
+            setTexture(item);
             return (InventoryItem) (InventoryItem) item;
         }
         if (type == WeaponItem.class) {
             WeaponItem item = new WeaponItem((WeaponItem) itemMap.get(itemID));
+            setTexture(item);
             return (InventoryItem) (WeaponItem) item;
         }
         return null;
     }
+    private void setTexture(InventoryItem inventoryItem){
+        inventoryItem.setDrawable(new TextureRegionDrawable(new TextureRegion((Texture) assetLoader.manager.get(inventoryItem.getTextureName()))));
+        inventoryItem.setScaling(Scaling.none);
+        }
 
-
+    public void setAssetLoader(AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
+    }
 }
 
 //        System.out.println(list);

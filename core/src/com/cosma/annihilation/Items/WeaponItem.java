@@ -1,6 +1,5 @@
 package com.cosma.annihilation.Items;
 
-import com.badlogic.gdx.graphics.Texture;
 
 
 public class WeaponItem extends InventoryItem {

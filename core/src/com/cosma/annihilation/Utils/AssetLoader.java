@@ -10,7 +10,6 @@ public class AssetLoader {
 
     public AssetLoader() {
         manager = new AssetManager();
-
     }
 
 
@@ -21,6 +20,9 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.bulletTrace);
         manager.load(GfxPlayerAssetDescriptors.player_stand_pistol);
         manager.load(GfxAssetDescriptors.skin);
+        manager.load(GfxAssetDescriptors.ammo);
+        manager.load(GfxAssetDescriptors.mp44);
+        manager.load(GfxAssetDescriptors.p38);
 
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load(GfxAssetDescriptors.tiledMap);
@@ -29,7 +31,10 @@ public class AssetLoader {
         System.out.println("Loaded!");
     }
 
-    public  void dispose() {
+
+
+
+    public void dispose() {
         manager.dispose();
     }
 }

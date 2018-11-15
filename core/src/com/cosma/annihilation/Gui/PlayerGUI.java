@@ -80,9 +80,9 @@ public class PlayerGUI implements Screen {
         createMenuWindow();
 
         containerWindow = new ContainerWindow("",skin,4,engine);
-        containerWindow.setSize(Utilities.setWindowWidth(0.5f),Utilities.setWindowHeight(0.5f));
+        containerWindow.setSize(Utilities.setWindowWidth(0.5f),Utilities.setWindowHeight(0.6f));
         containerWindow.setVisible(false);
-        containerWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.5f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.5f)/2));
+        containerWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.5f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.6f)/2));
         stage.addActor(containerWindow);
 
 
@@ -109,6 +109,7 @@ public class PlayerGUI implements Screen {
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 super.tap(event, x, y, count, button);
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                System.out.println(GfxAssetDescriptors.ammo.fileName);
                 if(player.getComponent(PlayerComponent.class).weaponHidden){
                     signal.dispatch(GameEvent.PERFORM_ACTION);
                 }else
@@ -253,9 +254,6 @@ public class PlayerGUI implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if(!menuWindow.isVisible()){
-                   for(Actor actor: stage.getActors()){
-                       actor.setVisible(false);
-                   }
                     menuWindow.setVisible(true);
                 }
                 return true;
