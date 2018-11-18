@@ -101,6 +101,9 @@ public class MenuWindow extends Window {
         exitButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if(windowTable.getChildren().contains(inventoryWindow,true)){
+                    inventoryWindow.saveInventory(engine);
+                }
                 windowTable.clearChildren();
                 menu.setVisible(false);
                 return true;
@@ -117,12 +120,13 @@ public class MenuWindow extends Window {
         });
     }
 
-    private void clearAndAddWindow(Window window){
-            windowTable.clearChildren();
-            //TODO
-//            inventoryWindow.saveInventory(engine);
-            windowTable.add(window).size(this.getWidth()*0.95f ,this.getHeight()*0.8f);
-            window.setVisible(true);
+    private void clearAndAddWindow(Window window) {
+        if (windowTable.getChildren().contains(inventoryWindow, true)) {
+            inventoryWindow.saveInventory(engine);
+        }
+        windowTable.clearChildren();
+        windowTable.add(window).size(this.getWidth() * 0.95f, this.getHeight() * 0.8f);
+        window.setVisible(true);
     }
 
 

@@ -17,6 +17,7 @@ public class PlayerComponent implements Component,Json.Serializable {
     public boolean weaponReady = false;
     public ArrayList<Entity> collisionEntityList;
     public WeaponItem activeWeapon;
+    public int activeWeaponAmmo;
     public Entity processedEntity;
 
     @Override

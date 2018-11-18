@@ -98,15 +98,19 @@ public class EntityFactory {
         bodyDef.position.set(x, y);
         bodyComponent.body = world.createBody(bodyDef);
         bodyComponent.body.setUserData(entity);
-        bodyComponent.body.setBullet(true);
+        bodyComponent.body.setBullet(false);
         //Physic fixture
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(0.02f, 0.01f);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 8f;
-        fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        fixtureDef.density = 0.2f;
+        fixtureDef.friction = 0.1f;
+        fixtureDef.restitution = 0.4f;
+
+        fixtureDef.filter.categoryBits = CollisionID.BACKGROUND ;
+        fixtureDef.filter.maskBits = CollisionID.SCENERY| CollisionID.CAN_JUMP_OBJECT;
+
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET_SHELL);
 
         bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
@@ -260,6 +264,7 @@ public class EntityFactory {
         fixtureDef.density = 1f;
         fixtureDef.friction = 0f;
         fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
+        fixtureDef.filter.maskBits = CollisionID.MASK_PLAYER;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();

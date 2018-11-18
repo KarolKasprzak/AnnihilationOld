@@ -139,11 +139,14 @@ class WorldLoader {
                 FixtureDef fixtureDef = new FixtureDef();
                 fixtureDef.shape = shape;
                 fixtureDef.density = 1f;
+                fixtureDef.filter.categoryBits = CollisionID.SCENERY| CollisionID.CAST_SHADOW;
+                fixtureDef.filter.maskBits = -1;
 
                 switch (selectType) {
                     case 0:
                         boxBody.createFixture(fixtureDef).setUserData(BodyID.GROUND);
-                        fixtureDef.filter.categoryBits = CollisionID.CAST_SHADOW;
+
+
 
                         break;
 
@@ -219,19 +222,33 @@ class WorldLoader {
         private Array<InventoryItemLocation> getItemForContainer(MapObject mapObject){
             MapProperties properties = mapObject.getProperties();
             Array<InventoryItemLocation> itemList = new Array<InventoryItemLocation>();
-            InventoryItemLocation item1 = new InventoryItemLocation();
-            InventoryItemLocation item2 = new InventoryItemLocation();
             if (properties.containsKey("item1")) {
+                InventoryItemLocation item1 = new InventoryItemLocation();
                 item1.setItemID(properties.get("item1", String.class));
                 item1.setItemsAmount(properties.get("item1size", Integer.class));
-                item1.setTableIndex(1);
+                item1.setTableIndex(0);
                 itemList.add(item1);
             }
             if (properties.containsKey("item2")) {
+                InventoryItemLocation item2 = new InventoryItemLocation();
                 item2.setItemID(properties.get("item2", String.class));
                 item2.setItemsAmount(properties.get("item2size", Integer.class));
-                item2.setTableIndex(2);
+                item2.setTableIndex(1);
                 itemList.add(item2);
+            }
+            if (properties.containsKey("item3")) {
+                InventoryItemLocation item3 = new InventoryItemLocation();
+                item3.setItemID(properties.get("item3", String.class));
+                item3.setItemsAmount(properties.get("item3size", Integer.class));
+                item3.setTableIndex(3);
+                itemList.add(item3);
+            }
+            if (properties.containsKey("item4")) {
+                InventoryItemLocation item4 = new InventoryItemLocation();
+                item4.setItemID(properties.get("item4", String.class));
+                item4.setItemsAmount(properties.get("item4size", Integer.class));
+                item4.setTableIndex(3);
+                itemList.add(item4);
             }
             return itemList;
         }

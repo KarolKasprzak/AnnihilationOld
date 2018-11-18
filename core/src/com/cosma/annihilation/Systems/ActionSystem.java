@@ -32,11 +32,6 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
 
-        if (entity.getComponent(PlayerDateComponent.class).inventoryItem.size > 0) {
-            System.out.println("saddsa");
-        }
-
-
         if(!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
 

@@ -109,7 +109,6 @@ public class PlayerGUI implements Screen {
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 super.tap(event, x, y, count, button);
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                System.out.println(GfxAssetDescriptors.ammo.fileName);
                 if(player.getComponent(PlayerComponent.class).weaponHidden){
                     signal.dispatch(GameEvent.PERFORM_ACTION);
                 }else

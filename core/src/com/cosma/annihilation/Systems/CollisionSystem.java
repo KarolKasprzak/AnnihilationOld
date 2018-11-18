@@ -36,7 +36,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         world.setContactListener(this);
         //Filter for one way wall
         goTroughFilter = new Filter();
-        goTroughFilter.maskBits = CollisionID.CATEGORY_SCENERY;
+        goTroughFilter.maskBits = CollisionID.SCENERY;
         goTroughFilter.groupIndex = -1;
         normalFilter = new Filter();
         normalFilter.categoryBits = CollisionID.NO_SHADOW;

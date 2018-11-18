@@ -11,14 +11,15 @@ public class WeaponItem extends InventoryItem {
     private int maxAmmoInMagazine;
     private float reloadTime;
     private float accuracy;
+    private ItemID ammoID;
 
 
 
     public WeaponItem(){}
 
-    public WeaponItem(String textureName,ItemID itemID,int damage,int itemAttributes, int itemUseType, int itemValue,String name,boolean stackable, String itemShortDescription){
+    public WeaponItem(String textureName,ItemID itemID,int damage,int itemAttributes, int itemUseType, int itemValue,String name,boolean stackable, String itemShortDescription,ItemID ammoID){
         super(textureName,itemID,itemAttributes,itemUseType,itemValue,name,stackable,itemShortDescription);
-        this.damage = damage;
+//        this.damage = damage;
     }
 
     public WeaponItem(WeaponItem weaponItem){
@@ -29,8 +30,7 @@ public class WeaponItem extends InventoryItem {
         this.maxAmmoInMagazine = weaponItem.getMaxAmmoInMagazine();
         this.reloadTime = weaponItem.getReloadTime();
         this.accuracy = weaponItem.getAccuracy();
-
-
+        this.ammoID = weaponItem.getAmmoID();
     }
 
     public boolean isAutomatic() {
@@ -73,6 +73,17 @@ public class WeaponItem extends InventoryItem {
         this.accuracy = accuracy;
     }
 
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public ItemID getAmmoID() {
+        return ammoID;
+    }
+
+    public void setAmmoID(ItemID ammoID) {
+        this.ammoID = ammoID;
+    }
 
     public int getDamage() {
         return damage;
