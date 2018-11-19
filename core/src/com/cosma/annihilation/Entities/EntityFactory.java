@@ -51,12 +51,13 @@ public class EntityFactory {
         return instance;
     }
 
-    public Entity createBulletEntity(float x, float y, float speed){
+    public Entity createBulletEntity(float x, float y,float speed,boolean flip){
         Entity entity = engine.createEntity();
 
         Texture mainTexture = (Texture) LoaderOLD.getResource("box");
         Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
         box2DSprite.setScale(12,2);
+        box2DSprite.setFlip(flip,false);
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 

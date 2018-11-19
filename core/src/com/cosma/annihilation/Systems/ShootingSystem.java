@@ -16,6 +16,7 @@ import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.SfxAssetDescriptors;
+import com.cosma.annihilation.Utils.StateManager;
 
 public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -54,8 +55,13 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         if(playerComponent.activeWeapon != null && !playerComponent.weaponHidden){
             if(playerComponent.weaponReady & isAmmoAvailable()){
                 System.out.println("shoot for " + playerComponent.activeWeapon.getDamage());
-                EntityFactory.getInstance().createBulletEntity(body.getPosition().x+1.1f,body.getPosition().y+0.63f,20);
-                EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x+0.7f,body.getPosition().y+0.63f);
+                if(StateManager.playerDirection){
+                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x+1.1f,body.getPosition().y+0.63f,20,false);
+                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x+0.7f,body.getPosition().y+0.63f);
+                }else{
+                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x-1.1f,body.getPosition().y+0.63f,-20,true);
+                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x-0.7f,body.getPosition().y+0.63f);
+                }
                 Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
                 sound.play();
                 ammoRemove();

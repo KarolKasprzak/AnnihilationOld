@@ -11,6 +11,7 @@ public class BodyComponent implements Component, Json.Serializable, Pool.Poolabl
     public Body body;
     public float SizeX = 0;
     public float SizeY = 0;
+    public boolean hasHitSomething = false;
 
     @Override
     public void write(Json json) {

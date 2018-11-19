@@ -23,6 +23,7 @@ public class StateManager {
 
     // false = left side
     // true = right side
+    /** right = true, left = false  */
     public static boolean playerDirection = true;
     public static boolean Open = false;
 

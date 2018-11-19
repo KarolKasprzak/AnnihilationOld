@@ -112,17 +112,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         //Bullet shell contact
         if(fa.getUserData() == BodyID.BULLET_SHELL ){
-            if (!bodiesToPeriodRemove.contains(fa.getBody(),true)){
-                bodiesToPeriodRemove.add(fa.getBody());
-                getEngine().removeEntity((Entity) fa.getBody().getUserData());
-            }
+            getEngine().removeEntity((Entity) fa.getBody().getUserData());
+            removeShellAfterTime(fa,2);
         }
 
         if(fb.getUserData() == BodyID.BULLET_SHELL){
-            if (!bodiesToPeriodRemove.contains(fb.getBody(),true)){
-                bodiesToPeriodRemove.add(fb.getBody());
-                getEngine().removeEntity((Entity) fb.getBody().getUserData());
-            }
+            getEngine().removeEntity((Entity) fb.getBody().getUserData());
+            removeShellAfterTime(fb,2);
         }
         //Bullet contact
         if(fa.getUserData() == BodyID.BULLET ){
@@ -234,7 +230,23 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
     }
-    //Action delay method
+
+    private void removeShellAfterTime(final Fixture fixture, float delay){
+        if(!fixture.getBody().isBullet()){
+            fixture.getBody().setBullet(true);
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    world.destroyBody(fixture.getBody());
+                }
+            }, delay);
+        }
+
+
+
+    }
+
+
     private void delayJump(float delay){
         Timer.schedule(new Timer.Task() {
             @Override
@@ -243,17 +255,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             }
         }, delay);
     }
-
-    private void removeBodyAfterTime(float delay, final Body body){
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                    world.destroyBody(body);
-            }
-        }, delay);
-    }
-
-
 
     private void addEntityToActionList(Fixture fa, Fixture fb){
         if(fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY  || fb.getUserData() == BodyID.CONTAINER &&  fa.getUserData() == BodyID.PLAYER_BODY){

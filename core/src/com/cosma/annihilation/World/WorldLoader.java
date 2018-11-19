@@ -240,7 +240,7 @@ class WorldLoader {
                 InventoryItemLocation item3 = new InventoryItemLocation();
                 item3.setItemID(properties.get("item3", String.class));
                 item3.setItemsAmount(properties.get("item3size", Integer.class));
-                item3.setTableIndex(3);
+                item3.setTableIndex(2);
                 itemList.add(item3);
             }
             if (properties.containsKey("item4")) {

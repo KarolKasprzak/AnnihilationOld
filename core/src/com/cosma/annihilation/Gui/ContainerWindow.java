@@ -45,8 +45,7 @@ class ContainerWindow extends Window {
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 super.tap(event, x, y, count, button);
                 if(count >= 2){
-                    InventorySlot slot = ( InventorySlot) event.getListenerActor();
-                    moveItemToPlayerEquipment(slot);
+                    moveItemToPlayerEquipment(( InventorySlot) event.getListenerActor());
                 }
             }
         };
@@ -54,24 +53,23 @@ class ContainerWindow extends Window {
         createContainerTable();
     }
 
-    private void moveItemToPlayerEquipment(InventorySlot inventorySlot){
-        if(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size <= 24){
+    private void moveItemToPlayerEquipment(InventorySlot inventorySlot) {
+        if (engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size <= 24) {
 
             InventoryItemLocation inventoryItemLocation = new InventoryItemLocation();
-                inventoryItemLocation.setTableIndex(findEmptySlotInEquipment());
-                inventoryItemLocation.setItemsAmount(inventorySlot.getItemsNumber());
-                inventoryItemLocation.setItemID(inventorySlot.getInventoryItem().getItemID().toString());
+            inventoryItemLocation.setTableIndex(findEmptySlotInEquipment());
+            inventoryItemLocation.setItemsAmount(inventorySlot.getItemsNumber());
+            inventoryItemLocation.setItemID(inventorySlot.getInventoryItem().getItemID().toString());
 
             engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.add(inventoryItemLocation);
 
-            System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.get(0).getTableIndex());
-
-            for(InventoryItemLocation item: engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
-                    .processedEntity.getComponent(ContainerComponent.class).itemLocations){
-                if(item.getItemID().equals(inventorySlot.getInventoryItem().getItemID().toString())){
-                    if(item.getItemsAmount() == inventorySlot.getItemsNumber()){
+            for (InventoryItemLocation item : engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
+                    .processedEntity.getComponent(ContainerComponent.class).itemLocations) {
+                if (item.getItemID().equals(inventorySlot.getInventoryItem().getItemID().toString())) {
+                    if (item.getItemsAmount() == inventorySlot.getItemsNumber()) {
+                        System.out.println("remove");
                         engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
-                                .processedEntity.getComponent(ContainerComponent.class).itemLocations.removeValue(item,true);
+                                .processedEntity.getComponent(ContainerComponent.class).itemLocations.removeValue(item, true);
                     }
                 }
             }
