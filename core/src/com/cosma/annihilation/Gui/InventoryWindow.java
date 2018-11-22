@@ -3,8 +3,12 @@ package com.cosma.annihilation.Gui;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.PlayerComponent;
@@ -13,6 +17,7 @@ import com.cosma.annihilation.Gui.Inventory.*;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
+import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Utils.LoaderOLD;
 import com.cosma.annihilation.Utils.Utilities;
 
@@ -29,16 +34,50 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private Label defLabel;
     private int inventorySize = 16;
     private float slotSize = Utilities.setWindowHeight(0.1f);
-    InventoryWindow(String title, Skin skin, Engine engine) {
+    private ActorGestureListener listener;
+    private ItemStatsWindow itemStatsWindow;
+    private InventoryWindow inventoryWindow;
+    InventoryWindow(String title, Skin skin, final Engine engine) {
         super(title, skin);
         dragAndDrop = new DragAndDrop();
         this.engine = engine;
         this.skin = skin;
         this.debugAll();
+        inventoryWindow = this;
+        itemStatsWindow = new ItemStatsWindow("",skin);
+        itemStatsWindow.setVisible(true);
+        itemStatsWindow.setMovable(false);
+
+
+        listener = new ActorGestureListener(){
+            @Override
+            public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+                InventorySlot inventorySlot =(InventorySlot) event.getListenerActor();
+                if(inventorySlot.hasItem()){
+                    if(inventorySlot.getInventoryItem() instanceof WeaponItem){
+                        itemStatsWindow.setDmglabel((WeaponItem) inventorySlot.getInventoryItem());
+                    }
+                }
+
+
+                super.touchDown(event, x, y, pointer, button);
+            }
+        };
 
         createStatsTable();
         createEquipmentTable();
         createInventoryTable();
+        this.add(equipmentSlotsTable);
+        this.add(statsTable);
+        this.row();
+        this.add(inventorySlotsTable);
+        this.add(itemStatsWindow).size(300,300).expandY().expandX();
+
+
+
+
+
 
     }
 
@@ -51,41 +90,28 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
        defLabel.setColor(0,82,0,255);
        statsTable.add(dmgLabel).expand().bottom().fillX().padRight(50);
        statsTable.add(defLabel).right();
-       this.add(statsTable);
-       this.row();
    }
 
     private void createEquipmentTable() {
         equipmentSlotsTable = new Table();
 
-        InventorySlot headInventorySlot = new InventorySlot();
-        InventorySlot bodyInventorySlot = new InventorySlot();
-        InventorySlot legsInventorySlot = new InventorySlot();
+        InventorySlot armourInventorySlot = new InventorySlot();
+
 
         weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE.getValue(), new Image((Texture) LoaderOLD.getResource("stack_default")));
         weaponInventorySlot.register(this);
 
-        InventorySlot rightInventorySlot = new InventorySlot();
-        dragAndDrop.addTarget(new InventorySlotTarget(headInventorySlot));
-        dragAndDrop.addTarget(new InventorySlotTarget(bodyInventorySlot));
-        dragAndDrop.addTarget(new InventorySlotTarget(legsInventorySlot));
+
+        dragAndDrop.addTarget(new InventorySlotTarget(armourInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(weaponInventorySlot));
-        dragAndDrop.addTarget(new InventorySlotTarget(rightInventorySlot));
-        equipmentSlotsTable.add();
-        equipmentSlotsTable.add(headInventorySlot).size(50, 50).pad(2);
-        equipmentSlotsTable.add();
+
+        equipmentSlotsTable.add(weaponInventorySlot).size(Utilities.setWindowWidth(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.006f));
         equipmentSlotsTable.row();
-        equipmentSlotsTable.add(weaponInventorySlot).size(50, 50).pad(2);
-        equipmentSlotsTable.add(bodyInventorySlot).size(50, 50).pad(2);
-        equipmentSlotsTable.add(rightInventorySlot).size(50, 50).pad(2);
-        equipmentSlotsTable.row();
-        equipmentSlotsTable.add();
-        equipmentSlotsTable.add(legsInventorySlot).size(50, 50).pad(2);
-        equipmentSlotsTable.add();
+        equipmentSlotsTable.add(armourInventorySlot).size(Utilities.setWindowWidth(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.006f));
+
+
         equipmentSlotsTable.center();
         equipmentSlotsTable.pad(20);
-        this.add(equipmentSlotsTable);
-        this.row();
     }
 
     public void setInventorySize(int size){
@@ -99,13 +125,13 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         inventorySlotsTable.setDebug(false);
         inventorySlotsTable.setFillParent(false);
 
-        for(int i = 1; i < 24; i++){
+        for(int i = 1; i <= 24; i++){
             InventorySlot inventorySlot = new InventorySlot();
+            inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
             inventorySlotsTable.add(inventorySlot).size(slotSize,slotSize).pad(Utilities.setWindowHeight(0.005f));
             if(i == 8 || i == 16)inventorySlotsTable.row();
         }
-        this.add(inventorySlotsTable);
     }
 
     public static void clearItemsTable(Table targetTable){

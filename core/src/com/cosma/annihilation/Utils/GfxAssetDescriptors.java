@@ -13,6 +13,7 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Skin> skin = new AssetDescriptor<Skin>("interface/retro_pc/uiskin.json", Skin.class);
     public static final AssetDescriptor<Texture> mp44 = new AssetDescriptor<Texture>("gfx/icon/stg.png", Texture.class);
     public static final AssetDescriptor<Texture> p38 = new AssetDescriptor<Texture>("gfx/icon/p38.png", Texture.class);
+    public static final AssetDescriptor<Texture> defaultStack = new AssetDescriptor<Texture>("interface/icon/stack_default.png", Texture.class);
     public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("Map/2/map1.tmx", TiledMap.class);
     private GfxAssetDescriptors(){
     }

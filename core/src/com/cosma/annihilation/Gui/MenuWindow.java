@@ -33,10 +33,12 @@ public class MenuWindow extends Window {
         this.getTitleLabel().setColor(0,82,0,255);
         this.setSize(x,y);
 
+
+
+
         serializer = new Serializer(engine, world);
 
         windowTable = new Table();
-        windowTable.setDebug(true);
         inventoryWindow = new InventoryWindow("",skin,engine);
         inventoryWindow.setVisible(false);
         optionsMenuWindow = new OptionsMenuWindow("",skin,this);
@@ -125,7 +127,7 @@ public class MenuWindow extends Window {
             inventoryWindow.saveInventory(engine);
         }
         windowTable.clearChildren();
-        windowTable.add(window).size(this.getWidth() * 0.95f, this.getHeight() * 0.8f);
+        windowTable.add(window).size(this.getWidth() * 0.95f, this.getHeight() * 0.84f);
         window.setVisible(true);
     }
 
@@ -133,28 +135,5 @@ public class MenuWindow extends Window {
     private void setWindowSize(Window window){
         window.setSize(this.getWidth()*0.9f ,this.getHeight()*0.7f);
         window.setFillParent(true);
-    }
-
-
-    public void openinventoryWindow() {
-        //        inventoryWindow = new InventoryWindow("Inventory", skin);
-//        inventoryWindow = new MenuWindow("Inventory", skin);
-        //Load inventory
-//        if(engine.getEntities().size() == 0){
-//            InventoryWindow.fillInventory(inventoryWindow.inventorySlotsTable,player.getComponent(PlayerComponent.class).inventoryItem,inventoryWindow.dragAndDrop);
-//            InventoryWindow.fillInventory(inventoryWindow.equipmentSlotsTable,player.getComponent(PlayerComponent.class).equippedItem,inventoryWindow.dragAndDrop);
-//        }
-//        inventoryWindow.setDebug(true);
-////        inventoryWindow.setFillParent(true);
-//        float x = stage.getWidth() * 0.9f;
-//        float y = stage.getHeight() * 0.9f;
-//        inventoryWindow.setSize(x,y);
-////        inventoryWindow.setPosition(stage.getWidth()/2-(x/2),stage.getHeight()/2-(y/2));
-//        inventoryWindow.setFillParent(true);
-//        inventoryWindow.setZIndex(10);
-//        inventoryWindow.setMovable(false);
-//        inventoryWindow.setVisible(false);
-//        stage.addActor(inventoryWindow);
-
     }
 }

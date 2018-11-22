@@ -23,6 +23,7 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.ammo);
         manager.load(GfxAssetDescriptors.mp44);
         manager.load(GfxAssetDescriptors.p38);
+        manager.load(GfxAssetDescriptors.defaultStack);
 
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load(GfxAssetDescriptors.tiledMap);

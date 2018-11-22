@@ -1,6 +1,7 @@
 package com.cosma.annihilation;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.cosma.annihilation.Screens.GameScreen;
 import com.cosma.annihilation.Screens.MenuScreen;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -51,6 +52,11 @@ public class Annihilation extends Game {
     public Boolean isGameLoaded() {
         return isGameLoaded;
     }
+
+    public static AssetLoader getAssets() {
+        return ((Annihilation) Gdx.app.getApplicationListener()).assetLoader;
+    }
+
 
 
 }

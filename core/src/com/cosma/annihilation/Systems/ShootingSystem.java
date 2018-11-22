@@ -27,12 +27,15 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PlayerComponent playerComponent;
     private PlayerDateComponent playerDateComponent;
     private Body body;
+    private WeaponMagazine weaponMagazine;
+
 
     public ShootingSystem(World world, AssetLoader assetLoader) {
         super(Family.all(PlayerComponent.class).get(),11);
         this.world = world;
         this.assetLoader = assetLoader;
 
+        weaponMagazine = new WeaponMagazine();
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         playerDateMapper = ComponentMapper.getFor(PlayerDateComponent.class);
@@ -47,48 +50,52 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private void weaponTakeOut() {
         if (playerComponent.activeWeapon != null) {
+            weaponMagazine.setAmmoInMagazine(playerComponent.activeWeapon.getAmmoInMagazine());
+            weaponMagazine.setMaxAmmoInMagazine(playerComponent.activeWeapon.getMaxAmmoInMagazine());
             playerComponent.weaponHidden = !playerComponent.weaponHidden;
         }
     }
 
-    private void weaponShoot(){
-        if(playerComponent.activeWeapon != null && !playerComponent.weaponHidden){
-            if(playerComponent.weaponReady & isAmmoAvailable()){
-                System.out.println("shoot for " + playerComponent.activeWeapon.getDamage());
-                if(StateManager.playerDirection){
-                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x+1.1f,body.getPosition().y+0.63f,20,false);
-                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x+0.7f,body.getPosition().y+0.63f);
-                }else{
-                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x-1.1f,body.getPosition().y+0.63f,-20,true);
-                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x-0.7f,body.getPosition().y+0.63f);
+    private void weaponShoot() {
+        if (playerComponent.activeWeapon != null && !playerComponent.weaponHidden) {
+            if (playerComponent.weaponReady) {
+                if (weaponMagazine.hasAmmo()) {
+                    if (StateManager.playerDirection) {
+                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false);
+                        EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f, body.getPosition().y + 0.63f);
+                    } else {
+                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x - 1.1f, body.getPosition().y + 0.63f, -20, true);
+                        EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x - 0.7f, body.getPosition().y + 0.63f);
+                    }
+                    Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
+                    sound.play();
+                    weaponMagazine.removeAmmoFromMagazine();
+                    System.out.println(weaponMagazine.getAmmoInMagazine());
+                } else {
+                    weaponMagazine.reload();
                 }
-                Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
-                sound.play();
-                ammoRemove();
-            }else{
+            } else {
                 playerComponent.weaponReady = true;
+
             }
         }
     }
 
-    private boolean isAmmoAvailable(){
-        for(InventoryItemLocation item: playerDateComponent.inventoryItem ){
-            if(item.getItemID().equals(playerComponent.activeWeapon.getAmmoID().toString())){
-                return true;
+    private int addAmmoFromInventory() {
+        int ammoInInventory = 0;
+        for (InventoryItemLocation item : playerDateComponent.inventoryItem) {
+            if (item.getItemID().equals(playerComponent.activeWeapon.getAmmoID().toString())) {
+                ammoInInventory = item.getItemsAmount();
+                if (ammoInInventory < playerComponent.activeWeapon.getMaxAmmoInMagazine()) {
+                    playerDateComponent.inventoryItem.removeValue(item, false);
+                    return ammoInInventory;
+                } else {
+                    item.setItemsAmount(item.getItemsAmount() - playerComponent.activeWeapon.getMaxAmmoInMagazine());
+                    return playerComponent.activeWeapon.getMaxAmmoInMagazine();
+                }
             }
         }
-        System.out.println("no ammo");
-        return false;
-    }
-    private void ammoRemove(){
-        for(InventoryItemLocation item: playerDateComponent.inventoryItem ){
-            if(item.getItemID().equals(playerComponent.activeWeapon.getAmmoID().toString())){
-                if(item.getItemsAmount() > 1){
-                    item.setItemsAmount(item.getItemsAmount() -1);
-                }else
-                    playerDateComponent.inventoryItem.removeValue(item,false);
-            }
-        }
+        return ammoInInventory;
     }
 
     @Override
@@ -103,7 +110,42 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 break;
         }
     }
+    private class WeaponMagazine{
+        private int ammoInMagazine;
+        private int maxAmmoInMagazine;
 
+        private WeaponMagazine(){
+
+        }
+
+        void reload(){
+            setAmmoInMagazine(addAmmoFromInventory());
+        }
+
+        boolean hasAmmo(){
+            if(ammoInMagazine > 0){
+                return true;
+            }
+            return false;
+        }
+
+        int getAmmoInMagazine() {
+
+            return ammoInMagazine;
+        }
+
+        void setAmmoInMagazine(int ammoInMagazine) {
+            this.ammoInMagazine = ammoInMagazine;
+        }
+
+        void removeAmmoFromMagazine(){
+            ammoInMagazine --;
+        }
+
+        void setMaxAmmoInMagazine(int maxAmmoInMagazine) {
+            this.maxAmmoInMagazine = maxAmmoInMagazine;
+        }
+    }
 
 
 

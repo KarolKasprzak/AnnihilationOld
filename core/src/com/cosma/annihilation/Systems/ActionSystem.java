@@ -46,6 +46,10 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
         this.playerGUI = playerGUI;
     }
 
+    public PlayerGUI getPlayerGUI(){
+        return  playerGUI;
+    }
+
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent event) {
         if (event.equals(GameEvent.PERFORM_ACTION) && playerComponent.processedEntity != null) {

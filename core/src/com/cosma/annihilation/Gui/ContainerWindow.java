@@ -67,7 +67,6 @@ class ContainerWindow extends Window {
                     .processedEntity.getComponent(ContainerComponent.class).itemLocations) {
                 if (item.getItemID().equals(inventorySlot.getInventoryItem().getItemID().toString())) {
                     if (item.getItemsAmount() == inventorySlot.getItemsNumber()) {
-                        System.out.println("remove");
                         engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
                                 .processedEntity.getComponent(ContainerComponent.class).itemLocations.removeValue(item, true);
                     }
