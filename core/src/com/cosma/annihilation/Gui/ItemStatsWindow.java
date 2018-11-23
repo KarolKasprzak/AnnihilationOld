@@ -1,51 +1,69 @@
 package com.cosma.annihilation.Gui;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Items.InventoryItem;
+import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
-import com.cosma.annihilation.Utils.Utilities;
+
 
 class ItemStatsWindow extends Window {
-    private Skin skin;
-    private TextButton closeButton;
-    private Label weaponNameValue;
-    Label label1;
+    private Label weaponName;
+    private Label weaponDescription;
+    private Label weaponDamage;
+    private Label weaponAccuracy;
+    private Label weaponAmmo;
+    private Label weaponAmmoInMagazine;
 
     ItemStatsWindow(String title, Skin skin) {
         super(title, skin);
-        this.skin = skin;
 
-        this.setColor(0, 82, 0, 255);
+        this.setColor(0, 82, 0, 1);
 
-        Label weaponName = new Label("Weapon:", skin);
+        weaponName = new Label("", skin);
         weaponName.setColor(0, 82, 0, 255);
-        this.add(weaponName).size(80,50);
-        weaponNameValue = new Label("", skin);
-        weaponNameValue.setColor(0, 82, 0, 255);
-        this.add(weaponNameValue).size(80,50);
+        weaponName.setFontScale(1.1f);
+        this.add(weaponName).left().expandX().top().pad(4);
+        this.row();
 
+        weaponDescription = new Label("", skin);
+        weaponDescription.setColor(0, 82, 0, 255);
+        weaponDescription.setWrap(true);
+        this.add(weaponDescription).left().pad(4);
         this.row();
-        label1 = new Label("Dmg = 25", skin);
-        label1.setColor(0, 82, 0, 255);
-        this.add(label1);
+
+        weaponDamage = new Label("", skin);
+        weaponDamage.setColor(0, 82, 0, 255);
+        weaponDamage.setFontScale(0.9f);
+        this.add(weaponDamage).left().expandX().top().pad(4).padTop(8);
         this.row();
-        Label label2 = new Label("Ammo in magazine = 45", skin);
-        label2.setColor(0, 82, 0, 255);
-        this.add(label2);
+
+        weaponAccuracy = new Label("", skin);
+        weaponAccuracy.setColor(0, 79, 0, 255);
+        weaponAccuracy.setFontScale(0.9f);
+        this.add(weaponAccuracy).left().expandX().top().pad(4);
+        this.row();
+
+        weaponAmmo = new Label("", skin);
+        weaponAmmo.setColor(0, 82, 0, 255);
+        weaponAmmo.setFontScale(0.9f);
+        this.add(weaponAmmo).left().expandX().top().pad(4);
+        this.row();
+
+        weaponAmmoInMagazine = new Label("", skin);
+        weaponAmmoInMagazine.setColor(0, 82, 0, 255);
+        weaponAmmoInMagazine.setFontScale(0.9f);
+        this.add(weaponAmmoInMagazine).left().expandX().top().pad(4);
         this.row();
     }
 
-    public void setDmglabel(WeaponItem item) {
-        weaponNameValue.setText(item.getItemName());
-        label1.setText(Integer.toString(item.getDamage()));
+    void setDmglabel(WeaponItem item) {
+        weaponName.setText(item.getItemName());
+        weaponDescription.setText(item.getItemShortDescription());
+        weaponDamage.setText("Weapon damage: " + item.getDamage());
+        weaponAccuracy.setText("Weapon accuracy: " + item.getAccuracy());
+        weaponAmmo.setText("Ammunition type: " + ItemFactory.getInstance().getItem(item.getAmmoID()).getItemName());
+        weaponAmmoInMagazine.setText("Magazine capacity: " + item.getMaxAmmoInMagazine());
 
     }
 

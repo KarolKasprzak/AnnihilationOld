@@ -89,8 +89,8 @@ public class PlayerGUI implements Screen {
     }
 
     private void createMenuWindow(){
-        menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.9f),Utilities.setWindowHeight(0.9f),this);
-        menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.9f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.9f)/2));
+        menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.95f),Utilities.setWindowHeight(0.95f),this);
+        menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.95f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.95f)/2));
         menuWindow.setMovable(true);
         menuWindow.setVisible(false);
         stage.addActor(menuWindow);
@@ -332,21 +332,6 @@ public class PlayerGUI implements Screen {
 
 }
 
-//            System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(ContainerComponent.class).name);
-//---------------------PickUP------------------
-//                    System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
-//                    WeldJointDef weldJoint = new WeldJointDef();
-//                    weldJoint.bodyA = player.getComponent(BodyComponent.class).body;
-//                    weldJoint.bodyB = player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body;
-//                    weldJoint.localAnchorA.set(new Vector2(1, 0));
-//                    if(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size == 1){
-//                        System.out.println("drop");
-//                        player.getComponent(BodyComponent.class).body.getWorld().destroyJoint(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().get(0).joint);
-//                    }
-//                    player.getComponent(BodyComponent.class).body.getWorld().createJoint(weldJoint);
-//                System.out.println(player.getComponent(PlayerComponent.class).collisionEntity.getComponent(BodyComponent.class).body.getJointList().size);
-
-//    }
 
 
 

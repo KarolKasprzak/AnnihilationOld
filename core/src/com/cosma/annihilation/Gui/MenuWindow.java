@@ -32,6 +32,7 @@ public class MenuWindow extends Window {
         this.engine = engine;
         this.getTitleLabel().setColor(0,82,0,255);
         this.setSize(x,y);
+        this.setMovable(false);
 
 
 
@@ -39,7 +40,7 @@ public class MenuWindow extends Window {
         serializer = new Serializer(engine, world);
 
         windowTable = new Table();
-        inventoryWindow = new InventoryWindow("",skin,engine);
+        inventoryWindow = new InventoryWindow("",skin,engine,this.getWidth()*0.95f ,this.getHeight()*0.8f);
         inventoryWindow.setVisible(false);
         optionsMenuWindow = new OptionsMenuWindow("",skin,this);
         optionsMenuWindow.setVisible(false);

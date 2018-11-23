@@ -25,6 +25,9 @@ import com.cosma.annihilation.Utils.Utilities;
 public class InventoryWindow extends Window implements InventorySlotObserver {
     private Engine engine;
     private DragAndDrop dragAndDrop;
+    private Table leftTable;
+    private Table rightTable;
+
     private Table inventorySlotsTable;
     private Table equipmentSlotsTable;
     private Table statsTable;
@@ -37,60 +40,78 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private ActorGestureListener listener;
     private ItemStatsWindow itemStatsWindow;
     private InventoryWindow inventoryWindow;
-    InventoryWindow(String title, Skin skin, final Engine engine) {
+
+    InventoryWindow(String title, Skin skin, final Engine engine, float x, float y) {
         super(title, skin);
-        dragAndDrop = new DragAndDrop();
         this.engine = engine;
         this.skin = skin;
         this.debugAll();
+        this.setSize(x, y);
+
+
+
         inventoryWindow = this;
-        itemStatsWindow = new ItemStatsWindow("",skin);
-        itemStatsWindow.setVisible(true);
+        dragAndDrop = new DragAndDrop();
+
+        leftTable = new Table(skin);
+        leftTable.setDebug(true);
+        rightTable = new Table(skin);
+        rightTable.setDebug(true);
+
+        itemStatsWindow = new ItemStatsWindow("", skin);
+        itemStatsWindow.setVisible(false);
         itemStatsWindow.setMovable(false);
 
 
-        listener = new ActorGestureListener(){
+        listener = new ActorGestureListener() {
             @Override
             public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
-                InventorySlot inventorySlot =(InventorySlot) event.getListenerActor();
-                if(inventorySlot.hasItem()){
-                    if(inventorySlot.getInventoryItem() instanceof WeaponItem){
+                InventorySlot inventorySlot = (InventorySlot) event.getListenerActor();
+                if (inventorySlot.hasItem()) {
+                    if (inventorySlot.getInventoryItem() instanceof WeaponItem) {
                         itemStatsWindow.setDmglabel((WeaponItem) inventorySlot.getInventoryItem());
+                        itemStatsWindow.setVisible(true);
                     }
                 }
-
 
                 super.touchDown(event, x, y, pointer, button);
             }
         };
+        this.add(leftTable).width(x*0.575f);
+        this.add(rightTable).width(x*0.375f);
 
         createStatsTable();
         createEquipmentTable();
         createInventoryTable();
-        this.add(equipmentSlotsTable);
-        this.add(statsTable);
-        this.row();
-        this.add(inventorySlotsTable);
-        this.add(itemStatsWindow).size(300,300).expandY().expandX();
+
+        leftTable.add(equipmentSlotsTable);
+        leftTable.row();
+        leftTable.add(inventorySlotsTable.bottom());
+
+        rightTable.add(itemStatsWindow).expandY().expandX().fill(true);
 
 
 
-
-
+//
+//        this.add(equipmentSlotsTable);
+//        this.add(statsTable);
+//        this.row();
+//        this.add(inventorySlotsTable.bottom());
+//        this.add(itemStatsWindow).expandY().expandX().fill(true);
 
     }
 
-   private void createStatsTable(){
-       statsTable = new Table();
-       statsTable.center();
-       dmgLabel = new Label("dmg:",skin);
-       dmgLabel.setColor(0,82,0,255);
-       defLabel = new Label("def:",skin);
-       defLabel.setColor(0,82,0,255);
-       statsTable.add(dmgLabel).expand().bottom().fillX().padRight(50);
-       statsTable.add(defLabel).right();
-   }
+    private void createStatsTable() {
+        statsTable = new Table();
+        statsTable.center();
+        dmgLabel = new Label("dmg:", skin);
+        dmgLabel.setColor(0, 82, 0, 255);
+        defLabel = new Label("def:", skin);
+        defLabel.setColor(0, 82, 0, 255);
+        statsTable.add(dmgLabel).expand().bottom().fillX().padRight(50);
+        statsTable.add(defLabel).right();
+    }
 
     private void createEquipmentTable() {
         equipmentSlotsTable = new Table();
@@ -114,7 +135,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         equipmentSlotsTable.pad(20);
     }
 
-    public void setInventorySize(int size){
+    public void setInventorySize(int size) {
         inventorySize = size;
     }
 
@@ -125,47 +146,48 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         inventorySlotsTable.setDebug(false);
         inventorySlotsTable.setFillParent(false);
 
-        for(int i = 1; i <= 24; i++){
+        for (int i = 1; i <= 24; i++) {
             InventorySlot inventorySlot = new InventorySlot();
             inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
-            inventorySlotsTable.add(inventorySlot).size(slotSize,slotSize).pad(Utilities.setWindowHeight(0.005f));
-            if(i == 8 || i == 16)inventorySlotsTable.row();
+            inventorySlotsTable.add(inventorySlot).size(slotSize, slotSize).pad(Utilities.setWindowHeight(0.005f));
+            if (i == 8 || i == 16) inventorySlotsTable.row();
         }
     }
 
-    public static void clearItemsTable(Table targetTable){
+    public static void clearItemsTable(Table targetTable) {
         Array<Cell> cells = targetTable.getCells();
-        for( int i = 0; i < cells.size; i++){
-            InventorySlot inventorySlot = (InventorySlot)cells.get(i).getActor();
-            if( inventorySlot == null ) continue;
+        for (int i = 0; i < cells.size; i++) {
+            InventorySlot inventorySlot = (InventorySlot) cells.get(i).getActor();
+            if (inventorySlot == null) continue;
             inventorySlot.clearAllItems();
         }
     }
 
-    public static Array<InventoryItemLocation> getItemsTable(Table targetTable){
+    public static Array<InventoryItemLocation> getItemsTable(Table targetTable) {
         Array<Cell> cells = targetTable.getCells();
         Array<InventoryItemLocation> items = new Array<InventoryItemLocation>();
-        for(int i = 0; i < cells.size; i++){
-            InventorySlot inventorySlot = ((InventorySlot)cells.get(i).getActor());
-            if(inventorySlot == null) continue;
+        for (int i = 0; i < cells.size; i++) {
+            InventorySlot inventorySlot = ((InventorySlot) cells.get(i).getActor());
+            if (inventorySlot == null) continue;
 
             int itemNumber = inventorySlot.getItemsNumber();
-            if(itemNumber> 0){
+            if (itemNumber > 0) {
 
-                items.add(new InventoryItemLocation(i,inventorySlot.getInventoryItem().getItemID().toString(),itemNumber));
+                items.add(new InventoryItemLocation(i, inventorySlot.getInventoryItem().getItemID().toString(), itemNumber));
             }
         }
         return items;
     }
-    public static  void fillInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop dragAndDrop ){
+
+    public static void fillInventory(Table targetTable, Array<InventoryItemLocation> inventoryItems, DragAndDrop dragAndDrop) {
         clearItemsTable(targetTable);
         Array<Cell> cells = targetTable.getCells();
-        for (int i =0; i < inventoryItems.size; i++){
+        for (int i = 0; i < inventoryItems.size; i++) {
             InventoryItemLocation itemLocation = inventoryItems.get(i);
             InventoryItem.ItemID itemID = InventoryItem.ItemID.valueOf(itemLocation.getItemID());
-            InventorySlot inventorySlot = ((InventorySlot)cells.get(itemLocation.getTableIndex()).getActor());
-            for( int index = 0; index < itemLocation.getItemsAmount(); index++){
+            InventorySlot inventorySlot = ((InventorySlot) cells.get(itemLocation.getTableIndex()).getActor());
+            for (int index = 0; index < itemLocation.getItemsAmount(); index++) {
                 InventoryItem item = ItemFactory.getInstance().getItem(itemID);
                 item.setName(targetTable.getName());
                 inventorySlot.add(item);
@@ -174,10 +196,10 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         }
     }
 
-    private void setDmgLabel(){
-        if(getActiveWeapon() != null){
+    private void setDmgLabel() {
+        if (getActiveWeapon() != null) {
             dmgLabel.setText("dmg " + getActiveWeapon().getDamage());
-        }else
+        } else
             dmgLabel.setText("no weapon");
     }
 
@@ -191,7 +213,6 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         clearItemsTable(equipmentSlotsTable);
         clearItemsTable(inventorySlotsTable);
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        System.out.println(player.getComponent(PlayerDateComponent.class).equippedItem.size);
         if (player.getComponent(PlayerDateComponent.class).equippedItem != null) {
             Array equipment = player.getComponent(PlayerDateComponent.class).equippedItem;
             fillInventory(equipmentSlotsTable, equipment, dragAndDrop);
@@ -203,25 +224,25 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         setDmgLabel();
     }
 
-    private WeaponItem getActiveWeapon(){
+    private WeaponItem getActiveWeapon() {
         if (weaponInventorySlot.getInventoryItem() == null) {
             return null;
         }
         return (WeaponItem) weaponInventorySlot.getInventoryItem();
     }
 
-    private void setActivePlayerWeapon(){
+    private void setActivePlayerWeapon() {
         engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first()
                 .getComponent(PlayerComponent.class).activeWeapon = getActiveWeapon();
-        if(!weaponInventorySlot.hasItem()){
+        if (!weaponInventorySlot.hasItem()) {
             engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first()
                     .getComponent(PlayerComponent.class).activeWeapon = null;
 
         }
     }
 
-    private void removeActivePlayerWeapon(){
-        if(weaponInventorySlot.hasItem()){
+    private void removeActivePlayerWeapon() {
+        if (weaponInventorySlot.hasItem()) {
             engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first()
                     .getComponent(PlayerComponent.class).activeWeapon = null;
         }
@@ -230,11 +251,11 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
 
     @Override
     public void onNotify(InventorySlot inventorySlot, InventorySlotEvent event) {
-        if(event == InventorySlotEvent.ADDED_ITEM){
+        if (event == InventorySlotEvent.ADDED_ITEM) {
             setDmgLabel();
             setActivePlayerWeapon();
         }
-        if(event == InventorySlotEvent.REMOVED_ITEM){
+        if (event == InventorySlotEvent.REMOVED_ITEM) {
             dmgLabel.setText("no weapon");
             removeActivePlayerWeapon();
         }
