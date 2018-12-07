@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.PlayerDateComponent;
 import com.cosma.annihilation.Gui.Inventory.*;
@@ -18,6 +19,8 @@ import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Systems.ActionSystem;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.GfxPlayerAssetDescriptors;
 import com.cosma.annihilation.Utils.LoaderOLD;
 import com.cosma.annihilation.Utils.Utilities;
 
@@ -30,38 +33,36 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
 
     private Table inventorySlotsTable;
     private Table equipmentSlotsTable;
+    private Table playerViewTable;
     private Table statsTable;
     private Skin skin;
     private InventorySlot weaponInventorySlot;
     private Label dmgLabel;
     private Label defLabel;
     private int inventorySize = 16;
-    private float slotSize = Utilities.setWindowHeight(0.1f);
+    private float slotSize = Utilities.setWindowHeight(0.09f);
     private ActorGestureListener listener;
-    private ItemStatsWindow itemStatsWindow;
     private InventoryWindow inventoryWindow;
+
+    private Label weaponName;
+    private Label weaponDescription;
+    private Label weaponDamage;
+    private Label weaponAccuracy;
+    private Label weaponAmmo;
+    private Label weaponAmmoInMagazine;
+    private InventorySlot armourInventorySlot;
 
     InventoryWindow(String title, Skin skin, final Engine engine, float x, float y) {
         super(title, skin);
         this.engine = engine;
         this.skin = skin;
-        this.debugAll();
         this.setSize(x, y);
-
-
+        this.debugAll();
 
         inventoryWindow = this;
         dragAndDrop = new DragAndDrop();
-
         leftTable = new Table(skin);
-        leftTable.setDebug(true);
         rightTable = new Table(skin);
-        rightTable.setDebug(true);
-
-        itemStatsWindow = new ItemStatsWindow("", skin);
-        itemStatsWindow.setVisible(false);
-        itemStatsWindow.setMovable(false);
-
 
         listener = new ActorGestureListener() {
             @Override
@@ -70,36 +71,83 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
                 InventorySlot inventorySlot = (InventorySlot) event.getListenerActor();
                 if (inventorySlot.hasItem()) {
                     if (inventorySlot.getInventoryItem() instanceof WeaponItem) {
-                        itemStatsWindow.setDmglabel((WeaponItem) inventorySlot.getInventoryItem());
-                        itemStatsWindow.setVisible(true);
+                        showItemStats((WeaponItem) inventorySlot.getInventoryItem());
                     }
                 }
-
                 super.touchDown(event, x, y, pointer, button);
             }
         };
-        this.add(leftTable).width(x*0.575f);
-        this.add(rightTable).width(x*0.375f);
+        this.add(leftTable).width(x*0.575f).height(y*0.8f);
+        this.add(rightTable).width(x*0.375f).height(y*0.8f);
 
         createStatsTable();
         createEquipmentTable();
         createInventoryTable();
+        createPlayerViewTable();
 
-        leftTable.add(equipmentSlotsTable);
+
+        leftTable.add(equipmentSlotsTable).expandY();
+        leftTable.add(playerViewTable).size(200,200);
         leftTable.row();
-        leftTable.add(inventorySlotsTable.bottom());
-
-        rightTable.add(itemStatsWindow).expandY().expandX().fill(true);
+        leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX();
 
 
+        addItemLabels();
+    }
 
-//
-//        this.add(equipmentSlotsTable);
-//        this.add(statsTable);
-//        this.row();
-//        this.add(inventorySlotsTable.bottom());
-//        this.add(itemStatsWindow).expandY().expandX().fill(true);
 
+    private void addItemLabels(){
+        weaponName = new Label("", skin);
+        weaponName.setColor(0, 82, 0, 255);
+        weaponName.setFontScale(1.1f);
+        rightTable.add(weaponName).left().expandX().top().pad(4).top();
+        rightTable.row();
+
+        weaponDescription = new Label("", skin);
+        weaponDescription.setColor(0, 82, 0, 255);
+        weaponDescription.setWrap(true);
+        rightTable.add(weaponDescription).left().pad(4).expandX().fillX();
+        rightTable.row();
+
+        weaponDamage = new Label("", skin);
+        weaponDamage.setColor(0, 82, 0, 255);
+        weaponDamage.setFontScale(0.9f);
+        rightTable.add(weaponDamage).left().expandX().top().pad(4).padTop(8);
+        rightTable.row();
+
+        weaponAccuracy = new Label("", skin);
+        weaponAccuracy.setColor(0, 79, 0, 255);
+        weaponAccuracy.setFontScale(0.9f);
+        rightTable.add(weaponAccuracy).left().expandX().top().pad(4);
+        rightTable.row();
+
+        weaponAmmo = new Label("", skin);
+        weaponAmmo.setColor(0, 82, 0, 255);
+        weaponAmmo.setFontScale(0.9f);
+        rightTable.add(weaponAmmo).left().expandX().top().pad(4);
+        rightTable.row();
+
+        weaponAmmoInMagazine = new Label("", skin);
+        weaponAmmoInMagazine.setColor(0, 82, 0, 255);
+        weaponAmmoInMagazine.setFontScale(0.9f);
+        rightTable.add(weaponAmmoInMagazine).left().expandX().top().pad(4);
+        rightTable.row();
+    }
+
+    private void showItemStats(WeaponItem item){
+        weaponName.setText(item.getItemName());
+        weaponDescription.setText(item.getItemShortDescription());
+        weaponDamage.setText("Weapon damage: " + item.getDamage());
+        weaponAccuracy.setText("Weapon accuracy: " + item.getAccuracy());
+        weaponAmmo.setText("Ammunition: " + ItemFactory.getInstance().getItem(item.getAmmoID()).getItemName());
+        weaponAmmoInMagazine.setText("Magazine capacity: " + item.getMaxAmmoInMagazine());
+    }
+
+    private void createPlayerViewTable(){
+        playerViewTable = new Table();
+        Image playerImage = new Image(Annihilation.getAssets().get(GfxPlayerAssetDescriptors.player_stand));
+        playerImage.setSize(200,200);
+        playerViewTable.add(playerImage);
     }
 
     private void createStatsTable() {
@@ -116,20 +164,20 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private void createEquipmentTable() {
         equipmentSlotsTable = new Table();
 
-        InventorySlot armourInventorySlot = new InventorySlot();
+        armourInventorySlot = new InventorySlot(InventoryItem.ItemUseType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack)));
 
-
-        weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE.getValue(), new Image((Texture) LoaderOLD.getResource("stack_default")));
+        weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE_LONG.getValue() | InventoryItem.ItemUseType.WEAPON_CLOSE.getValue()
+                | InventoryItem.ItemUseType.WEAPON_DISTANCE_SHORT.getValue() , new Image(Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack)));
         weaponInventorySlot.register(this);
-
 
         dragAndDrop.addTarget(new InventorySlotTarget(armourInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(weaponInventorySlot));
 
         equipmentSlotsTable.add(weaponInventorySlot).size(Utilities.setWindowWidth(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.006f));
+        equipmentSlotsTable.add();
+
         equipmentSlotsTable.row();
         equipmentSlotsTable.add(armourInventorySlot).size(Utilities.setWindowWidth(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.006f));
-
 
         equipmentSlotsTable.center();
         equipmentSlotsTable.pad(20);
@@ -142,9 +190,9 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
 
     private void createInventoryTable() {
         inventorySlotsTable = new Table();
-        inventorySlotsTable.bottom();
+        inventorySlotsTable.center();
         inventorySlotsTable.setDebug(false);
-        inventorySlotsTable.setFillParent(false);
+        inventorySlotsTable.setFillParent(true);
 
         for (int i = 1; i <= 24; i++) {
             InventorySlot inventorySlot = new InventorySlot();

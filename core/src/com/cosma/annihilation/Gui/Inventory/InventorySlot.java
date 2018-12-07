@@ -1,11 +1,9 @@
 package com.cosma.annihilation.Gui.Inventory;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -13,8 +11,6 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.LoaderOLD;
-import com.cosma.annihilation.Utils.StateManager;
 
 public class InventorySlot extends Stack implements InventorySlotObservable{
     private int itemsAmount = 0;
@@ -23,21 +19,22 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
     private Label itemsAmountLabel;
     private Stack stack;
     private Array<InventorySlotObserver> observers;
+    private float itemImageScale;
 
     public InventorySlot(){
 
         stack = new Stack();
         backgroundImage = new Image();
-        Image backgroundImageStandard = new Image( Annihilation.getAssets().manager.get(GfxAssetDescriptors.defaultStack));
+        Image backgroundImageStandard = new Image( Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack));
         stack.add(backgroundImageStandard);
         stack.setName("background");
         this.add(stack);
-        itemsAmountLabel = new Label(String.valueOf(itemsAmount),StateManager.skin);
+        itemsAmountLabel = new Label(String.valueOf(itemsAmount),Annihilation.getAssets().get(GfxAssetDescriptors.skin));
         itemsAmountLabel.setFontScale(0.5f);
         itemsAmountLabel.setAlignment(Align.bottomRight);
         itemsAmountLabel.setVisible(false);
         this.add(itemsAmountLabel);
-
+        this.itemImageScale = 1;
         observers = new Array<InventorySlotObserver>();
 
     }
@@ -60,9 +57,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
     public boolean hasItem(){
         if( hasChildren() ){
             SnapshotArray<Actor> items = this.getChildren();
-            if( items.size > 2 ){
-                return true;
-            }
+            return items.size > 2;
         }
         return false;
     }
@@ -83,7 +78,12 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
 
     }
 
-    public void addItem() {
+    public void setImageScale(float scale){
+        this.itemImageScale = scale;
+    }
+
+
+    private void addItem() {
         itemsAmount++;
         itemsAmountLabel.setText(String.valueOf(itemsAmount));
         checkVisibilityOfItemCount();
@@ -142,6 +142,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
         }
         if( !actor.equals(stack) && !actor.equals(itemsAmountLabel) ) {
             addItem();
+            actor.setScale(itemImageScale);
         }
     }
 

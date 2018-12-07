@@ -16,9 +16,9 @@ public class ActionSelectWindow extends Window {
 //        list.setFillParent(true);
 
         Array<Label> labels = new Array<Label>();
-        Label act1 = new Label("action 1", StateManager.skin);
+        Label act1 = new Label("action 1", skin);
         act1.setText("act");
-        Label act2 = new Label("action 2", StateManager.skin);
+        Label act2 = new Label("action 2", skin);
         labels.add(act1,act2);
         list.setItems(labels);
 

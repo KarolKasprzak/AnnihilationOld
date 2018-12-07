@@ -28,7 +28,6 @@ public class DebugRenderSystem extends IteratingSystem {
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
         if(StateManager.debugMode) {
             debugRenderer.render(world, camera.combined);
         }

@@ -26,14 +26,16 @@ class ContainerWindow extends Window {
     private ContainerWindow containerWindow;
     private ActorGestureListener listener;
     private Engine engine;
-    private Skin skin;
+    private float guiScale;
+
     ContainerWindow(String title, Skin skin, int itemSlotNumber, final Engine engine) {
         super(title, skin);
-        this.skin = skin;
         this.itemSlotNumber = itemSlotNumber;
         this.engine = engine;
 
         containerWindow = this;
+
+        guiScale = 1.9f;
 
         dragAndDrop = new DragAndDrop();
         takeAllButton = new TextButton("Take all", skin);
@@ -106,8 +108,9 @@ class ContainerWindow extends Window {
         for (int i = 0; i < itemSlotNumber; i++) {
             InventorySlot inventorySlot = new InventorySlot();
             inventorySlot.addListener(listener);
+            inventorySlot.setImageScale(1f);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
-            containerSlotsTable.add(inventorySlot).size(Utilities.setWindowHeight(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.005f));
+            containerSlotsTable.add(inventorySlot).size(Utilities.setWindowHeight(0.1f)*guiScale, Utilities.setWindowHeight(0.1f)*guiScale).pad(Utilities.setWindowHeight(0.005f));
             if (i == 6 || i == 12 || i == 18) containerSlotsTable.row();
         }
 

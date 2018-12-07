@@ -80,7 +80,7 @@ public class PlayerGUI implements Screen {
         createMenuWindow();
 
         containerWindow = new ContainerWindow("",skin,4,engine);
-        containerWindow.setSize(Utilities.setWindowWidth(0.5f),Utilities.setWindowHeight(0.6f));
+        containerWindow.setSize(Utilities.setWindowWidth(0.6f),Utilities.setWindowHeight(0.7f));
         containerWindow.setVisible(false);
         containerWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.5f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.6f)/2));
         stage.addActor(containerWindow);

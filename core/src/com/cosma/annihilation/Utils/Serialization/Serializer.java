@@ -72,12 +72,18 @@ public class Serializer{
                  entity = EntityFactory.getInstance().createPlayerEntity();
                 break;
             case BOX:
-                 entity = EntityFactory.getInstance().createBoxEntityTest();
+                entity = EntityFactory.getInstance().createBoxEntityTest();
                  break;
+
+            case ENEMY_TEST:
+                entity = EntityFactory.getInstance().createTestEnemy();
+                break;
         }
-        for (Component component : entityWrapper.getEntitysMap().values()) {
-            entity.add(component);
+        if(entity != null) {
+            for (Component component : entityWrapper.getEntitysMap().values()) {
+                entity.add(component);
+            }
+            setPosition(entity);
         }
-        setPosition(entity);
     }
 }

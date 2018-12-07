@@ -81,7 +81,15 @@ public class AnimationSystem extends IteratingSystem {
             box2DSprite.setTexture(playerStand);
             fixture.setUserData(box2DSprite);
             if(!playerComponent.weaponHidden){
-                box2DSprite.setTexture(playerWeaponStand);
+                int weaponTag = playerComponent.activeWeapon.getItemUseType();
+                switch (weaponTag) {
+                    case 4:
+                        box2DSprite.setTexture(playerWeaponStand);
+                        break;
+                    case 16:
+                        box2DSprite.setTexture(assetLoader.manager.get(GfxPlayerAssetDescriptors.player_stand_rifle));
+                        break;
+                }
                 fixture.setUserData(box2DSprite);
                 if(playerComponent.weaponReady){
                     box2DSprite.setTexture(assetLoader.manager.get(GfxPlayerAssetDescriptors.player_stand_pistol));

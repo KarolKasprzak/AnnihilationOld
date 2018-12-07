@@ -27,6 +27,7 @@ public class TileMapRender extends IteratingSystem {
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
+
     }
 
 

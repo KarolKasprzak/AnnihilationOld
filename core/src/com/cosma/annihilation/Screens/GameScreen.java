@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector3;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Systems.PlayerControlSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -79,9 +80,9 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-//        Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
-//               System.out.println(screenX + " " + screenY);
+       Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+       Vector3 vec = worldBuilder.getCamera().unproject(worldCoordinates);
+               System.out.println(screenX + " " + screenY);
 
         return false;
     }

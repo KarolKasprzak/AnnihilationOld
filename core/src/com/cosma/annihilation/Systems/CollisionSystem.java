@@ -107,6 +107,34 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
+        if(fa.getUserData() == BodyID.BULLET ){
+            if(fb.getUserData() == BodyID.ENEMY_TEST){
+                Entity entity = (Entity) fb.getBody().getUserData();
+                entity.getComponent(HealthComponent.class).hp = entity.getComponent(HealthComponent.class).hp - 25;
+                System.out.println("hit");
+            }
+            if (!bodiesToRemove.contains(fa.getBody(),true)){
+                bodiesToRemove.add(fa.getBody());
+                getEngine().removeEntity((Entity) fa.getBody().getUserData());
+
+            }
+        }
+
+        if(fb.getUserData() == BodyID.BULLET){
+            if(fa.getUserData() == BodyID.ENEMY_TEST){
+                Entity entity = (Entity) fa.getBody().getUserData();
+                entity.getComponent(HealthComponent.class).hp = entity.getComponent(HealthComponent.class).hp - 25;
+                System.out.println("hit1");
+            }
+            if (!bodiesToRemove.contains(fb.getBody(),true)){
+                bodiesToRemove.add(fb.getBody());
+                getEngine().removeEntity((Entity) fb.getBody().getUserData());
+            }
+        }
+
+
+
+
 
         addEntityToActionList(fa, fb);
 
@@ -120,20 +148,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             getEngine().removeEntity((Entity) fb.getBody().getUserData());
             removeShellAfterTime(fb,2);
         }
-        //Bullet contact
-        if(fa.getUserData() == BodyID.BULLET ){
-            if (!bodiesToRemove.contains(fa.getBody(),true)){
-                bodiesToRemove.add(fa.getBody());
-                getEngine().removeEntity((Entity) fa.getBody().getUserData());
-            }
-        }
 
-        if(fb.getUserData() == BodyID.BULLET){
-            if (!bodiesToRemove.contains(fb.getBody(),true)){
-                bodiesToRemove.add(fb.getBody());
-                getEngine().removeEntity((Entity) fb.getBody().getUserData());
-            }
-        }
         //Player ground contact
         if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
             player.getComponent(PlayerComponent.class).numFootContacts++;
@@ -186,6 +201,10 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             Fixture fb = contact.getFixtureB();
 
             removeEntityFromActionList(fa,fb);
+
+            //Bullet contact
+
+
 
 
 

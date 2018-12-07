@@ -43,11 +43,11 @@ public class InventoryItem extends Image {
     }
 
     public enum ItemUseType{
-        ITEM_RESTORE_HEALTH(1),
+        ARMOUR(1),
         ITEM_RESTORE_MP(2),
-        ITEM_DAMAGE(4),
+        WEAPON_DISTANCE_SHORT(4),
         WEAPON_CLOSE(8),
-        WEAPON_DISTANCE(16),
+        WEAPON_DISTANCE_LONG(16),
         AMMUNIION(32),
         WAND_TWOHAND(64),
         ARMOR_SHIELD(128),

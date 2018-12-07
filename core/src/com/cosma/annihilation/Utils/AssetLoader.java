@@ -1,7 +1,9 @@
 package com.cosma.annihilation.Utils;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
@@ -14,6 +16,10 @@ public class AssetLoader {
 
 
     public void load() {
+
+        loadMap();
+        loadFonts();
+
         manager.load(GfxAssetDescriptors.box);
         manager.load(SfxAssetDescriptors.pistolSound);
         manager.load(GfxAssetDescriptors.bulletShell);
@@ -24,16 +30,28 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.mp44);
         manager.load(GfxAssetDescriptors.p38);
         manager.load(GfxAssetDescriptors.defaultStack);
+        manager.load(GfxPlayerAssetDescriptors.player_stand);
+        manager.load(GfxPlayerAssetDescriptors.player_stand_rifle);
+        manager.load(GfxAssetDescriptors.enemy1);
 
-        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        manager.load(GfxAssetDescriptors.tiledMap);
         manager.finishLoading();
+
+
+
+
 
         System.out.println("Loaded!");
     }
 
+    private void loadFonts(){
+        manager.setLoader(BitmapFont.class, new BitmapFontLoader(new InternalFileHandleResolver()));
+        manager.load(GfxAssetDescriptors.font);
+    }
 
-
+    private void loadMap(){
+        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.load(GfxAssetDescriptors.tiledMap);
+    }
 
     public void dispose() {
         manager.dispose();

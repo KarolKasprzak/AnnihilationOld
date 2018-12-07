@@ -22,6 +22,8 @@ public class Utilities {
         return (Gdx.graphics.getHeight()/24)*scale;
     }
 
+    public  static float setFontScale(float scale) {return (Gdx.graphics.getHeight()/500)*scale; }
+
     public static void setButtonColor(TextButton button){
         button.getLabel().setColor(0,82,0,255);
     }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Items.ItemFactory;
@@ -40,6 +41,9 @@ public class WorldBuilder implements Disposable, EntityListener {
         new WorldLoader(engine, world, tiledMap, rayHandler);
         playerGUI = new PlayerGUI(engine, world,assetLoader);
         engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
+        engine.getSystem(HealthSystem.class).setPlayerGUI(playerGUI);
+        engine.getSystem(HealthSystem.class).camera = camera;
+
         engine.addEntityListener(this);
         if (isGameLoaded) {
             playerGUI.loadGame();

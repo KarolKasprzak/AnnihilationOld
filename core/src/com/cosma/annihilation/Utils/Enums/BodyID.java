@@ -9,5 +9,7 @@ public enum  BodyID {
     LADDER,
     CONTAINER,
     BULLET,
-    BULLET_SHELL
+    BULLET_SHELL,
+    ENEMY_TEST
+
 }

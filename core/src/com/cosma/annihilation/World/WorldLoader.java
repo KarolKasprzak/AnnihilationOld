@@ -4,6 +4,7 @@ import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.*;
@@ -60,14 +61,23 @@ class WorldLoader {
                             float[] dimension = getDimension(mo);
                             Body playerBody = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(BodyComponent.class).body;
                             playerBody.setTransform(dimension[0],dimension[1],0);
+                            continue;
+                        }
+                        if("spawn_enemy".equals(mo.getName())){
+                            float[] dimension = getDimension(mo);
+                            Entity entity = entityFactory.createTestEnemy();
+                            entity.getComponent(BodyComponent.class).body.setTransform(dimension[0],dimension[1],0);
+                            continue;
                         }
                         if("ladder".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             Body body = createLadder(dimension[0],dimension[1],dimension[2],dimension[3]);
+                            continue;
                         }
                         if("ground".equals(mo.getName())) {
                             float[] dimension = getDimension(mo);
                             Body body = createBoxBody(dimension[0], dimension[1], dimension[2], dimension[3], false, 0,dimension[4]);
+                            continue;
                         }
                         if("light".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
@@ -75,6 +85,7 @@ class WorldLoader {
 //                            pl.setStaticLight(true);
 //                            pl.setXray(true);
 //                            pl.setSoft(true);
+                            return;
                         }
                         if("light1".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
@@ -85,6 +96,7 @@ class WorldLoader {
                             pl1.setContactFilter(filter);
                             pl1.setSoftnessLength(0.3f);
                             pl1.setSoft(true);
+                            continue;
                         }
                         if("sun".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
@@ -95,7 +107,8 @@ class WorldLoader {
                             sun.setContactFilter(filter);
                             sun.setSoft(true);
                             sun.setSoftnessLength(0.4f);
-                        }
+                            continue;
+                    }
                         if("spawn_test".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             BodyDef bodyDef = new BodyDef();
@@ -110,12 +123,14 @@ class WorldLoader {
                             fixtureDef.shape = shape;
                             fixtureDef.density = 1f;
                             boxBody.createFixture(fixtureDef);
+                            continue;
                         }
                         if("spawn_box".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             entityFactory.createBoxEntity(dimension[0],dimension[1],getItemForContainer(mo));
 //                            if(getItemForContainer(mo).size > 0)
 //                            System.out.println(getItemForContainer(mo).get(0).getItemID());
+                            continue;
                         }
                     }
                 }

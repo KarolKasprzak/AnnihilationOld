@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Utils.Constants;
@@ -24,7 +25,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
 
     private OrthographicCamera camera;
-    private SpriteBatch batch;
+    public SpriteBatch batch;
     private World world;
 
 
@@ -33,37 +34,44 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
     @SuppressWarnings("unchecked")
     public RenderSystem(OrthographicCamera camera,World world) {
-        // gets all entities with a TransformComponent and TextureComponent
+
         super(Family.all(TransformComponent.class, TextureComponent.class).get(),Constants.RENDER);
         this.camera = camera;
         this.world = world;
         batch = new SpriteBatch();
-        //creates out componentMappers
-//        textureMapper = ComponentMapper.getFor(TextureComponent.class);
-//        transformMapper = ComponentMapper.getFor(TransformComponent.class);
-//        this.batch = batch;  // set our batch to the one supplied in constructor
-        // set up the camera to match our screen size
-//        camera = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
-//        camera.position.set(FRUSTUM_WIDTH / 2f, FRUSTUM_HEIGHT / 2f, 0);
 
-
+       textureMapper = ComponentMapper.getFor(TextureComponent.class);
+       transformMapper = ComponentMapper.getFor(TransformComponent.class);
     }
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+        super.update(deltaTime);
         Box2DSprite.draw(batch,world);
+
         batch.end();
     }
 
     @Override
     public void processEntity(Entity entity, float deltaTime) {
 
+            TransformComponent transformComponent = transformMapper.get(entity);
+            TextureComponent textureComponent = textureMapper.get(entity);
+            if(textureComponent.texture != null){
+                batch.draw(textureComponent.texture,transformComponent.position.x-1,transformComponent.position.y-1,2,2);
+            }else
+                System.out.println("Texture is null!");
+
+
+
+
     }
     @Override
     public void dispose() {
-
+        batch.dispose();
     }
 }
