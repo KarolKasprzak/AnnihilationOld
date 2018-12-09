@@ -84,8 +84,6 @@ public class PlayerGUI implements Screen {
         containerWindow.setVisible(false);
         containerWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.5f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.6f)/2));
         stage.addActor(containerWindow);
-
-
     }
 
     private void createMenuWindow(){
@@ -93,6 +91,7 @@ public class PlayerGUI implements Screen {
         menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.95f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.95f)/2));
         menuWindow.setMovable(true);
         menuWindow.setVisible(false);
+        menuWindow.setZIndex(0);
         stage.addActor(menuWindow);
     }
 

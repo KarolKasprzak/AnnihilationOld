@@ -43,6 +43,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
         engine.getSystem(HealthSystem.class).setPlayerGUI(playerGUI);
         engine.getSystem(HealthSystem.class).camera = camera;
+        engine.getSystem(CollisionSystem.class).SetSignal();
 
         engine.addEntityListener(this);
         if (isGameLoaded) {
@@ -66,13 +67,13 @@ public class WorldBuilder implements Disposable, EntityListener {
         LightRenderSystem lightRenderSystem = new LightRenderSystem(camera,world);
         this.rayHandler = lightRenderSystem.getRayHandler();
         engine.addSystem(new RenderSystem(camera,world));
+        engine.addSystem(new HealthSystem());
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
         engine.addSystem(new AnimationSystem(assetLoader));
-        engine.addSystem(new HealthSystem());
         engine.addSystem(lightRenderSystem);
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new ActionSystem(world));

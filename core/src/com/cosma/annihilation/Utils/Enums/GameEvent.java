@@ -5,6 +5,7 @@ package com.cosma.annihilation.Utils.Enums;
         WEAPON_TAKE_OUT,
         WEAPON_SHOOT,
         PERFORM_ACTION,
-        JUMP
+        JUMP,
+        OBJECT_HIT
     }
 

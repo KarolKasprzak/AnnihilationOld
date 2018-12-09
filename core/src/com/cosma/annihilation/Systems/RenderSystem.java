@@ -62,7 +62,8 @@ public class RenderSystem extends IteratingSystem implements Disposable {
             TransformComponent transformComponent = transformMapper.get(entity);
             TextureComponent textureComponent = textureMapper.get(entity);
             if(textureComponent.texture != null){
-                batch.draw(textureComponent.texture,transformComponent.position.x-1,transformComponent.position.y-1,2,2);
+//                batch.draw(textureComponent.texture,transformComponent.position.x-1,transformComponent.position.y-1,2,2);
+                batch.draw(textureComponent.texture,transformComponent.position.x-1,transformComponent.position.y-1,textureComponent.texture.getHeight()/32,textureComponent.texture.getWidth()/32);
             }else
                 System.out.println("Texture is null!");
 

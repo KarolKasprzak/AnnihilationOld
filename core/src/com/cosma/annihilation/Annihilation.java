@@ -44,6 +44,7 @@ public class Annihilation extends Game {
     public void setGameScreen() {
         gameScreen = new GameScreen(this, assetLoader);
         this.setScreen(gameScreen);
+
     }
 
     public void setGameState(Boolean gameLoaded) {

@@ -3,18 +3,22 @@ package com.cosma.annihilation.Systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Utils.EntityEventSignal;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
+import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.StateManager;
 
 
 public class CollisionSystem extends IteratingSystem implements ContactListener {
 
+    private Signal<EntityEventSignal> signal;
     private World world;
     private Entity player;
     private float ladderX;
@@ -26,7 +30,8 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     private Filter goTroughFilter;
     private Filter normalFilter;
     public Array<Body> bodiesToRemove;
-    public Array<Body> bodiesToPeriodRemove;
+    private EntityEventSignal entityEventSignal;
+
 
     public CollisionSystem(World world) {
         super(Family.all(PlayerComponent.class).get());
@@ -41,7 +46,16 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         normalFilter = new Filter();
         normalFilter.categoryBits = CollisionID.NO_SHADOW;
         bodiesToRemove = new Array<Body>();
-        bodiesToPeriodRemove = new Array<Body>();
+
+
+
+        signal = new Signal<EntityEventSignal>();
+        entityEventSignal = new EntityEventSignal();
+
+    }
+
+    public void SetSignal(){
+        signal.add(this.getEngine().getSystem(HealthSystem.class));
     }
 
     @Override
@@ -83,18 +97,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
                playerBody.getFixtureList().get(0).setFilterData(normalFilter);
            }
-
-//        if(bodiesToPeriodRemove.size > 0 && !world.isLocked()){
-//            for(final Body body: getEngine().getSystem(CollisionSystem.class).bodiesToPeriodRemove){
-//                Timer.schedule(new Timer.Task() {
-//                    @Override
-//                    public void run() {
-//                        world.destroyBody(body);
-//                    }
-//                }, 2);
-//               bodiesToPeriodRemove.removeValue(body,true);
-//            }
-//        }
        }
 
 
@@ -107,34 +109,8 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
-        if(fa.getUserData() == BodyID.BULLET ){
-            if(fb.getUserData() == BodyID.ENEMY_TEST){
-                Entity entity = (Entity) fb.getBody().getUserData();
-                entity.getComponent(HealthComponent.class).hp = entity.getComponent(HealthComponent.class).hp - 25;
-                System.out.println("hit");
-            }
-            if (!bodiesToRemove.contains(fa.getBody(),true)){
-                bodiesToRemove.add(fa.getBody());
-                getEngine().removeEntity((Entity) fa.getBody().getUserData());
-
-            }
-        }
-
-        if(fb.getUserData() == BodyID.BULLET){
-            if(fa.getUserData() == BodyID.ENEMY_TEST){
-                Entity entity = (Entity) fa.getBody().getUserData();
-                entity.getComponent(HealthComponent.class).hp = entity.getComponent(HealthComponent.class).hp - 25;
-                System.out.println("hit1");
-            }
-            if (!bodiesToRemove.contains(fb.getBody(),true)){
-                bodiesToRemove.add(fb.getBody());
-                getEngine().removeEntity((Entity) fb.getBody().getUserData());
-            }
-        }
-
-
-
-
+        bulletCollision(fa,fb);
+        bulletCollision(fb,fa);
 
         addEntityToActionList(fa, fb);
 
@@ -202,14 +178,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
             removeEntityFromActionList(fa,fb);
 
-            //Bullet contact
-
-
-
-
-
-
-
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
                 StateManager.onGround = false;
                 player.getComponent(PlayerComponent.class).numFootContacts--;
@@ -260,11 +228,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 }
             }, delay);
         }
-
-
-
     }
-
 
     private void delayJump(float delay){
         Timer.schedule(new Timer.Task() {
@@ -274,6 +238,23 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             }
         }, delay);
     }
+
+    private void bulletCollision(Fixture fa, Fixture fb){
+        if(fa.getUserData() == BodyID.BULLET ){
+            if(fb.getBody().getUserData()instanceof Entity){
+                Entity entity = (Entity) fa.getBody().getUserData();
+                entityEventSignal.setEvent(GameEvent.OBJECT_HIT,(Entity) fb.getBody().getUserData(),entity.getComponent(BulletComponent.class).dmg);
+                signal.dispatch(entityEventSignal);
+            }
+            if (!bodiesToRemove.contains(fa.getBody(),true)){
+                bodiesToRemove.add(fa.getBody());
+                getEngine().removeEntity((Entity) fa.getBody().getUserData());
+
+            }
+        }
+    }
+
+
 
     private void addEntityToActionList(Fixture fa, Fixture fb){
         if(fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY  || fb.getUserData() == BodyID.CONTAINER &&  fa.getUserData() == BodyID.PLAYER_BODY){

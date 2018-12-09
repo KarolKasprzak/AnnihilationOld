@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Pool;
 
 public class BulletComponent implements Component, Pool.Poolable {
 
+    public int dmg = 0;
 
     @Override
     public void reset() {

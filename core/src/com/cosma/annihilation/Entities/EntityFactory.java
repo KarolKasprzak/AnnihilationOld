@@ -75,7 +75,7 @@ public class EntityFactory {
         healthComponent.hpIndicator = new Label(healthComponent.hp + "/" + healthComponent.maxHP,Annihilation.getAssets().get(GfxAssetDescriptors.skin));
         healthComponent.hpIndicator.setFontScale(Utilities.setFontScale(1));
         healthComponent.hpIndicator.setColor(0,82,0,255);
-
+        healthComponent.hpIndicator.setZIndex(5);
 
         serializationComponent.type = EntityID.ENEMY_TEST;
 
@@ -105,7 +105,7 @@ public class EntityFactory {
     }
 
 
-    public Entity createBulletEntity(float x, float y,float speed,boolean flip){
+    public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg){
         Entity entity = engine.createEntity();
 
         Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
@@ -113,6 +113,8 @@ public class EntityFactory {
         box2DSprite.setFlip(flip,false);
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+
+        bulletComponent.dmg = dmg;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

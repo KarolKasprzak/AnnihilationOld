@@ -61,16 +61,15 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             if (playerComponent.weaponReady) {
                 if (weaponMagazine.hasAmmo()) {
                     if (StateManager.playerDirection) {
-                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false);
+                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage());
                         EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f, body.getPosition().y + 0.63f);
                     } else {
-                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x - 1.1f, body.getPosition().y + 0.63f, -20, true);
+                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x - 1.1f, body.getPosition().y + 0.63f, -20, true,playerComponent.activeWeapon.getDamage());
                         EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x - 0.7f, body.getPosition().y + 0.63f);
                     }
                     Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
                     sound.play();
                     weaponMagazine.removeAmmoFromMagazine();
-                    System.out.println(weaponMagazine.getAmmoInMagazine());
                 } else {
                     weaponMagazine.reload();
                 }
@@ -110,6 +109,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 break;
         }
     }
+
+
+
     private class WeaponMagazine{
         private int ammoInMagazine;
         private int maxAmmoInMagazine;

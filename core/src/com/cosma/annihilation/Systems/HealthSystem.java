@@ -3,25 +3,19 @@ package com.cosma.annihilation.Systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.signals.Listener;
+import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.HealthComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Gui.PlayerGUI;
 import com.cosma.annihilation.Utils.Constants;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.StateManager;
+import com.cosma.annihilation.Utils.EntityEventSignal;
 
-public class HealthSystem extends IteratingSystem {
+public class HealthSystem extends IteratingSystem implements Listener<EntityEventSignal> {
+
 
 
     private ComponentMapper<HealthComponent> healthMapper;
@@ -52,14 +46,29 @@ public class HealthSystem extends IteratingSystem {
             healthComponent.hpIndicator.setText(healthComponent.hp + "/" + healthComponent.maxHP);
         }
 
-//        if (hp <= 0) {
-//            System.out.println("dead");
-//        }
+     if (healthComponent.hp <= 0) {
+         getEngine().getSystem(CollisionSystem.class).bodiesToRemove.add(entity.getComponent(BodyComponent.class).body);
+         healthComponent.hpIndicator.remove();
+         this.getEngine().removeEntity(entity);
+        }
 
     }
 
 
     public void setPlayerGUI(PlayerGUI playerGUI) {
         this.playerGUI = playerGUI;
+    }
+
+
+    @Override
+    public void receive(Signal<EntityEventSignal> signal, EntityEventSignal object) {
+        switch (object.getGameEvent()){
+            case OBJECT_HIT:
+                object.getEntity().getComponent(HealthComponent.class).hp -= object.getDamage();
+                break;
+            case WEAPON_SHOOT:
+
+                break;
+        }
     }
 }
