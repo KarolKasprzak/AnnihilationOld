@@ -67,7 +67,6 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     }
 
     private void openBoxAction(){
-        System.out.println(playerComponent.processedEntity.getComponent(ActionComponent.class).action);
         if(playerComponent.processedEntity.getComponent(ContainerComponent.class).itemLocations.size>0){
           playerGUI.showLootWindow(playerComponent.processedEntity);
         }

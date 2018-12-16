@@ -5,11 +5,14 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.PlayerComponent;
@@ -57,12 +60,12 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         this.engine = engine;
         this.skin = skin;
         this.setSize(x, y);
-        this.debugAll();
 
         inventoryWindow = this;
         dragAndDrop = new DragAndDrop();
         leftTable = new Table(skin);
         rightTable = new Table(skin);
+
 
         listener = new ActorGestureListener() {
             @Override

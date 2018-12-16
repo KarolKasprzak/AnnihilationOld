@@ -2,11 +2,14 @@ package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.PlayerDateComponent;
@@ -14,6 +17,7 @@ import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Gui.Inventory.InventorySlot;
 import com.cosma.annihilation.Gui.Inventory.InventorySlotTarget;
 import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 
@@ -35,7 +39,9 @@ class ContainerWindow extends Window {
 
         containerWindow = this;
 
-        guiScale = 1.9f;
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.guiframe))));
+
+        guiScale = 1.3f;
 
         dragAndDrop = new DragAndDrop();
         takeAllButton = new TextButton("Take all", skin);
@@ -75,7 +81,6 @@ class ContainerWindow extends Window {
                 }
             }
             inventorySlot.clearAllItems();
-
         }
     }
 
@@ -116,8 +121,8 @@ class ContainerWindow extends Window {
 
         this.add(containerSlotsTable).center().fillX().colspan(2).pad(80);
         this.row();
-        this.add(takeAllButton).bottom().center().size(Utilities.setButtonWidth(2), Utilities.setButtonHeight(2));
-        this.add(closeButton).bottom().center().size(Utilities.setButtonWidth(2), Utilities.setButtonHeight(2));
+        this.add(takeAllButton).bottom().center().size(Utilities.setButtonWidth(1.7f), Utilities.setButtonHeight(1.7f));
+        this.add(closeButton).bottom().center().size(Utilities.setButtonWidth(1.7f), Utilities.setButtonHeight(1.7f));
         closeButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

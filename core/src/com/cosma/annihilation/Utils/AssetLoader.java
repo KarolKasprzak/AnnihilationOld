@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Utils;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -33,6 +34,8 @@ public class AssetLoader {
         manager.load(GfxPlayerAssetDescriptors.player_stand);
         manager.load(GfxPlayerAssetDescriptors.player_stand_rifle);
         manager.load(GfxAssetDescriptors.enemy1);
+        manager.load(GfxAssetDescriptors.guiframe);
+        manager.load(GfxAssetDescriptors.guiframe64x64);
 
         manager.finishLoading();
 

@@ -33,7 +33,7 @@ public class MenuWindow extends Window {
         this.getTitleLabel().setColor(0,82,0,255);
         this.setSize(x,y);
         this.setMovable(false);
-
+        this.setFillParent(true);
 
 
 

@@ -189,8 +189,16 @@ public class EntityFactory {
         TransformComponent transformComponent = new TransformComponent();
         ActionComponent actionComponent = new ActionComponent();
         SerializationComponent serializationComponent = new SerializationComponent();
-        serializationComponent.type = EntityID.BOX;
+        HealthComponent healthComponent = new HealthComponent();
+        healthComponent.hp = 50;
+        healthComponent.maxHP = 50;
 
+        healthComponent.hpIndicator = new Label(healthComponent.hp + "/" + healthComponent.maxHP,Annihilation.getAssets().get(GfxAssetDescriptors.skin));
+        healthComponent.hpIndicator.setFontScale(Utilities.setFontScale(1));
+        healthComponent.hpIndicator.setColor(0,82,0,255);
+        healthComponent.hpIndicator.setZIndex(5);
+
+        serializationComponent.type = EntityID.BOX;
         actionComponent.action = ActionID.OPEN;
         containerComponent.name = "box";
         containerComponent.itemLocations = itemList;
@@ -231,7 +239,9 @@ public class EntityFactory {
         entity.add(containerComponent);
         entity.add(transformComponent);
         entity.add(actionComponent);
+        entity.add(healthComponent);
         engine.addEntity(entity);
+        System.out.println("f23 " + entity.getComponent(HealthComponent.class).hp);
 
         return entity;
     }

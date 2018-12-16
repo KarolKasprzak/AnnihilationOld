@@ -205,8 +205,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                 StateManager.climbing = false;
             }
 
-
-
         }
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
@@ -253,8 +251,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             }
         }
     }
-
-
 
     private void addEntityToActionList(Fixture fa, Fixture fb){
         if(fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY  || fb.getUserData() == BodyID.CONTAINER &&  fa.getUserData() == BodyID.PLAYER_BODY){

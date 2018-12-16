@@ -16,9 +16,13 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> p38 = new AssetDescriptor<Texture>("gfx/icon/p38.png", Texture.class);
     public static final AssetDescriptor<Texture> defaultStack = new AssetDescriptor<Texture>("interface/icon/stack_default.png", Texture.class);
     public static final AssetDescriptor<Texture> enemy1 = new AssetDescriptor<Texture>("gfx/characters/enemy.png", Texture.class);
+    public static final AssetDescriptor<Texture> guiframe = new AssetDescriptor<Texture>("gfx/gui/gui_frame.png", Texture.class);
+    public static final AssetDescriptor<Texture> guiframe64x64 = new AssetDescriptor<Texture>("gfx/gui/gui_frame_64x64.png", Texture.class);
+
     public static final AssetDescriptor<BitmapFont> font = new AssetDescriptor<BitmapFont>("gfx/fonts/font1.fnt", BitmapFont.class);
 
     public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("Map/2/map1.tmx", TiledMap.class);
+
     private GfxAssetDescriptors(){
 
     }

@@ -64,7 +64,10 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     public void receive(Signal<EntityEventSignal> signal, EntityEventSignal object) {
         switch (object.getGameEvent()){
             case OBJECT_HIT:
+                System.out.println("f" + object.getEntity().getComponent(HealthComponent.class).hp);
                 object.getEntity().getComponent(HealthComponent.class).hp -= object.getDamage();
+                System.out.println("f1" + object.getEntity().getComponent(HealthComponent.class).hp);
+                System.out.println("f2" + object.getDamage());
                 break;
             case WEAPON_SHOOT:
 

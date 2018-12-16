@@ -25,7 +25,8 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
 
         stack = new Stack();
         backgroundImage = new Image();
-        Image backgroundImageStandard = new Image( Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack));
+        Image backgroundImageStandard = new Image( Annihilation.getAssets().get(GfxAssetDescriptors.guiframe64x64));
+//        Image backgroundImageStandard = new Image( Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack));
         stack.add(backgroundImageStandard);
         stack.setName("background");
         this.add(stack);

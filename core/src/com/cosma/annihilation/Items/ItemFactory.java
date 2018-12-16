@@ -77,7 +77,7 @@ public class ItemFactory {
     }
     private void setTexture(InventoryItem inventoryItem){
         inventoryItem.setDrawable(new TextureRegionDrawable(new TextureRegion((Texture) assetLoader.manager.get(inventoryItem.getTextureName()))));
-        inventoryItem.setScaling(Scaling.none);
+        inventoryItem.setScaling(Scaling.fit);
         }
 
     public void setAssetLoader(AssetLoader assetLoader) {
