@@ -20,7 +20,6 @@ public class LoaderOLD {
 
         files = new HashMap<String, AssetsHelper>();
         //Textures
-        files.put("bullet", new AssetsHelper("gfx/bullet/bullet.png", Texture.class));
         files.put("ladder", new AssetsHelper("gfx/map_util/ladders_wood.png", Texture.class));
         files.put("ladder2", new AssetsHelper("tiles/ladder_mid.png", Texture.class));
         files.put("box", new AssetsHelper("gfx/box.png", Texture.class));
@@ -35,7 +34,6 @@ public class LoaderOLD {
         files.put("player_move", new AssetsHelper("gfx/player_move.atlas", TextureAtlas.class));
         files.put("player_move_start", new AssetsHelper("gfx/player.atlas", TextureAtlas.class));
         files.put("player_stand", new AssetsHelper("gfx/Player1.png", Texture.class));
-        files.put("tablet", new AssetsHelper("gfx/tablet.png", Texture.class));
         files.put("skin", new AssetsHelper("interface/comadore/uiskin.json", Skin.class));
         files.put("player_weapon", new AssetsHelper("gfx/player_weapons_stand.png", Texture.class));
 

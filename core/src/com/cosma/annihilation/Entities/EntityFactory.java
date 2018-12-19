@@ -72,10 +72,8 @@ public class EntityFactory {
         healthComponent.maxHP = 50;
         healthComponent.hp = 50;
 
-        healthComponent.hpIndicator = new Label(healthComponent.hp + "/" + healthComponent.maxHP,Annihilation.getAssets().get(GfxAssetDescriptors.skin));
-        healthComponent.hpIndicator.setFontScale(Utilities.setFontScale(1));
-        healthComponent.hpIndicator.setColor(0,82,0,255);
-        healthComponent.hpIndicator.setZIndex(5);
+        transformComponent.sizeX = 2;
+        transformComponent.sizeY = 2;
 
         serializationComponent.type = EntityID.ENEMY_TEST;
 
@@ -181,22 +179,22 @@ public class EntityFactory {
 
     public Entity createBoxEntity(float x, float y, Array<InventoryItemLocation> itemList) {
         Entity entity = new Entity();
-        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
-        Box2DSprite box2DSprite = new Box2DSprite(mainTexture);
         //Component
         BodyComponent bodyComponent = new BodyComponent();
         ContainerComponent containerComponent = new ContainerComponent();
         TransformComponent transformComponent = new TransformComponent();
+        TextureComponent textureComponent = new TextureComponent();
         ActionComponent actionComponent = new ActionComponent();
         SerializationComponent serializationComponent = new SerializationComponent();
         HealthComponent healthComponent = new HealthComponent();
         healthComponent.hp = 50;
         healthComponent.maxHP = 50;
 
-        healthComponent.hpIndicator = new Label(healthComponent.hp + "/" + healthComponent.maxHP,Annihilation.getAssets().get(GfxAssetDescriptors.skin));
-        healthComponent.hpIndicator.setFontScale(Utilities.setFontScale(1));
-        healthComponent.hpIndicator.setColor(0,82,0,255);
-        healthComponent.hpIndicator.setZIndex(5);
+        textureComponent.texturePatch = GfxAssetDescriptors.box.fileName;
+        textureComponent.setTexture();
+
+        transformComponent.sizeX = 1;
+        transformComponent.sizeY = 1;
 
         serializationComponent.type = EntityID.BOX;
         actionComponent.action = ActionID.OPEN;
@@ -219,12 +217,6 @@ public class EntityFactory {
         fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
         bodyComponent.body.createFixture(fixtureDef);
-        //Render fixture
-        FixtureDef renderFixture = new FixtureDef();
-        renderFixture.shape = shape;
-        renderFixture.isSensor = true;
-        renderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-        bodyComponent.body.createFixture(renderFixture).setUserData(box2DSprite);
         //Sensor fixture
         CircleShape sensorShape = new CircleShape();
         sensorShape.setRadius(1);
@@ -234,6 +226,7 @@ public class EntityFactory {
         touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
         //-----------Body Component End----------------------
+        entity.add(textureComponent);
         entity.add(serializationComponent);
         entity.add(bodyComponent);
         entity.add(containerComponent);
@@ -241,7 +234,6 @@ public class EntityFactory {
         entity.add(actionComponent);
         entity.add(healthComponent);
         engine.addEntity(entity);
-        System.out.println("f23 " + entity.getComponent(HealthComponent.class).hp);
 
         return entity;
     }

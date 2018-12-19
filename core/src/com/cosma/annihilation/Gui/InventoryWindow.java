@@ -5,6 +5,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -22,10 +24,8 @@ import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Systems.ActionSystem;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.GfxPlayerAssetDescriptors;
-import com.cosma.annihilation.Utils.LoaderOLD;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.*;
+import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
 
 public class InventoryWindow extends Window implements InventorySlotObserver {
@@ -38,6 +38,8 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private Table equipmentSlotsTable;
     private Table playerViewTable;
     private Table statsTable;
+    private Table medicalTable;
+
     private Skin skin;
     private InventorySlot weaponInventorySlot;
     private Label dmgLabel;
@@ -55,17 +57,34 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private Label weaponAmmoInMagazine;
     private InventorySlot armourInventorySlot;
 
-    InventoryWindow(String title, Skin skin, final Engine engine, float x, float y) {
+
+    private AnimatedActor animatedActor;
+    private Image imageHuman;
+
+    InventoryWindow(String title, Skin skin, final Engine engine) {
         super(title, skin);
         this.engine = engine;
         this.skin = skin;
-        this.setSize(x, y);
+
+
+        this.debugAll();
 
         inventoryWindow = this;
         dragAndDrop = new DragAndDrop();
         leftTable = new Table(skin);
         rightTable = new Table(skin);
 
+        TextureAtlas atlas = Annihilation.getAssets().get(GfxAssetDescriptors.gui_human_animation);
+        Animation animation = new Animation(0.1f,atlas.findRegion("gui_rotate_human10"),Animation.PlayMode.NORMAL);
+        AnimatedSprite animatedSprite = new AnimatedSprite(animation);
+        animatedActor = new AnimatedActor(animation);
+
+        imageHuman = new Image();
+
+
+
+
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.clearColor))));
 
         listener = new ActorGestureListener() {
             @Override
@@ -80,23 +99,33 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
                 super.touchDown(event, x, y, pointer, button);
             }
         };
-        this.add(leftTable).width(x*0.575f).height(y*0.8f);
-        this.add(rightTable).width(x*0.375f).height(y*0.8f);
+        this.add(leftTable);
+        this.add(rightTable);
 
         createStatsTable();
+        createMedicalTable();
         createEquipmentTable();
         createInventoryTable();
         createPlayerViewTable();
 
 
-        leftTable.add(equipmentSlotsTable).expandY();
-        leftTable.add(playerViewTable).size(200,200);
-        leftTable.row();
+//        leftTable.add(equipmentSlotsTable).expandY();
+//        leftTable.add(playerViewTable).size(200,200);
+//        leftTable.row();
         leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX();
+        rightTable.add(medicalTable);
+        rightTable.row();
+        rightTable.add(equipmentSlotsTable).expandY().expandX();
 
-
-        addItemLabels();
+//        addItemLabels();
     }
+
+    private void createMedicalTable(){
+        medicalTable = new Table();
+        medicalTable.add(animatedActor);
+
+    }
+
 
 
     private void addItemLabels(){
@@ -167,20 +196,18 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private void createEquipmentTable() {
         equipmentSlotsTable = new Table();
 
-        armourInventorySlot = new InventorySlot(InventoryItem.ItemUseType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack)));
+        armourInventorySlot = new InventorySlot(InventoryItem.ItemUseType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_armour_slot)));
 
         weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE_LONG.getValue() | InventoryItem.ItemUseType.WEAPON_CLOSE.getValue()
-                | InventoryItem.ItemUseType.WEAPON_DISTANCE_SHORT.getValue() , new Image(Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack)));
+                | InventoryItem.ItemUseType.WEAPON_DISTANCE_SHORT.getValue() , new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_weapon_slot)));
         weaponInventorySlot.register(this);
 
         dragAndDrop.addTarget(new InventorySlotTarget(armourInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(weaponInventorySlot));
 
-        equipmentSlotsTable.add(weaponInventorySlot).size(Utilities.setWindowWidth(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.006f));
-        equipmentSlotsTable.add();
+        equipmentSlotsTable.add(weaponInventorySlot).size(slotSize*1.33f, slotSize).pad(Utilities.setWindowHeight(0.006f)).colspan(2);
 
-        equipmentSlotsTable.row();
-        equipmentSlotsTable.add(armourInventorySlot).size(Utilities.setWindowWidth(0.1f), Utilities.setWindowHeight(0.1f)).pad(Utilities.setWindowHeight(0.006f));
+        equipmentSlotsTable.add(armourInventorySlot).size(slotSize*1.33f, slotSize).pad(Utilities.setWindowHeight(0.006f));
 
         equipmentSlotsTable.center();
         equipmentSlotsTable.pad(20);
@@ -197,12 +224,12 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         inventorySlotsTable.setDebug(false);
         inventorySlotsTable.setFillParent(true);
 
-        for (int i = 1; i <= 24; i++) {
+        for (int i = 1; i <= 21; i++) {
             InventorySlot inventorySlot = new InventorySlot();
             inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
             inventorySlotsTable.add(inventorySlot).size(slotSize, slotSize).pad(Utilities.setWindowHeight(0.005f));
-            if (i == 8 || i == 16) inventorySlotsTable.row();
+            if (i == 3||i == 6||i == 9||i == 12|| i == 15||i == 18) inventorySlotsTable.row();
         }
     }
 

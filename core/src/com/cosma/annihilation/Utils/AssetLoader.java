@@ -36,6 +36,14 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.enemy1);
         manager.load(GfxAssetDescriptors.guiframe);
         manager.load(GfxAssetDescriptors.guiframe64x64);
+        manager.load(GfxAssetDescriptors.tabletGui);
+        manager.load(GfxAssetDescriptors.gui_button);
+        manager.load(GfxAssetDescriptors.gui_button_down);
+        manager.load(GfxAssetDescriptors.gui_button1);
+        manager.load(GfxAssetDescriptors.clearColor);
+        manager.load(GfxAssetDescriptors.gui_weapon_slot);
+        manager.load(GfxAssetDescriptors.gui_armour_slot);
+        manager.load(GfxAssetDescriptors.gui_human_animation);
 
         manager.finishLoading();
 

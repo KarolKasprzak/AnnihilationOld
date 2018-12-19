@@ -87,10 +87,11 @@ public class PlayerGUI implements Screen {
     }
 
     private void createMenuWindow(){
-        menuWindow = new MenuWindow("C:\\...", skin,world,engine,Utilities.setWindowWidth(0.95f),Utilities.setWindowHeight(0.95f),this);
+        menuWindow = new MenuWindow("",skin,world,engine,Utilities.setWindowWidth(0.95f),Utilities.setWindowHeight(0.95f),this);
         menuWindow.setPosition(Gdx.graphics.getWidth()/2-(Utilities.setWindowWidth(0.95f)/2),Gdx.graphics.getHeight()/2-(Utilities.setWindowHeight(0.95f)/2));
         menuWindow.setMovable(true);
         menuWindow.setVisible(false);
+        menuWindow.setFillParent(true);
         stage.addActor(menuWindow);
     }
 

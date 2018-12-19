@@ -39,16 +39,8 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
 
 
 
-        if (healthComponent.hpIndicator != null) {
-            Vector3 vec = camera.project(worldCoordinates.set(entity.getComponent(BodyComponent.class).body.getPosition().add(-0.25f, 0.8f), 0));
-            playerGUI.getStage().addActor(healthComponent.hpIndicator);
-            healthComponent.hpIndicator.setPosition(vec.x, vec.y);
-            healthComponent.hpIndicator.setText(healthComponent.hp + "/" + healthComponent.maxHP);
-        }
-
      if (healthComponent.hp <= 0) {
          getEngine().getSystem(CollisionSystem.class).bodiesToRemove.add(entity.getComponent(BodyComponent.class).body);
-         healthComponent.hpIndicator.remove();
          this.getEngine().removeEntity(entity);
         }
 

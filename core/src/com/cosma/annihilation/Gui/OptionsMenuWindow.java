@@ -1,11 +1,15 @@
 package com.cosma.annihilation.Gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 class OptionsMenuWindow extends Window {
@@ -21,6 +25,9 @@ class OptionsMenuWindow extends Window {
         this.skin = skin;
         this.menuWindow = menuWindow;
 
+//        this.debugAll();
+
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.clearColor))));
         addButtons();
         addAction();
     }
