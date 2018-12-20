@@ -47,8 +47,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         normalFilter.categoryBits = CollisionID.NO_SHADOW;
         bodiesToRemove = new Array<Body>();
 
-
-
         signal = new Signal<EntityEventSignal>();
         entityEventSignal = new EntityEventSignal();
 
@@ -269,8 +267,12 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         if(fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY  || fb.getUserData() == BodyID.CONTAINER &&  fa.getUserData() == BodyID.PLAYER_BODY){
             if(fa.getUserData() != BodyID.PLAYER_BODY){
                     player.getComponent(PlayerComponent.class).collisionEntityList.remove(fa.getBody().getUserData());
+                Entity entity = (Entity) fa.getBody().getUserData();
+                entity.getComponent(TextureComponent.class).renderWithShader = false;
             }else
                 player.getComponent(PlayerComponent.class).collisionEntityList.remove(fb.getBody().getUserData());
+            Entity entity = (Entity) fb.getBody().getUserData();
+            entity.getComponent(TextureComponent.class).renderWithShader = false;
         }
     }
 }

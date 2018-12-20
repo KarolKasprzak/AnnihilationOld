@@ -57,32 +57,23 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private Label weaponAmmoInMagazine;
     private InventorySlot armourInventorySlot;
 
-
     private AnimatedActor animatedActor;
-    private Image imageHuman;
+
 
     InventoryWindow(String title, Skin skin, final Engine engine) {
         super(title, skin);
         this.engine = engine;
         this.skin = skin;
 
-
-        this.debugAll();
-
+//        this.debugAll();
         inventoryWindow = this;
         dragAndDrop = new DragAndDrop();
         leftTable = new Table(skin);
         rightTable = new Table(skin);
 
         TextureAtlas atlas = Annihilation.getAssets().get(GfxAssetDescriptors.gui_human_animation);
-        Animation animation = new Animation(0.1f,atlas.findRegion("gui_rotate_human10"),Animation.PlayMode.NORMAL);
-        AnimatedSprite animatedSprite = new AnimatedSprite(animation);
+        Animation animation = new Animation(0.1f,atlas.getRegions(), Animation.PlayMode.LOOP);
         animatedActor = new AnimatedActor(animation);
-
-        imageHuman = new Image();
-
-
-
 
         this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.clearColor))));
 
@@ -100,7 +91,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
             }
         };
         this.add(leftTable);
-        this.add(rightTable);
+        this.add(rightTable).expandX();
 
         createStatsTable();
         createMedicalTable();
@@ -108,21 +99,15 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         createInventoryTable();
         createPlayerViewTable();
 
-
-//        leftTable.add(equipmentSlotsTable).expandY();
-//        leftTable.add(playerViewTable).size(200,200);
-//        leftTable.row();
-        leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX();
+        leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX().padLeft(Utilities.setWindowHeight(0.06f));
         rightTable.add(medicalTable);
         rightTable.row();
         rightTable.add(equipmentSlotsTable).expandY().expandX();
-
-//        addItemLabels();
     }
 
     private void createMedicalTable(){
         medicalTable = new Table();
-        medicalTable.add(animatedActor);
+        medicalTable.add(animatedActor).size(250,250).expandY();
 
     }
 
@@ -226,7 +211,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
 
         for (int i = 1; i <= 21; i++) {
             InventorySlot inventorySlot = new InventorySlot();
-            inventorySlot.addListener(listener);
+//            inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
             inventorySlotsTable.add(inventorySlot).size(slotSize, slotSize).pad(Utilities.setWindowHeight(0.005f));
             if (i == 3||i == 6||i == 9||i == 12|| i == 15||i == 18) inventorySlotsTable.row();

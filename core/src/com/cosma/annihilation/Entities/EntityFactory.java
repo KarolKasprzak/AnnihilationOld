@@ -208,7 +208,7 @@ public class EntityFactory {
         bodyComponent.body.setUserData(entity);
         //Physic fixture
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1f / 2, 1f / 2);
+        shape.setAsBox(0.93f / 2, 0.93f / 2);
         bodyComponent.SizeX = 1f / 2;
         bodyComponent.SizeY = 1f / 2;
         FixtureDef fixtureDef = new FixtureDef();

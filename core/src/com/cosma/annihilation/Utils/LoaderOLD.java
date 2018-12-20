@@ -46,12 +46,6 @@ public class LoaderOLD {
             manager.load(asset.path,asset.type);
         }
 
-//        manager.load("images_packed/gameatlas.atlas", TextureAtlas.class);
-//        manager.load("interface/comadore/uiskin.json", Skin.class, new SkinLoader.SkinParameter("images_packed/gameatlas.atlas"));
-
-
-        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        manager.load("Map/2/map1.tmx", TiledMap.class);
         manager.finishLoading();
         System.out.println("assets load");
     }

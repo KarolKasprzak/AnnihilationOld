@@ -34,6 +34,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
         if(!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
+            playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
 
             playerGUI.setDisplayedActionName(playerComponent.processedEntity.getComponent(ActionComponent.class).action);
         }

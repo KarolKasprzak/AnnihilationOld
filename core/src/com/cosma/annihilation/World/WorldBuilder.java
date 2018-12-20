@@ -41,8 +41,6 @@ public class WorldBuilder implements Disposable, EntityListener {
         new WorldLoader(engine, world, tiledMap, rayHandler);
         playerGUI = new PlayerGUI(engine, world,assetLoader);
         engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
-        engine.getSystem(HealthSystem.class).setPlayerGUI(playerGUI);
-        engine.getSystem(HealthSystem.class).camera = camera;
         engine.getSystem(CollisionSystem.class).SetSignal();
 
         engine.addEntityListener(this);
