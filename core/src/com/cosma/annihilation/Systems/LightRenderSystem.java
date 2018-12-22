@@ -20,11 +20,11 @@ public class LightRenderSystem extends IteratingSystem {
     private RayHandler rayHandler;
     private SpriteBatch batch;
 
-    public LightRenderSystem(OrthographicCamera camera, World world) {
+    public LightRenderSystem(OrthographicCamera camera, World world,RayHandler rayHandler) {
         super(Family.all().get(),Constants.LIGHT_RENDER);
         this.camera = camera;
         this.world = world;
-        rayHandler = new RayHandler(world);
+        this.rayHandler = rayHandler;
         rayHandler.useDiffuseLight(true);
 
     }

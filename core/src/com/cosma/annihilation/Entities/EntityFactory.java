@@ -174,8 +174,11 @@ public class EntityFactory {
         return entity;
     }
 
-
-
+    public Entity createDoorEntity(){
+        Entity entity = new Entity();
+        //TODO
+        return entity;
+    }
 
     public Entity createBoxEntity(float x, float y, Array<InventoryItemLocation> itemList) {
         Entity entity = new Entity();
@@ -200,6 +203,7 @@ public class EntityFactory {
         actionComponent.action = ActionID.OPEN;
         containerComponent.name = "box";
         containerComponent.itemLocations = itemList;
+
         //----------Body Component----------------------
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;

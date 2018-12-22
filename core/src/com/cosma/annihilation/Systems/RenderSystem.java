@@ -15,9 +15,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.StateManager;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 
@@ -102,10 +104,16 @@ public class RenderSystem extends IteratingSystem implements Disposable {
     }
 
     void renderText(String text, Vector2 vector2){
-        
-        batch.begin();
-        font.draw(batch,text, vector2.x, vector2.y);
-        batch.end();
+
+        do {
+            batch.begin();
+            font.draw(batch,text, vector2.x, vector2.y);
+            batch.end();
+
+
+        } while(3>1);
+
+
     }
 
     private void loadShader() {

@@ -33,7 +33,7 @@ import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.Utils.Utilities;
 
-public class PlayerGUI implements Screen {
+public class Gui implements Screen {
     private Stage stage;
     private Skin skin;
     private Label fpsLabel;
@@ -58,14 +58,12 @@ public class PlayerGUI implements Screen {
     private boolean rightUpButtonPressed = false;
 
 
-    public  PlayerGUI(Engine engine,World world,AssetLoader assetLoader){
+    public Gui(Engine engine, World world, AssetLoader assetLoader){
         this.world = world;
         this.engine = engine;
         this.assetLoader = assetLoader;
         skin = assetLoader.manager.get(GfxAssetDescriptors.skin);
         signal = new Signal<GameEvent>();
-        signal.add(engine.getSystem(ActionSystem.class));
-        signal.add(engine.getSystem(ShootingSystem.class));
 
         Camera camera = new OrthographicCamera();
         camera.update();
@@ -93,6 +91,11 @@ public class PlayerGUI implements Screen {
         menuWindow.setVisible(false);
         menuWindow.setFillParent(true);
         stage.addActor(menuWindow);
+    }
+
+    public void addEngine(){
+        signal.add(engine.getSystem(ActionSystem.class));
+        signal.add(engine.getSystem(ShootingSystem.class));
     }
 
     public void loadGame(){

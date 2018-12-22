@@ -12,9 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
-import com.cosma.annihilation.Gui.PlayerGUI;
+import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
@@ -30,26 +29,12 @@ public class WorldBuilder implements Disposable, EntityListener {
     private Viewport viewport;
     private TiledMap tiledMap;
     private RayHandler rayHandler;
-    private PlayerGUI playerGUI;
+    private Gui gui;
     private AssetLoader assetLoader;
 
     public WorldBuilder(Boolean isGameLoaded, AssetLoader assetLoader) {
         this.assetLoader = assetLoader;
         ItemFactory.getInstance().setAssetLoader(assetLoader);
-        runEngine();
-        EntityFactory.getInstance().setAssetLoader(assetLoader);
-        new WorldLoader(engine, world, tiledMap, rayHandler);
-        playerGUI = new PlayerGUI(engine, world,assetLoader);
-        engine.getSystem(ActionSystem.class).setPlayerGUI(playerGUI);
-        engine.getSystem(CollisionSystem.class).SetSignal();
-
-        engine.addEntityListener(this);
-        if (isGameLoaded) {
-            playerGUI.loadGame();
-
-        }
-    }
-    private void runEngine(){
 
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
@@ -57,25 +42,37 @@ public class WorldBuilder implements Disposable, EntityListener {
         camera.update();
 
         tiledMap = assetLoader.manager.get(GfxAssetDescriptors.tiledMap);
-//        tiledMap = LoaderOLD.manager.get("Map/2/map1.tmx", TiledMap.class);
 
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
+        rayHandler = new RayHandler(world);
         engine = new PooledEngine();
+        gui = new Gui(engine, world,assetLoader);
 
-        LightRenderSystem lightRenderSystem = new LightRenderSystem(camera,world);
-        this.rayHandler = lightRenderSystem.getRayHandler();
+        EntityFactory.getInstance().setAssetLoader(assetLoader);
+        new WorldLoader(engine, world, tiledMap, rayHandler);
+
         engine.addSystem(new RenderSystem(camera,world));
-        engine.addSystem(new HealthSystem());
+        engine.addSystem(new HealthSystem(gui,camera));
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
         engine.addSystem(new AnimationSystem(assetLoader));
-        engine.addSystem(lightRenderSystem);
+        engine.addSystem(new LightRenderSystem(camera,world,rayHandler));
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new ActionSystem(world));
         engine.addSystem(new ShootingSystem(world,assetLoader));
+
+        engine.getSystem(ActionSystem.class).setGui(gui);
+        engine.getSystem(CollisionSystem.class).SetSignal();
+
+        gui.addEngine();
+
+        engine.addEntityListener(this);
+        if (isGameLoaded) {
+            gui.loadGame();
+        }
     }
 
     public void update(float delta) {
@@ -83,18 +80,18 @@ public class WorldBuilder implements Disposable, EntityListener {
         viewport.apply();
         engine.update(delta);
         camera.update();
-        playerGUI.render(delta);
+        gui.render(delta);
         }
 
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        playerGUI.resize(w,h);
+        gui.resize(w,h);
         }
     public OrthographicCamera getCamera() {
             return  camera;
             }
     public Stage getPlayerHudStage()        {
-            return playerGUI.getStage();
+            return gui.getStage();
     }
 
     private void debugInput() {

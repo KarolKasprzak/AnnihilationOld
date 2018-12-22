@@ -25,14 +25,14 @@ public class MenuWindow extends Window {
     private Button inventoryButton;
     private Button menuButton;
     private Button characterButton;
-    private PlayerGUI playerGUI;
+    private Gui Gui;
     private Engine engine;
     private Serializer serializer;
 
-    MenuWindow(String title, Skin skin, World world, Engine engine, float x, float y, PlayerGUI playerGUI) {
+    MenuWindow(String title, Skin skin, World world, Engine engine, float x, float y, Gui Gui) {
         super(title, skin);
 
-        this.playerGUI = playerGUI;
+        this.Gui = Gui;
         this.skin = skin;
         this.setVisible(false);
         this.engine = engine;
