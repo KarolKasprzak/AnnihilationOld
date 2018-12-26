@@ -88,7 +88,7 @@ public class EntityFactory {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
 
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.ENEMY_TEST);
 
         entity.add(transformComponent);
@@ -103,7 +103,7 @@ public class EntityFactory {
     }
 
 
-    public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg){
+    public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg,float accuracy){
         Entity entity = engine.createEntity();
 
         Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
@@ -113,6 +113,7 @@ public class EntityFactory {
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 
         bulletComponent.dmg = dmg;
+        bulletComponent.accuracy = accuracy;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -127,7 +128,7 @@ public class EntityFactory {
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
         fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET);
 
         bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
@@ -163,7 +164,7 @@ public class EntityFactory {
         fixtureDef.restitution = 0.4f;
 
         fixtureDef.filter.categoryBits = CollisionID.BACKGROUND ;
-        fixtureDef.filter.maskBits = CollisionID.SCENERY| CollisionID.CAN_JUMP_OBJECT;
+        fixtureDef.filter.maskBits = CollisionID.SCENERY| CollisionID.JUMPABLE_OBJECT;
 
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET_SHELL);
 
@@ -176,7 +177,52 @@ public class EntityFactory {
 
     public Entity createDoorEntity(){
         Entity entity = new Entity();
-        //TODO
+        BodyComponent bodyComponent = new BodyComponent();
+        TransformComponent transformComponent = new TransformComponent();
+        TextureComponent textureComponent = new TextureComponent();
+        ActionComponent actionComponent = new ActionComponent();
+        HealthComponent healthComponent = new HealthComponent();
+
+        healthComponent.hp = 100;
+        healthComponent.maxHP = 100;
+        textureComponent.texturePatch = GfxAssetDescriptors.door.fileName;
+        textureComponent.setTexture();
+        transformComponent.sizeX = 2;
+        transformComponent.sizeY = 2;
+        actionComponent.action = ActionID.OPEN_DOOR;
+
+        //----------Body Component----------------------
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
+        bodyComponent.body = world.createBody(bodyDef);
+        bodyComponent.body.setUserData(entity);
+        //Physic fixture
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox( 0.1f,1);
+        bodyComponent.SizeX = 1f ;
+        bodyComponent.SizeY = 1f ;
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 8f;
+        fixtureDef.friction = 1f;
+        fixtureDef.filter.categoryBits = CollisionID.CAST_SHADOW;
+        bodyComponent.body.createFixture(fixtureDef);
+        //Sensor fixture
+        CircleShape sensorShape = new CircleShape();
+        sensorShape.setRadius(1);
+        FixtureDef touchSensorFixture = new FixtureDef();
+        touchSensorFixture.shape = sensorShape;
+        touchSensorFixture.isSensor = true;
+        touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
+        bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
+        //-----------Body Component End----------------------
+        entity.add(textureComponent);
+        entity.add(bodyComponent);
+        entity.add(transformComponent);
+        entity.add(actionComponent);
+        entity.add(healthComponent);
+        engine.addEntity(entity);
+
         return entity;
     }
 
@@ -219,7 +265,7 @@ public class EntityFactory {
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
         fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(fixtureDef);
         //Sensor fixture
         CircleShape sensorShape = new CircleShape();
@@ -270,7 +316,7 @@ public class EntityFactory {
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
         fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.CAN_JUMP_OBJECT;
+        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(fixtureDef);
         //Render fixture
         FixtureDef renderFixture = new FixtureDef();
@@ -342,7 +388,8 @@ public class EntityFactory {
         FixtureDef footFixtureDef = new FixtureDef();
         footFixtureDef.shape = footSensorShape;
         footFixtureDef.isSensor = true;
-        footFixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
+        footFixtureDef.filter.categoryBits = CollisionID.JUMPABLE_OBJECT;
+        footFixtureDef.filter.maskBits = CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Sprite render fixture
         PolygonShape playerSensorShape = new PolygonShape();

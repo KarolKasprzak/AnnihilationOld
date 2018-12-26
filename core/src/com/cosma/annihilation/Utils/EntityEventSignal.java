@@ -7,9 +7,18 @@ import com.cosma.annihilation.Utils.Enums.GameEvent;
 
 public class EntityEventSignal {
     private GameEvent gameEvent;
+
+    public float getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(float accuracy) {
+        this.accuracy = accuracy;
+    }
+
     private Entity entity;
     private int dmg;
-
+    private float accuracy;
 
     public EntityEventSignal(){}
 
@@ -26,10 +35,11 @@ public class EntityEventSignal {
         return dmg;
     }
 
-    public void setEvent(GameEvent gameEvent,Entity entity,int dmg) {
+    public void setEvent(GameEvent gameEvent,Entity entity,int dmg,float accuracy) {
         this.gameEvent = gameEvent;
         this.entity = entity;
         this.dmg = dmg;
+        this.accuracy = accuracy;
     }
 
 

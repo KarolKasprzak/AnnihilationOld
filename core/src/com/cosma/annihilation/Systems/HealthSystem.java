@@ -47,17 +47,10 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     }
 
     @Override
-    public void receive(Signal<EntityEventSignal> signal, EntityEventSignal object) {
-        switch (object.getGameEvent()) {
+    public void receive(Signal<EntityEventSignal> signal, EntityEventSignal entityEvent) {
+        switch (entityEvent.getGameEvent()) {
             case OBJECT_HIT:
-                object.getEntity().getComponent(HealthComponent.class).hp -= object.getDamage();
-                Vector3 worldCoordinates = new Vector3(object.getEntity().getComponent(TransformComponent.class).position.x, object.getEntity().getComponent(TransformComponent.class).position.y, 0);
-                Vector3 cameraCoordinates = camera.project(worldCoordinates);
-                TextActor floatingText = new TextActor(Integer.toString(object.getDamage()), TimeUnit.SECONDS.toMillis(1));
-                floatingText.setPosition(cameraCoordinates.x, cameraCoordinates.y+100);
-                floatingText.setDeltaY(200);
-                gui.getStage().addActor(floatingText);
-                floatingText.animate();
+               calculateAccuracy(entityEvent);
 
                 break;
             case WEAPON_SHOOT:
@@ -65,4 +58,27 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
                 break;
         }
     }
+
+    private void calculateAccuracy(EntityEventSignal entityEvent){
+        if(entityEvent.getAccuracy() < 0.9f){
+            displayMessage(entityEvent,"miss");
+
+        }else{
+            entityEvent.getEntity().getComponent(HealthComponent.class).hp -= entityEvent.getDamage();
+            displayMessage(entityEvent,Integer.toString(entityEvent.getDamage()) + " dmg");
+
+        }
+    }
+
+    private void displayMessage(EntityEventSignal entityEvent, String message){
+        Vector3 worldCoordinates = new Vector3(entityEvent.getEntity().getComponent(TransformComponent.class).position.x, entityEvent.getEntity().getComponent(TransformComponent.class).position.y, 0);
+        Vector3 cameraCoordinates = camera.project(worldCoordinates);
+        TextActor floatingText = new TextActor(message, TimeUnit.SECONDS.toMillis(1));
+        floatingText.setPosition(cameraCoordinates.x, cameraCoordinates.y+100);
+        floatingText.setDeltaY(200);
+        gui.getStage().addActor(floatingText);
+        floatingText.animate();
+    }
+
+
 }

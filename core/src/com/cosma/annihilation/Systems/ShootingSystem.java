@@ -61,10 +61,10 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             if (playerComponent.weaponReady) {
                 if (weaponMagazine.hasAmmo()) {
                     if (StateManager.playerDirection) {
-                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage());
+                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage(),playerComponent.activeWeapon.getAccuracy());
                         EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f, body.getPosition().y + 0.63f);
                     } else {
-                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x - 1.1f, body.getPosition().y + 0.63f, -20, true,playerComponent.activeWeapon.getDamage());
+                        EntityFactory.getInstance().createBulletEntity(body.getPosition().x - 1.1f, body.getPosition().y + 0.63f, -20, true,playerComponent.activeWeapon.getDamage(),playerComponent.activeWeapon.getAccuracy());
                         EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x - 0.7f, body.getPosition().y + 0.63f);
                     }
                     Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);

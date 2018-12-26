@@ -44,6 +44,8 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.gui_weapon_slot);
         manager.load(GfxAssetDescriptors.gui_armour_slot);
         manager.load(GfxAssetDescriptors.gui_human_animation);
+        manager.load(GfxAssetDescriptors.door);
+        manager.load(GfxAssetDescriptors.door_open);
 
         manager.finishLoading();
 

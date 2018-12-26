@@ -16,14 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.PlayerDateComponent;
-import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
-import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -37,6 +33,14 @@ public class Gui implements Screen {
     private Stage stage;
     private Skin skin;
     private Label fpsLabel;
+    private Label footContact;
+    private Label onground;
+    private Label climbing;
+    private Label canClimb;
+    private Label canJump;
+    private Label canClimbDown;
+
+
     private String fpsNumber;
     private ImageButton actionButtonRightUp;
     private ImageButton actionButtonRightDown;
@@ -116,6 +120,8 @@ public class Gui implements Screen {
                 }else
                 signal.dispatch(GameEvent.WEAPON_SHOOT);
             }
+
+
 
             @Override
             public boolean longPress(Actor actor, float x, float y) {
@@ -203,6 +209,15 @@ public class Gui implements Screen {
 
     private void createButtonView(){
         fpsLabel = new Label(fpsNumber, skin);
+        climbing = new Label("", skin);
+        onground = new Label("", skin);
+        footContact = new Label("", skin);
+
+
+         canClimb= new Label("", skin);
+         canJump= new Label("", skin);
+         canClimbDown= new Label("", skin);
+
 
         actionNameDisplayed = new Label("",skin);
 
@@ -282,8 +297,20 @@ public class Gui implements Screen {
         table.add(actionNameDisplayed).center().expandX();;
         table.add(menuButton).padTop(10).padRight(10).right().width(180).height(50);
         table.row();
-        table.add(fpsLabel).padTop(10).padLeft(10).left().width(150).height(50);
+        table.add(fpsLabel).padTop(0).padLeft(10).left().width(150).height(50);
         table.row();
+        table.add(climbing).padTop(0).padLeft(10).left().width(250).height(50);
+        table.row();
+        table.add(onground).padTop(0).padLeft(10).left().width(250).height(50);
+        table.row();
+        table.add(canClimb).padTop(0).padLeft(10).left().width(250).height(50);
+        table.row();
+        table.add(canJump).padTop(0).padLeft(10).left().width(250).height(50);
+        table.row();
+        table.add(canClimbDown).padTop(10).padLeft(10).left().width(250).height(50);
+        table.row();
+
+
         //-------------------Action button table------------------------------------------------
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15).size(300);
         bTable.add(actionButtonUp).width(150).height(150).center().colspan(3);
@@ -309,6 +336,11 @@ public class Gui implements Screen {
     float fpss = Gdx.graphics.getFramesPerSecond();
     fpsNumber = Float.toString(fpss);
     fpsLabel.setText(fpsNumber);
+    climbing.setText("climbing " + StateManager.climbing);
+    onground.setText("onGround " + StateManager.onGround);
+        canClimb.setText("canclimb " + StateManager.canClimb);
+        canClimbDown.setText("canclimbdown " + StateManager.canClimbDown);
+        canJump.setText("can jump " + StateManager.canJump);
     fpsLabel.setColor(0,82,0,255);
     stage.act(delta);
     stage.draw();

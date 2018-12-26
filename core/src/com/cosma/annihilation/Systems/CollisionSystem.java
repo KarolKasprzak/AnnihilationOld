@@ -41,7 +41,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         world.setContactListener(this);
         //Filter for one way wall
         goTroughFilter = new Filter();
-        goTroughFilter.maskBits = CollisionID.SCENERY;
+        goTroughFilter.maskBits = CollisionID.NO_SHADOW;
         goTroughFilter.groupIndex = -1;
         normalFilter = new Filter();
         normalFilter.categoryBits = CollisionID.NO_SHADOW;
@@ -82,10 +82,12 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
            }
            //Player go through wall
            if (StateManager.climbing) {
+               System.out.println("1");
                if (playerBody.getPosition().y > ladderY - (ladderHeight / 2 - 2)) {
+                   System.out.println("2");
                    playerBody.getFixtureList().get(0).setFilterData(goTroughFilter);
                    if (playerBody.getPosition().y < ladderY - (ladderHeight / 2 - 2)) {
-
+                       System.out.println("3");
                        playerBody.getFixtureList().get(0).setFilterData(normalFilter);
                    }
                } else {
@@ -137,6 +139,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         if (fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.DESCENT_LADDER || fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.DESCENT_LADDER) {
             StateManager.canClimbDown = true;
+            System.out.println("truewa");
             if (fa.getUserData() == BodyID.DESCENT_LADDER) {
                 ladderX = fa.getBody().getPosition().x;
                 ladderY = fa.getBody().getPosition().y;
@@ -239,7 +242,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         if(fa.getUserData() == BodyID.BULLET ){
             if(fb.getBody().getUserData()instanceof Entity){
                 Entity entity = (Entity) fa.getBody().getUserData();
-                entityEventSignal.setEvent(GameEvent.OBJECT_HIT,(Entity) fb.getBody().getUserData(),entity.getComponent(BulletComponent.class).dmg);
+                entityEventSignal.setEvent(GameEvent.OBJECT_HIT,(Entity) fb.getBody().getUserData(),entity.getComponent(BulletComponent.class).dmg,entity.getComponent(BulletComponent.class).accuracy);
                 signal.dispatch(entityEventSignal);
             }
             if (!bodiesToRemove.contains(fa.getBody(),true)){

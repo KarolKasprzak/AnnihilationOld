@@ -20,7 +20,6 @@ public class LoaderOLD {
 
         files = new HashMap<String, AssetsHelper>();
         //Textures
-        files.put("ladder", new AssetsHelper("gfx/map_util/ladders_wood.png", Texture.class));
         files.put("ladder2", new AssetsHelper("tiles/ladder_mid.png", Texture.class));
         files.put("box", new AssetsHelper("gfx/box.png", Texture.class));
         files.put("pl_1", new AssetsHelper("character/player_front1.png", Texture.class));

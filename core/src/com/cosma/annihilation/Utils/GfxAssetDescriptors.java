@@ -17,10 +17,12 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> p38 = new AssetDescriptor<Texture>("gfx/icon/p38.png", Texture.class);
     public static final AssetDescriptor<Texture> defaultStack = new AssetDescriptor<Texture>("interface/icon/stack_default.png", Texture.class);
     public static final AssetDescriptor<Texture> enemy1 = new AssetDescriptor<Texture>("gfx/characters/enemy.png", Texture.class);
+    public static final AssetDescriptor<Texture> door = new AssetDescriptor<Texture>("gfx/object/door.png", Texture.class);
+    public static final AssetDescriptor<Texture> door_open = new AssetDescriptor<Texture>("gfx/object/door_open1.png", Texture.class);
+
     public static final AssetDescriptor<Texture> guiframe = new AssetDescriptor<Texture>("gfx/gui/gui_frame.png", Texture.class);
     public static final AssetDescriptor<Texture> tabletGui = new AssetDescriptor<Texture>("gfx/gui/tablet.png", Texture.class);
     public static final AssetDescriptor<Texture> clearColor = new AssetDescriptor<Texture>("gfx/gui/clear.png", Texture.class);
-
     public static final AssetDescriptor<Texture> gui_button = new AssetDescriptor<Texture>("gfx/gui/table_button.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_button1 = new AssetDescriptor<Texture>("gfx/gui/table_button1.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_button_down = new AssetDescriptor<Texture>("gfx/gui/table_button_pressed.png", Texture.class);

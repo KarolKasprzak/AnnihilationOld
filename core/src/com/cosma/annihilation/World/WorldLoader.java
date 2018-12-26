@@ -63,6 +63,13 @@ class WorldLoader {
                             playerBody.setTransform(dimension[0],dimension[1],0);
                             continue;
                         }
+                        if("spawn_door".equals(mo.getName())){
+                            float[] dimension = getDimension(mo);
+                            Entity entity = entityFactory.createDoorEntity();
+                            entity.getComponent(BodyComponent.class).body.setTransform(dimension[0],dimension[1],0);
+                            continue;
+                        }
+
                         if("spawn_enemy".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             Entity entity = entityFactory.createTestEnemy();
@@ -90,7 +97,7 @@ class WorldLoader {
                         if("light1".equals(mo.getName())){
                             float[] dimension = getDimension(mo);
                             PointLight pl1 = new PointLight(rayHandler, 90, new Color(1,1,1,0.6f), 7,dimension[0],dimension[1]);
-                            pl1.setStaticLight(true);
+                            pl1.setStaticLight(false);
                             Filter filter = new Filter();
                             filter.maskBits = CollisionID.CAST_SHADOW;
                             pl1.setContactFilter(filter);
@@ -154,7 +161,7 @@ class WorldLoader {
                 FixtureDef fixtureDef = new FixtureDef();
                 fixtureDef.shape = shape;
                 fixtureDef.density = 1f;
-                fixtureDef.filter.categoryBits = CollisionID.SCENERY| CollisionID.CAST_SHADOW;
+                fixtureDef.filter.categoryBits = CollisionID.SCENERY| CollisionID.CAST_SHADOW| CollisionID.JUMPABLE_OBJECT;
                 fixtureDef.filter.maskBits = -1;
 
                 switch (selectType) {
@@ -169,10 +176,6 @@ class WorldLoader {
                         fixtureDef.isSensor = true;
                              break;
 
-                    case 2:
-                        fixtureDef.isSensor = true;
-                        boxBody.createFixture(fixtureDef).setUserData(BodyID.LADDER);
-                        break;
                 }
                 shape.dispose();
                 return boxBody;
@@ -193,7 +196,7 @@ class WorldLoader {
                 fixtureDef.shape = fshape;
                 fixtureDef.density = 1f;
                 fixtureDef.isSensor = true;
-                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW ;
+                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW| CollisionID.JUMPABLE_OBJECT;
                 ladderBody.createFixture(fixtureDef).setUserData(BodyID.LADDER);
                 //Fixture sensor2
                 PolygonShape shapesensor2 = new PolygonShape();
@@ -201,7 +204,8 @@ class WorldLoader {
                 FixtureDef fixtureDef1 = new FixtureDef();
                 fixtureDef1.shape = shapesensor2;
                 fixtureDef1.isSensor = true;
-                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW ;
+                fixtureDef1.filter.categoryBits = CollisionID.NO_SHADOW| CollisionID.JUMPABLE_OBJECT;;
+
                 ladderBody.createFixture(fixtureDef1).setUserData(BodyID.DESCENT_LADDER);
                 shape.dispose();
                 return ladderBody;

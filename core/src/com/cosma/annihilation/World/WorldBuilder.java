@@ -51,7 +51,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         EntityFactory.getInstance().setAssetLoader(assetLoader);
         new WorldLoader(engine, world, tiledMap, rayHandler);
 
-        engine.addSystem(new RenderSystem(camera,world));
+        engine.addSystem(new RenderSystem(camera,world,rayHandler));
         engine.addSystem(new HealthSystem(gui,camera));
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
@@ -59,7 +59,6 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera,tiledMap));
         engine.addSystem(new AnimationSystem(assetLoader));
-        engine.addSystem(new LightRenderSystem(camera,world,rayHandler));
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new ActionSystem(world));
         engine.addSystem(new ShootingSystem(world,assetLoader));
