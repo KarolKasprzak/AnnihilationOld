@@ -18,6 +18,9 @@ import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.SfxAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerComponent> playerMapper;
@@ -28,6 +31,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PlayerDateComponent playerDateComponent;
     private Body body;
     private WeaponMagazine weaponMagazine;
+    private boolean isWeaponShooting;
 
 
     public ShootingSystem(World world, AssetLoader assetLoader) {
@@ -52,13 +56,12 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         if (playerComponent.activeWeapon != null) {
             weaponMagazine.setAmmoInMagazine(playerComponent.activeWeapon.getAmmoInMagazine());
             weaponMagazine.setMaxAmmoInMagazine(playerComponent.activeWeapon.getMaxAmmoInMagazine());
-            playerComponent.weaponHidden = !playerComponent.weaponHidden;
+            playerComponent.isWeaponHidden = !playerComponent.isWeaponHidden;
         }
     }
 
     private void weaponShoot() {
-        if (playerComponent.activeWeapon != null && !playerComponent.weaponHidden) {
-            if (playerComponent.weaponReady) {
+        if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
                 if (weaponMagazine.hasAmmo()) {
                     if (StateManager.playerDirection) {
                         EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage(),playerComponent.activeWeapon.getAccuracy());
@@ -73,12 +76,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 } else {
                     weaponMagazine.reload();
                 }
-            } else {
-                playerComponent.weaponReady = true;
-
             }
         }
-    }
+
 
     private int addAmmoFromInventory() {
         int ammoInInventory = 0;
@@ -100,14 +100,47 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent event) {
 
-        switch (event){
+        switch (event) {
+            case ACTION_BUTTON_TOUCH_DOWN:
+                startShooting();
+                break;
+            case ACTION_BUTTON_TOUCH_UP:
+                 isWeaponShooting= false;
+                break;
             case WEAPON_TAKE_OUT:
                 weaponTakeOut();
                 break;
             case WEAPON_SHOOT:
-                weaponShoot();
+//                startShooting();
+                break;
+            case WEAPON_STOP_SHOOT:
+//                isWeaponShooting = false;
                 break;
         }
+    }
+
+    private void startShooting(){
+        if(playerComponent.activeWeapon.isAutomatic()){
+            isWeaponShooting = true;
+            automaticWeaponShoot();
+        }else
+            weaponShoot();
+    }
+
+    private void automaticWeaponShoot(){
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if(isWeaponShooting){
+                    weaponShoot();
+                }else{
+                    this.cancel();
+                    System.out.println("canel");
+                }
+
+            }
+        };
+        new Timer().scheduleAtFixedRate(timerTask,0,Math.round(playerComponent.activeWeapon.getReloadTime()*1000));
     }
 
 
