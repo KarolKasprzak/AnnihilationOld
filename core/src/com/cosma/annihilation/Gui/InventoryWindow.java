@@ -3,17 +3,13 @@ package com.cosma.annihilation.Gui;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Annihilation;
@@ -23,9 +19,7 @@ import com.cosma.annihilation.Gui.Inventory.*;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Items.WeaponItem;
-import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Utils.*;
-import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
 
 public class InventoryWindow extends Window implements InventorySlotObserver {
@@ -181,10 +175,10 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private void createEquipmentTable() {
         equipmentSlotsTable = new Table();
 
-        armourInventorySlot = new InventorySlot(InventoryItem.ItemUseType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_armour_slot)));
+        armourInventorySlot = new InventorySlot(InventoryItem.ItemType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_armour_slot)));
 
-        weaponInventorySlot = new InventorySlot(InventoryItem.ItemUseType.WEAPON_DISTANCE_LONG.getValue() | InventoryItem.ItemUseType.WEAPON_CLOSE.getValue()
-                | InventoryItem.ItemUseType.WEAPON_DISTANCE_SHORT.getValue() , new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_weapon_slot)));
+        weaponInventorySlot = new InventorySlot(InventoryItem.ItemType.WEAPON_DISTANCE.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_ENERGETIC.getValue()
+                | InventoryItem.ItemType.WEAPON_MELEE.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_LONG.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_ENERGETIC_LONG.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_weapon_slot)));
         weaponInventorySlot.register(this);
 
         dragAndDrop.addTarget(new InventorySlotTarget(armourInventorySlot));

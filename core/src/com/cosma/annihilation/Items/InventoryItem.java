@@ -1,11 +1,8 @@
 package com.cosma.annihilation.Items;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.cosma.annihilation.Utils.LoaderOLD;
 
 
 public class InventoryItem extends Image {
@@ -21,7 +18,7 @@ public class InventoryItem extends Image {
     private boolean stackable;
 
     public enum ItemID {
-        MP44,BOX,P38,AMMO_BOX9MM;
+        MP44,BOX,P38,AMMO_BOX9MM,FIRE_AXE;
     }
 
 
@@ -42,22 +39,23 @@ public class InventoryItem extends Image {
 
     }
 
-    public enum ItemUseType{
+    public enum ItemType {
         ARMOUR(1),
         ITEM_RESTORE_MP(2),
-        WEAPON_DISTANCE_SHORT(4),
-        WEAPON_CLOSE(8),
-        WEAPON_DISTANCE_LONG(16),
-        AMMUNIION(32),
-        WAND_TWOHAND(64),
-        ARMOR_SHIELD(128),
-        ARMOR_HELMET(256),
-        ARMOR_CHEST(512),
-        ARMOR_FEET(1024);
+        WEAPON_MELEE(4),
+        WEAPON_DISTANCE_ENERGETIC(8),
+        WEAPON_DISTANCE_ENERGETIC_LONG(16),
+        WEAPON_DISTANCE(32),
+        WEAPON_DISTANCE_LONG(64),
+        AMMUNIION(128);
+//        ARMOR_SHIELD(128),
+//        ARMOR_HELMET(256),
+//        ARMOR_CHEST(512),
+//        ARMOR_FEET(1024);
 
         private int itemUseType;
 
-        ItemUseType(int itemUseType){
+        ItemType(int itemUseType){
             this.itemUseType = itemUseType;
         }
 

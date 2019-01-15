@@ -13,8 +13,7 @@ public class PlayerComponent implements Component,Json.Serializable {
     public float velocity = 2;
     public int numFootContacts = 0;
     public boolean hidde = false;
-    public boolean weaponHidden = true;
-    public boolean weaponReady = false;
+    public boolean isWeaponHidden = true;
     public ArrayList<Entity> collisionEntityList;
     public WeaponItem activeWeapon;
     public int activeWeaponAmmo;

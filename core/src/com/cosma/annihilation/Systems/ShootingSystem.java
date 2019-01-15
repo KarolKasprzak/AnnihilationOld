@@ -7,10 +7,12 @@ import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.PlayerDateComponent;
+import com.cosma.annihilation.Components.SerializationComponent;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -31,6 +33,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PlayerDateComponent playerDateComponent;
     private Body body;
     private WeaponMagazine weaponMagazine;
+    private RayCastCallback callback;
     private boolean isWeaponShooting;
 
 
@@ -43,6 +46,19 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         playerDateMapper = ComponentMapper.getFor(PlayerDateComponent.class);
+
+        callback = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                System.out.println("dsa");
+                Entity entity =(Entity)fixture.getBody().getUserData();
+                System.out.println(entity.getComponent(SerializationComponent.class).type);
+
+                return 0;
+            }
+        };
+
+
     }
 
     @Override
@@ -102,7 +118,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         switch (event) {
             case ACTION_BUTTON_TOUCH_DOWN:
-                startShooting();
+                weaponSelector();
                 break;
             case ACTION_BUTTON_TOUCH_UP:
                  isWeaponShooting= false;
@@ -119,16 +135,46 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         }
     }
 
+    private void weaponSelector() {
+        if (playerComponent.activeWeapon != null) {
+            int weaponType = playerComponent.activeWeapon.getItemUseType();
+
+            switch (weaponType) {
+                case 4:
+                    meleeAttack();
+                    break;
+                case 8:
+                case 16:
+                case 32:
+                case 64:
+                    startShooting();
+                    break;
+            }
+        }
+    }
+
+
+    private void meleeAttack(){
+        if (!playerComponent.isWeaponHidden) {
+            if(StateManager.playerDirection){
+                world.rayCast(callback,body.getPosition(),new Vector2(body.getPosition().x+1,body.getPosition().y));
+            }else
+                world.rayCast(callback,body.getPosition(),new Vector2(body.getPosition().x-1,body.getPosition().y));
+
+
+        }
+    }
+
     private void startShooting(){
-        if(playerComponent.activeWeapon.isAutomatic()){
-            isWeaponShooting = true;
-            automaticWeaponShoot();
-        }else
-            weaponShoot();
+            if(playerComponent.activeWeapon.isAutomatic()){
+                isWeaponShooting = true;
+                automaticWeaponShoot();
+            }else
+                weaponShoot();
     }
 
     private void automaticWeaponShoot(){
-        TimerTask timerTask = new TimerTask() {
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
             public void run() {
                 if(isWeaponShooting){
@@ -137,13 +183,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                     this.cancel();
                     System.out.println("canel");
                 }
-
             }
-        };
-        new Timer().scheduleAtFixedRate(timerTask,0,Math.round(playerComponent.activeWeapon.getReloadTime()*1000));
+        }, 0,playerComponent.activeWeapon.getReloadTime());
     }
-
-
 
     private class WeaponMagazine{
         private int ammoInMagazine;
@@ -181,10 +223,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             this.maxAmmoInMagazine = maxAmmoInMagazine;
         }
     }
-
-
-
-
 }
 
 

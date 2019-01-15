@@ -12,7 +12,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
+import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Utils.Enums.EntityID;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
 import java.util.ArrayList;
 
@@ -41,8 +43,8 @@ public class Serializer{
     }
 
     public void load(){
-        System.out.println(engine.getEntities().size());
-        System.out.println(world.getBodyCount());
+//        System.out.println(engine.getEntities().size());
+//        System.out.println(world.getBodyCount());
         StateManager.pause = true;
         for(Entity entity: engine.getEntitiesFor(Family.all(BodyComponent.class).get())){
             world.destroyBody(entity.getComponent(BodyComponent.class).body);
@@ -53,8 +55,8 @@ public class Serializer{
                 createEntity(entityWrapper);
             }
         StateManager.pause = false;
-        System.out.println(engine.getEntities().size());
-        System.out.println(world.getBodyCount());
+//        System.out.println(engine.getEntities().size());
+//        System.out.println(world.getBodyCount());
     }
 
     private void setPosition (Entity entity){
@@ -67,21 +69,28 @@ public class Serializer{
         SerializationComponent serialization = (SerializationComponent) entityWrapper.getEntitysMap().get("SerializationComponent");
         EntityID id = serialization.type;
         Entity entity = null;
-        switch(id){
+        switch (id) {
             case PLAYER:
-                 entity = EntityFactory.getInstance().createPlayerEntity();
+                entity = EntityFactory.getInstance().createPlayerEntity();
+                break;
+            case DOOR:
+                entity = EntityFactory.getInstance().createDoorEntity();
                 break;
             case BOX:
                 entity = EntityFactory.getInstance().createBoxEntityTest();
-                 break;
-
+                break;
             case ENEMY_TEST:
                 entity = EntityFactory.getInstance().createTestEnemy();
                 break;
         }
-        if(entity != null) {
+        if (entity != null) {
             for (Component component : entityWrapper.getEntitysMap().values()) {
                 entity.add(component);
+            }
+            if(entity.getComponent(SerializationComponent.class).type.equals(EntityID.DOOR)) {
+                if (entity.getComponent(DoorComponent.class).isOpen) {
+                    engine.getSystem(ActionSystem.class).loadDoor(entity);
+                }
             }
             setPosition(entity);
         }

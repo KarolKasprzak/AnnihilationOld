@@ -15,6 +15,7 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Skin> skin = new AssetDescriptor<Skin>("interface/retro_pc/uiskin.json", Skin.class);
     public static final AssetDescriptor<Texture> mp44 = new AssetDescriptor<Texture>("gfx/icon/stg.png", Texture.class);
     public static final AssetDescriptor<Texture> p38 = new AssetDescriptor<Texture>("gfx/icon/p38.png", Texture.class);
+    public static final AssetDescriptor<Texture> fireaxe = new AssetDescriptor<Texture>("gfx/icon/fireaxe.png", Texture.class);
     public static final AssetDescriptor<Texture> defaultStack = new AssetDescriptor<Texture>("interface/icon/stack_default.png", Texture.class);
     public static final AssetDescriptor<Texture> enemy1 = new AssetDescriptor<Texture>("gfx/characters/enemy.png", Texture.class);
     public static final AssetDescriptor<Texture> door = new AssetDescriptor<Texture>("gfx/object/door.png", Texture.class);
@@ -28,7 +29,11 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> gui_button_down = new AssetDescriptor<Texture>("gfx/gui/table_button_pressed.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_weapon_slot = new AssetDescriptor<Texture>("gfx/gui/gui_weapon_slot.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_armour_slot = new AssetDescriptor<Texture>("gfx/gui/gui_armour_slot.png", Texture.class);
+
+
     public static final AssetDescriptor<TextureAtlas> gui_human_animation = new AssetDescriptor<TextureAtlas>("gfx/gui/human/gui_human.txt", TextureAtlas.class);
+    public static final AssetDescriptor<TextureAtlas> gui_buttons = new AssetDescriptor<TextureAtlas>("gfx/gui/buttons_gui.txt", TextureAtlas.class);
+
 
     public static final AssetDescriptor<Texture> guiframe64x64 = new AssetDescriptor<Texture>("gfx/gui/gui_frame_64x64.png", Texture.class);
 

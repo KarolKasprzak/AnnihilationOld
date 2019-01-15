@@ -80,18 +80,23 @@ public class AnimationSystem extends IteratingSystem {
             float velocityX = fixture.getBody().getLinearVelocity().x;
             box2DSprite.setTexture(playerStand);
             fixture.setUserData(box2DSprite);
-            if(!playerComponent.weaponHidden){
-                int weaponTag = playerComponent.activeWeapon.getItemUseType();
+            if(!playerComponent.isWeaponHidden){
+                int weaponTag = 1;
+                if(playerComponent.activeWeapon != null) {
+                    weaponTag = playerComponent.activeWeapon.getItemUseType();
+                }
+
                 switch (weaponTag) {
-                    case 4:
+                    case 32:
                         box2DSprite.setTexture(playerWeaponStand);
                         break;
-                    case 16:
-                        box2DSprite.setTexture(assetLoader.manager.get(GfxPlayerAssetDescriptors.player_stand_rifle));
+                    case 64:
+//                        box2DSprite.setTexture(assetLoader.manager.get(GfxPlayerAssetDescriptors.player_stand_rifle));
+                        box2DSprite.setTexture((Texture) assetLoader.manager.get("gfx/player/player_rifle_takeout.png"));
                         break;
                 }
                 fixture.setUserData(box2DSprite);
-                if(playerComponent.weaponReady){
+                if(!playerComponent.isWeaponHidden){
                     box2DSprite.setTexture(assetLoader.manager.get(GfxPlayerAssetDescriptors.player_stand_pistol));
                     fixture.setUserData(box2DSprite);
                 }

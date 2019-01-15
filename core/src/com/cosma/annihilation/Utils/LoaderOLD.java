@@ -22,11 +22,6 @@ public class LoaderOLD {
         //Textures
         files.put("ladder2", new AssetsHelper("tiles/ladder_mid.png", Texture.class));
         files.put("box", new AssetsHelper("gfx/box.png", Texture.class));
-        files.put("pl_1", new AssetsHelper("character/player_front1.png", Texture.class));
-        files.put("pl_2", new AssetsHelper("character/player_front2.png", Texture.class));
-        files.put("pl_3", new AssetsHelper("character/player_front3.png", Texture.class));
-        files.put("pl_4", new AssetsHelper("character/player_front4.png", Texture.class));
-        files.put("pl_5", new AssetsHelper("character/player_front5.png", Texture.class));
         files.put("mp44", new AssetsHelper("interface/icon/stg.png", Texture.class));
         files.put("p38", new AssetsHelper("interface/icon/p38.png", Texture.class));
         files.put("stack_default", new AssetsHelper("interface/icon/stack_default.png", Texture.class));

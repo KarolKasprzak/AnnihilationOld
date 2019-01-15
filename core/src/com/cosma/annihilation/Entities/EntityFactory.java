@@ -182,7 +182,10 @@ public class EntityFactory {
         TextureComponent textureComponent = new TextureComponent();
         ActionComponent actionComponent = new ActionComponent();
         HealthComponent healthComponent = new HealthComponent();
+        SerializationComponent serializationComponent = engine.createComponent(SerializationComponent.class);
+        DoorComponent doorComponent = new DoorComponent();
 
+        serializationComponent.type = EntityID.DOOR;
         healthComponent.hp = 100;
         healthComponent.maxHP = 100;
         textureComponent.texturePatch = GfxAssetDescriptors.door.fileName;
@@ -216,6 +219,8 @@ public class EntityFactory {
         touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
         //-----------Body Component End----------------------
+        entity.add(doorComponent);
+        entity.add(serializationComponent);
         entity.add(textureComponent);
         entity.add(bodyComponent);
         entity.add(transformComponent);

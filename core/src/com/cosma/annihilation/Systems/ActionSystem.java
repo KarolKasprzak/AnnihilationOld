@@ -6,11 +6,9 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
-import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Utils.Enums.ActionID;
@@ -64,7 +62,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent event) {
-        if (event.equals(GameEvent.PERFORM_ACTION) && playerComponent.processedEntity != null) {
+        if (event.equals(GameEvent.PERFORM_ACTION) && playerComponent.processedEntity != null && playerComponent.isWeaponHidden) {
             ActionID action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
 
             switch (action) {
@@ -89,12 +87,19 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(false);
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter1);
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).refilter();
+            playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = false;
             playerComponent.processedEntity.getComponent(TextureComponent.class).setTexture(GfxAssetDescriptors.door.fileName);
         } else {
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
+            playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = true;
             playerComponent.processedEntity.getComponent(TextureComponent.class).setTexture(GfxAssetDescriptors.door_open.fileName);
         }
+    }
 
+    public void loadDoor(Entity entity){
+        entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
+        entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
+        entity.getComponent(TextureComponent.class).setTexture(GfxAssetDescriptors.door_open.fileName);
     }
 }

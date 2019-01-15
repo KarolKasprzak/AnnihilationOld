@@ -46,6 +46,8 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.gui_human_animation);
         manager.load(GfxAssetDescriptors.door);
         manager.load(GfxAssetDescriptors.door_open);
+        manager.load(GfxAssetDescriptors.gui_buttons);
+        manager.load(GfxAssetDescriptors.fireaxe);
 
         manager.finishLoading();
 
