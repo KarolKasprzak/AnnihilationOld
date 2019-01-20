@@ -38,7 +38,7 @@ class WorldLoader {
         EntityFactory.getInstance().setEngine(engine);
         EntityFactory.getInstance().setWorld(world);
         entityFactory = EntityFactory.getInstance();
-        entityFactory.createPlayerEntity();
+//        entityFactory.createPlayerEntity();
         //Get player entity
         loadMap();
 

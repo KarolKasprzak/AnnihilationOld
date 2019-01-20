@@ -22,13 +22,14 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     private Body playerBody;
     private World world;
     private PlayerComponent playerComponent;
-    private Gui Gui;
+    private final Gui gui;
     Filter filter;
     Filter filter1;
 
-    public ActionSystem(World world) {
+    public ActionSystem(World world,Gui gui) {
         super(Family.all(PlayerComponent.class).get(), 11);
         this.world = world;
+        this.gui = gui;
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         filter = new Filter();
@@ -45,19 +46,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
         if (!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
             playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
-
-            Gui.setDisplayedActionName(playerComponent.processedEntity.getComponent(ActionComponent.class).action);
         } else
             playerComponent.processedEntity = null;
-        Gui.setDisplayedActionName(ActionID.NOTHING);
-    }
-
-    public void setGui(Gui gui) {
-        this.Gui = gui;
-    }
-
-    public Gui getGui() {
-        return Gui;
     }
 
     @Override
@@ -78,7 +68,10 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     private void openBoxAction() {
         if (playerComponent.processedEntity.getComponent(ContainerComponent.class).itemLocations.size > -1) {
-            Gui.showLootWindow(playerComponent.processedEntity);
+            if(gui != null){
+                gui.showLootWindow(playerComponent.processedEntity);
+            }
+
         }
     }
 

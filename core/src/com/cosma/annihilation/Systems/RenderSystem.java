@@ -8,14 +8,16 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.TextureComponent;
-import com.cosma.annihilation.Components.TransformComponent;
 import com.cosma.annihilation.Utils.Constants;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
@@ -29,29 +31,34 @@ public class RenderSystem extends IteratingSystem implements Disposable {
     private ShaderProgram shaderOutline;
     private RayHandler rayHandler;
 
+
     private ComponentMapper<TextureComponent> textureMapper;
-    private ComponentMapper<TransformComponent> transformMapper;
+    private ComponentMapper<BodyComponent> bodyMapper;
 
 
-    public RenderSystem(OrthographicCamera camera, World world, RayHandler rayHandler) {
-        super(Family.all(TransformComponent.class, TextureComponent.class).get(), Constants.RENDER);
+
+    public RenderSystem(OrthographicCamera camera, World world, RayHandler rayHandler,SpriteBatch batch) {
+        super(Family.all(BodyComponent.class, TextureComponent.class).get(), Constants.RENDER);
+        this.batch = batch;
         this.camera = camera;
         this.world = world;
         this.rayHandler = rayHandler;
-        batch = new SpriteBatch();
-        rayHandler.useDiffuseLight(true);
 
+        rayHandler.useDiffuseLight(true);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
-        transformMapper = ComponentMapper.getFor(TransformComponent.class);
+        bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         loadShader();
     }
 
     @Override
     public void update(float deltaTime) {
+
         batch.setProjectionMatrix(camera.combined);
+
         super.update(deltaTime);
+
         batch.begin();
-        Box2DSprite.draw(batch, world);
+//        Box2DSprite.draw(batch, world);
         batch.end();
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
@@ -59,16 +66,29 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
     @Override
     public void processEntity(Entity entity, float deltaTime) {
-        TransformComponent transformComponent = transformMapper.get(entity);
         TextureComponent textureComponent = textureMapper.get(entity);
+        Body body = bodyMapper.get(entity).body;
+
+        Fixture fixture = body.getFixtureList().first();
+        Vector2 position = body.getPosition();
+
+//        if (textureComponent.texture == null || fixture == null) return;
+
+        float sizeX = textureComponent.renderSizeX;
+        float sizeY = textureComponent.renderSizeY;
+
+        position.x = position.x - sizeX/2;
+        position.y = position.y - sizeY/2;
 
         batch.begin();
         if (textureComponent.texture != null ) {
+             batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, sizeX/2, sizeY/2,
+                     textureComponent.texture.getWidth()/32, Math.round((float)textureComponent.texture.getHeight()/32),
+                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
 
-            batch.draw(textureComponent.texture, transformComponent.position.x - transformComponent.sizeX / 2, transformComponent.position.y - transformComponent.sizeY / 2,
-                    textureComponent.texture.getHeight() / 32, textureComponent.texture.getWidth() / 32);
-//            batch.draw(textureRegion, x, y, width, height, width, height, 1f, 1f, angle);
-
+        }
+        if (textureComponent.texture_ != null ) {
+            batch.draw(textureComponent.texture_, position.x, position.y,  sizeX/2, sizeY/2, textureComponent.texture_.getRegionWidth()/32, textureComponent.texture_.getRegionHeight()/32, 1, 1, body.getAngle() * MathUtils.radiansToDegrees);
         }
         batch.end();
 
@@ -81,8 +101,8 @@ public class RenderSystem extends IteratingSystem implements Disposable {
             shaderOutline.end();
             batch.setShader(shaderOutline);
             batch.begin();
-            batch.draw(textureComponent.texture, transformComponent.position.x - transformComponent.sizeX / 2, transformComponent.position.y - transformComponent.sizeY / 2,
-                    textureComponent.texture.getHeight() / 32, textureComponent.texture.getWidth() / 32);
+//            batch.draw(textureComponent.texture, transformComponent.position.x - transformComponent.sizeX / 2, transformComponent.position.y - transformComponent.sizeY / 2,
+//                    textureComponent.texture.getHeight() / 32, textureComponent.texture.getWidth() / 32);
             batch.end();
             batch.setShader(null);
         }

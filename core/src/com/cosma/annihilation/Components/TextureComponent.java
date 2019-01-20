@@ -10,6 +10,11 @@ import com.cosma.annihilation.Annihilation;
 public class TextureComponent implements Component, Json.Serializable {
     public String texturePatch;
     public Texture texture;
+    public TextureRegion texture_;
+
+    public float renderSizeX = 0;
+    public float renderSizeY = 0;
+
     public boolean renderWithShader = false;
 
 
@@ -21,6 +26,7 @@ public class TextureComponent implements Component, Json.Serializable {
     @Override
     public void read(Json json, JsonValue jsonData) {
         texturePatch = jsonData.getString("texture");
+
         setTexture();
     }
 

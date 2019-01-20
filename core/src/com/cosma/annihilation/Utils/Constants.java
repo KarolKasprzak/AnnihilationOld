@@ -24,15 +24,15 @@ public class Constants {
     public static final   short  NOT_COLIDED= 0x2;
 
     //--------ENGINE-----------
-    public static final int PHYSIC_SYSTEM                  = 1;
+    public static final int PHYSIC_SYSTEM                  = 13;
     public static final int COLLISION_SYSTEM               = 2;
     public static final int PLAYER_CONTROL_SYSTEM          = 3;
     public static final int CAMERA_SYSTEM                  = 4;
     public static final int ANIMATION                      = 5;
     public static final int TILE_MAP_RENDER                = 6;
-    public static final int RENDER                         = 7;
-    public static final int HEALTHSYSTEM                   = 8;
-    public static final int LIGHT_RENDER                   = 9;
-    public static final int DEBUG_RENDER                   = 11;
+    public static final int SPRITER_RENDER                = 6;
+    public static final int RENDER                         = 8;
+    public static final int HEALTHSYSTEM                   = 9;
+    public static final int DEBUG_RENDER                   = 12;
 
 }

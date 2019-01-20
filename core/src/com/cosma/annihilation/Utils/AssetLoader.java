@@ -1,9 +1,11 @@
 package com.cosma.annihilation.Utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -48,12 +50,9 @@ public class AssetLoader {
         manager.load(GfxAssetDescriptors.door_open);
         manager.load(GfxAssetDescriptors.gui_buttons);
         manager.load(GfxAssetDescriptors.fireaxe);
+        manager.load(GfxPlayerAssetDescriptors.player_stand_melee);
 
         manager.finishLoading();
-
-
-
-
 
         System.out.println("Loaded!");
     }

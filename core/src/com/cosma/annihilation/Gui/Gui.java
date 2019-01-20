@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Components.PlayerStateComponent;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -34,6 +35,7 @@ import com.cosma.annihilation.Utils.Utilities;
 public class Gui implements Screen {
     private Stage stage;
     private Skin skin;
+
     private Label fpsLabel;
     private Label footContact;
     private Label onground;
@@ -56,7 +58,10 @@ public class Gui implements Screen {
     private TextButton menuButton;
     private ProgressBar healthBar;
     private Engine engine;
+
     private Entity player;
+    private PlayerStateComponent playerState;
+
     private World world;
     private Signal<GameEvent> signal;
     private Label actionNameDisplayed;
@@ -72,7 +77,6 @@ public class Gui implements Screen {
         this.assetLoader = assetLoader;
         skin = assetLoader.manager.get(GfxAssetDescriptors.skin);
         signal = new Signal<GameEvent>();
-
         Camera camera = new OrthographicCamera();
         camera.update();
         Viewport viewport = new ScreenViewport(camera);
@@ -156,27 +160,27 @@ public class Gui implements Screen {
         actionButtonRightDown.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goUp = true;
+                playerState.goUp = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goUp = false;
+                playerState.goUp = false;
             }
         });
         actionButtonUp.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 {
-                    StateManager.goUp = true;
+                    playerState.goUp = true;
                 }
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goUp = false;
+                playerState.goUp = false;
             }
 
         });
@@ -184,39 +188,39 @@ public class Gui implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
-                StateManager.goDown = true;
+                playerState.goDown = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goDown = false;
+                playerState.goDown = false;
             }
 
         });
         actionButtonLeft.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goLeft = true;
+                playerState.goLeft = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goLeft = false;
+                playerState.goLeft = false;
             }
 
         });
         actionButtonRight.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goRight = true;
+                playerState.goRight = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                StateManager.goRight = false;
+                playerState.goRight = false;
             }
         });
 
@@ -233,26 +237,18 @@ public class Gui implements Screen {
         stage.addActor(menuWindow);
     }
 
-    public void addEngine() {
+    /** do it after systems are added to engine */
+    public void addSystemsReferences() {
         signal.add(engine.getSystem(ActionSystem.class));
         signal.add(engine.getSystem(ShootingSystem.class));
+        player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        playerState = player.getComponent(PlayerStateComponent.class);
     }
 
 
     public void showLootWindow(Entity entity) {
         containerWindow.setVisible(true);
         InventoryWindow.fillInventory(containerWindow.containerSlotsTable, entity.getComponent(ContainerComponent.class).itemLocations, containerWindow.dragAndDrop);
-    }
-
-    public void setDisplayedActionName(ActionID actionID) {
-        switch (actionID) {
-            case NOTHING:
-                actionNameDisplayed.setText("");
-                break;
-            case OPEN:
-                actionNameDisplayed.setText("Open box");
-                break;
-        }
     }
 
     private void createHUD() {
@@ -338,6 +334,7 @@ public class Gui implements Screen {
 
     @Override
     public void show() {
+      System.out.println("gui start");
     }
 
     @Override
@@ -346,11 +343,11 @@ public class Gui implements Screen {
         player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         fpsNumber = Float.toString(fpss);
         fpsLabel.setText(fpsNumber);
-        climbing.setText("climbing " + StateManager.climbing);
-        onground.setText("onGround " + StateManager.onGround);
-        canClimb.setText("canclimb " + StateManager.canClimb);
-        canClimbDown.setText("canclimbdown " + StateManager.canClimbDown);
-        canJump.setText("can jump " + StateManager.canJump);
+        climbing.setText("climbing " + playerState.climbing);
+        onground.setText("onGround " + playerState.onGround);
+        canClimb.setText("canclimb " + playerState.canClimb);
+        canClimbDown.setText("canclimbdown " + playerState.canClimbDown);
+        canJump.setText("can jump " + playerState.canJump);
         weaponHidden.setText("weapon is hidden " + player.getComponent(PlayerComponent.class).isWeaponHidden);
         fpsLabel.setColor(0, 82, 0, 255);
         stage.act(delta);

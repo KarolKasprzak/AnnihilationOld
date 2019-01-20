@@ -60,8 +60,9 @@ public class Serializer{
     }
 
     private void setPosition (Entity entity){
-        Vector2 position = entity.getComponent(TransformComponent.class).position;
-        float angle = entity.getComponent(TransformComponent.class).rotation * MathUtils.degreesToRadians;
+        Vector2 position = entity.getComponent(BodyComponent.class).body.getPosition();
+        float angle = entity.getComponent(BodyComponent.class).body.getAngle();
+//        float angle = entity.getComponent(BodyComponent.class).body.getAngle() * MathUtils.degreesToRadians;
         entity.getComponent(BodyComponent.class).body.setTransform(position,angle);
     }
 

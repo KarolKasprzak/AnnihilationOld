@@ -9,10 +9,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.PlayerDateComponent;
-import com.cosma.annihilation.Components.SerializationComponent;
+import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -27,14 +24,17 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<PlayerDateComponent> playerDateMapper;
+
     private AssetLoader assetLoader;
     private World world;
     private PlayerComponent playerComponent;
     private PlayerDateComponent playerDateComponent;
+    private ComponentMapper<PlayerStateComponent> stateMapper;
     private Body body;
     private WeaponMagazine weaponMagazine;
     private RayCastCallback callback;
     private boolean isWeaponShooting;
+    private PlayerStateComponent stateComponent;
 
 
     public ShootingSystem(World world, AssetLoader assetLoader) {
@@ -43,6 +43,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         this.assetLoader = assetLoader;
 
         weaponMagazine = new WeaponMagazine();
+        stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         playerDateMapper = ComponentMapper.getFor(PlayerDateComponent.class);
@@ -65,6 +66,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
         playerDateComponent = playerDateMapper.get(entity);
+        stateComponent = stateMapper.get(entity);
         body = bodyMapper.get(entity).body;
     }
 
@@ -73,13 +75,14 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             weaponMagazine.setAmmoInMagazine(playerComponent.activeWeapon.getAmmoInMagazine());
             weaponMagazine.setMaxAmmoInMagazine(playerComponent.activeWeapon.getMaxAmmoInMagazine());
             playerComponent.isWeaponHidden = !playerComponent.isWeaponHidden;
+            System.out.println(body.getPosition());
         }
     }
 
     private void weaponShoot() {
         if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
                 if (weaponMagazine.hasAmmo()) {
-                    if (StateManager.playerDirection) {
+                    if (stateComponent.playerDirection) {
                         EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage(),playerComponent.activeWeapon.getAccuracy());
                         EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f, body.getPosition().y + 0.63f);
                     } else {
@@ -156,7 +159,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private void meleeAttack(){
         if (!playerComponent.isWeaponHidden) {
-            if(StateManager.playerDirection){
+            if(stateComponent.playerDirection){
                 world.rayCast(callback,body.getPosition(),new Vector2(body.getPosition().x+1,body.getPosition().y));
             }else
                 world.rayCast(callback,body.getPosition(),new Vector2(body.getPosition().x-1,body.getPosition().y));

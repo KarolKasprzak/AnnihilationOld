@@ -9,8 +9,8 @@ import com.badlogic.gdx.utils.Pool;
 
 public class BodyComponent implements Component, Json.Serializable, Pool.Poolable {
     public Body body;
-    public float SizeX = 0;
-    public float SizeY = 0;
+    public float sizeX = 0;
+    public float sizeY = 0;
     public boolean hasHitSomething = false;
 
     @Override

@@ -1,6 +1,7 @@
 package com.cosma.annihilation.Systems;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Signal;
@@ -26,7 +27,9 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     private float ladderHeight;
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
+    private ComponentMapper<PlayerStateComponent> stateMapper;
     private Body playerBody;
+    private PlayerStateComponent playerState;
     private Filter goTroughFilter;
     private Filter normalFilter;
     public Array<Body> bodiesToRemove;
@@ -37,7 +40,9 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         super(Family.all(PlayerComponent.class).get());
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
+        stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
         this.world = world;
+
         world.setContactListener(this);
         //Filter for one way wall
         goTroughFilter = new Filter();
@@ -50,6 +55,15 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         signal = new Signal<EntityEventSignal>();
         entityEventSignal = new EntityEventSignal();
 
+
+    }
+
+    @Override
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
+        player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        playerBody = player.getComponent(BodyComponent.class).body;
+        playerState = player.getComponent(PlayerStateComponent.class);
     }
 
     public void SetSignal(){
@@ -58,15 +72,16 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     @Override
     public void update(float deltaTime) {
-       player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+
        playerBody = player.getComponent(BodyComponent.class).body;
 
+
            if (player.getComponent(PlayerComponent.class).numFootContacts >= 1) {
-               StateManager.onGround = true;
-           } else StateManager.onGround = false;
+               playerState.onGround = true;
+           } else  playerState.onGround = false;
 
            //Setting player on ladder center
-           if (StateManager.climbing) {
+           if ( playerState.climbing) {
                float b1 = playerBody.getPosition().x;
                float b2 = ladderX;
 
@@ -81,7 +96,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
                }
            }
            //Player go through wall
-           if (StateManager.climbing) {
+           if (playerState.climbing) {
                System.out.println("1");
                if (playerBody.getPosition().y > ladderY - (ladderHeight / 2 - 2)) {
                    System.out.println("2");
@@ -132,13 +147,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         //Ladder climb down
         if (fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.GROUND ||
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.GROUND) {
-            if (StateManager.climbing) {
-                StateManager.canMoveOnSide = false;
+            if (playerState.climbing) {
+                playerState.canMoveOnSide = false;
             }
         }
 
         if (fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.DESCENT_LADDER || fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.DESCENT_LADDER) {
-            StateManager.canClimbDown = true;
+            playerState.canClimbDown = true;
             System.out.println("truewa");
             if (fa.getUserData() == BodyID.DESCENT_LADDER) {
                 ladderX = fa.getBody().getPosition().x;
@@ -156,9 +171,9 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         if (fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.LADDER ||
                 fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER) {
 
-            if (StateManager.onGround) {
-                StateManager.canClimb = true;
-                StateManager.canJump = false;
+            if (playerState.onGround) {
+                playerState.canClimb = true;
+                playerState.canJump = false;
             }
 
             if (fa.getUserData() == BodyID.LADDER) {
@@ -180,7 +195,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             removeEntityFromActionList(fa,fb);
 
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
-                StateManager.onGround = false;
+                playerState.onGround = false;
                 player.getComponent(PlayerComponent.class).numFootContacts--;
             }
 
@@ -188,13 +203,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             if (fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.GROUND ||
                     fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.GROUND) {
 
-                StateManager.canMoveOnSide = true;
-                StateManager.canJump = false;
+                playerState.canMoveOnSide = true;
+                playerState.canJump = false;
                 delayJump(0.4f);
             }
 
             if (fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.DESCENT_LADDER || fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.DESCENT_LADDER) {
-                StateManager.canClimbDown = false;
+                playerState.canClimbDown = false;
 
             }
 
@@ -202,8 +217,8 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             if (fb.getUserData() == BodyID.PLAYER_CENTER && fa.getUserData() == BodyID.LADDER ||
                     fa.getUserData() == BodyID.PLAYER_CENTER && fb.getUserData() == BodyID.LADDER) {
                 delayJump(0.4f);
-                StateManager.canClimb = false;
-                StateManager.climbing = false;
+                playerState.canClimb = false;
+                playerState.climbing = false;
             }
 
         }
@@ -233,7 +248,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                StateManager.canJump = true;
+                playerState.canJump = true;
             }
         }, delay);
     }

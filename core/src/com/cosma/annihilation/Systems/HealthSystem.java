@@ -71,13 +71,13 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     }
 
     private void displayMessage(EntityEventSignal entityEvent, String message){
-        Vector3 worldCoordinates = new Vector3(entityEvent.getEntity().getComponent(TransformComponent.class).position.x, entityEvent.getEntity().getComponent(TransformComponent.class).position.y, 0);
-        Vector3 cameraCoordinates = camera.project(worldCoordinates);
-        TextActor floatingText = new TextActor(message, TimeUnit.SECONDS.toMillis(1));
-        floatingText.setPosition(cameraCoordinates.x, cameraCoordinates.y+100);
-        floatingText.setDeltaY(200);
-        gui.getStage().addActor(floatingText);
-        floatingText.animate();
+//        Vector3 worldCoordinates = new Vector3(entityEvent.getEntity().getComponent(TransformComponent.class).position.x, entityEvent.getEntity().getComponent(TransformComponent.class).position.y, 0);
+//        Vector3 cameraCoordinates = camera.project(worldCoordinates);
+//        TextActor floatingText = new TextActor(message, TimeUnit.SECONDS.toMillis(1));
+//        floatingText.setPosition(cameraCoordinates.x, cameraCoordinates.y+100);
+//        floatingText.setDeltaY(200);
+//        gui.getStage().addActor(floatingText);
+//        floatingText.animate();
     }
 
 
