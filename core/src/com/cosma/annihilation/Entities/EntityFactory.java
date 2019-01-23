@@ -98,7 +98,7 @@ public class EntityFactory {
     }
 
 
-    public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg,float accuracy){
+    public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg,boolean accuracy){
         Entity entity = engine.createEntity();
 
         Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
@@ -108,7 +108,7 @@ public class EntityFactory {
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 
         bulletComponent.dmg = dmg;
-        bulletComponent.accuracy = accuracy;
+        bulletComponent.isBulletHit = accuracy;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -137,11 +137,12 @@ public class EntityFactory {
 
     public Entity createBulletShellEntity(float x, float y){
         Entity entity = engine.createEntity();
-
-        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
-        Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletShell));
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+        TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
+
+        textureComponent.texturePatch = GfxAssetDescriptors.bulletShell.fileName;
+        textureComponent.setTexture();
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -163,7 +164,7 @@ public class EntityFactory {
 
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET_SHELL);
 
-        bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
+        entity.add(textureComponent);
         entity.add(bodyComponent);
         entity.add(bulletComponent);
 
@@ -355,9 +356,10 @@ public class EntityFactory {
         PlayerDateComponent playerDateComponent = new PlayerDateComponent();
         TextureComponent textureComponent = new TextureComponent();
         PlayerStateComponent stateComponent = new PlayerStateComponent();
+        PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
 
-        textureComponent.texturePatch = GfxPlayerAssetDescriptors.player_stand_melee.fileName;
-        textureComponent.setTexture();
+//        textureComponent.texturePatch = GfxPlayerAssetDescriptors.player_stand_melee.fileName;
+//        textureComponent.setTexture();
 
         textureComponent.renderSizeX = 2;
         textureComponent.renderSizeY = 2;
@@ -383,6 +385,7 @@ public class EntityFactory {
         fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
         fixtureDef.filter.maskBits = CollisionID.MASK_PLAYER;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.PLAYER_BODY);
+        shape.dispose();
         //Body sensor fixture
         PolygonShape bodySensorShape = new PolygonShape();
         bodySensorShape.setAsBox(0.5f / 2, 1.9f / 2);
@@ -391,6 +394,7 @@ public class EntityFactory {
         centerFixtureDef.isSensor = true;
         centerFixtureDef.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(centerFixtureDef).setUserData(BodyID.PLAYER_CENTER);
+        bodySensorShape.dispose();
         //Foot sensor fixture
         PolygonShape footSensorShape = new PolygonShape();
         footSensorShape.setAsBox(0.5f / 2, 0.5f / 2, new Vector2(0, -1), 0);
@@ -401,6 +405,7 @@ public class EntityFactory {
         footFixtureDef.filter.maskBits = CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Add entity
+        entity.add(playerStatsComponent);
         entity.add(stateComponent);
         entity.add(textureComponent);
         entity.add(playerDateComponent);

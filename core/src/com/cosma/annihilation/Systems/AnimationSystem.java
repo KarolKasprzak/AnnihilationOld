@@ -76,14 +76,11 @@ public class AnimationSystem extends IteratingSystem {
             if (velocityX != 0) {
                 if (stateComponent.playerDirection) {
                     textureComponent.texture_ = walkAnimation.getKeyFrame(stateComponent.time);
-                    System.out.println(walkAnimation.isAnimationFinished(stateComponent.time));
-
                     if (textureComponent.texture_.isFlipX()) {
                         textureComponent.texture_.flip(true, false);
                     }
                 } else {
                     textureComponent.texture_ = walkAnimation.getKeyFrame(stateComponent.time);
-                  System.out.println(walkAnimation.isAnimationFinished(stateComponent.time));
                     if (!textureComponent.texture_.isFlipX()) {
                         textureComponent.texture_.flip(true, false);
                     }

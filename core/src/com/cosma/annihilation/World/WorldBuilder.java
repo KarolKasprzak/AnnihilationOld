@@ -57,6 +57,11 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         gui = new Gui(engine, world,assetLoader);
 
+        if (isGameLoaded) {
+            gui.loadGame();
+
+        }
+
         engine.addSystem(new RenderSystem(camera,world,rayHandler,batch));
         engine.addSystem(new HealthSystem(gui,camera));
         engine.addSystem(new CollisionSystem(world));
@@ -70,13 +75,8 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new ShootingSystem(world,assetLoader));
         engine.getSystem(CollisionSystem.class).SetSignal();
 
-        gui.addSystemsReferences();
+        gui.addSystemsReferences(engine);
         engine.addEntityListener(this);
-
-        if (isGameLoaded) {
-            gui.loadGame();
-
-        }
     }
 
     public void update(float delta) {

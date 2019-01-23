@@ -18,8 +18,8 @@ android {
     }
     defaultConfig {
         applicationId "com.cosma.annihilation"
-        minSdkVersion 9
-        targetSdkVersion 27
+        minSdkVersion 21
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }

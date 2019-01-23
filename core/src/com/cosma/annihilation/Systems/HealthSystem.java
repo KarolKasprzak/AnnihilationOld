@@ -50,7 +50,7 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     public void receive(Signal<EntityEventSignal> signal, EntityEventSignal entityEvent) {
         switch (entityEvent.getGameEvent()) {
             case OBJECT_HIT:
-               calculateAccuracy(entityEvent);
+                 calculateAccuracy(entityEvent);
 
                 break;
             case WEAPON_SHOOT:
@@ -60,7 +60,7 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     }
 
     private void calculateAccuracy(EntityEventSignal entityEvent){
-        if(entityEvent.getAccuracy() < 0.9f){
+        if(entityEvent.getAccuracy()){
             displayMessage(entityEvent,"miss");
 
         }else{

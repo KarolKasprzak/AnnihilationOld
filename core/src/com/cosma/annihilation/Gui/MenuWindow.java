@@ -25,14 +25,14 @@ public class MenuWindow extends Window {
     private Button inventoryButton;
     private Button menuButton;
     private Button characterButton;
-    private Gui Gui;
+    private Gui gui;
     private Engine engine;
     private Serializer serializer;
 
-    MenuWindow(String title, Skin skin, World world, Engine engine, float x, float y, Gui Gui) {
+    MenuWindow(String title, Skin skin, World world, Engine engine, float x, float y, Gui gui) {
         super(title, skin);
 
-        this.Gui = Gui;
+        this.gui = gui;
         this.skin = skin;
         this.setVisible(false);
         this.engine = engine;
@@ -112,6 +112,7 @@ public class MenuWindow extends Window {
     void loadGame() {
         serializer.load();
         inventoryWindow.loadInventory(engine);
+        gui.setPlayerEntity();
     }
 
 

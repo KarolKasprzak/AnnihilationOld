@@ -31,7 +31,9 @@ public class TextureComponent implements Component, Json.Serializable {
     }
 
     public void setTexture(){
-        texture = Annihilation.getAssets().get(texturePatch);
+        if(texturePatch != null){
+            texture = Annihilation.getAssets().get(texturePatch);
+        }
     }
 
     public void setTexture(String patch){

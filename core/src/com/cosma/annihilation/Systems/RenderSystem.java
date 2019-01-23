@@ -7,6 +7,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -30,7 +31,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
     private World world;
     private ShaderProgram shaderOutline;
     private RayHandler rayHandler;
-
+    private BitmapFont font;
 
     private ComponentMapper<TextureComponent> textureMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -47,6 +48,8 @@ public class RenderSystem extends IteratingSystem implements Disposable {
         rayHandler.useDiffuseLight(true);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
+        font = new BitmapFont();
+        font.getData().setScale(1f * font.getScaleY() / font.getLineHeight());
         loadShader();
     }
 
@@ -58,7 +61,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
         super.update(deltaTime);
 
         batch.begin();
-//        Box2DSprite.draw(batch, world);
+        font.draw(batch,"Hello World",130,100);
         batch.end();
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
@@ -72,23 +75,30 @@ public class RenderSystem extends IteratingSystem implements Disposable {
         Fixture fixture = body.getFixtureList().first();
         Vector2 position = body.getPosition();
 
-//        if (textureComponent.texture == null || fixture == null) return;
+//       if (textureComponent.texture == null || fixture == null) return;
 
-        float sizeX = textureComponent.renderSizeX;
-        float sizeY = textureComponent.renderSizeY;
 
-        position.x = position.x - sizeX/2;
-        position.y = position.y - sizeY/2;
+//        position.x = position.x - textureComponent.texture.getWidth()/2;
+//        position.y = position.y - textureComponent.texture.getHeight()/2;
+
+
 
         batch.begin();
         if (textureComponent.texture != null ) {
-             batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, sizeX/2, sizeY/2,
-                     textureComponent.texture.getWidth()/32, Math.round((float)textureComponent.texture.getHeight()/32),
+            position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
+            position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
+             batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
+                     textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
                      1, 1, body.getAngle() * MathUtils.radiansToDegrees);
 
         }
+
         if (textureComponent.texture_ != null ) {
-            batch.draw(textureComponent.texture_, position.x, position.y,  sizeX/2, sizeY/2, textureComponent.texture_.getRegionWidth()/32, textureComponent.texture_.getRegionHeight()/32, 1, 1, body.getAngle() * MathUtils.radiansToDegrees);
+            position.x = position.x - textureComponent.texture_.getRegionWidth()/32/2;
+            position.y = position.y - textureComponent.texture_.getRegionHeight()/32/2;
+            batch.draw(textureComponent.texture_, position.x, position.y,(float)textureComponent.texture_.getRegionWidth()/2,(float)textureComponent.texture_.getRegionHeight()/2,
+                    textureComponent.texture_.getRegionWidth()/32, textureComponent.texture_.getRegionHeight()/32,
+                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
         }
         batch.end();
 
@@ -101,8 +111,11 @@ public class RenderSystem extends IteratingSystem implements Disposable {
             shaderOutline.end();
             batch.setShader(shaderOutline);
             batch.begin();
-//            batch.draw(textureComponent.texture, transformComponent.position.x - transformComponent.sizeX / 2, transformComponent.position.y - transformComponent.sizeY / 2,
-//                    textureComponent.texture.getHeight() / 32, textureComponent.texture.getWidth() / 32);
+            position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
+            position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
+            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
+                    textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
+                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
             batch.end();
             batch.setShader(null);
         }

@@ -174,6 +174,9 @@ public class Gui implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 {
                     playerState.goUp = true;
+                    System.out.println("work");
+                    System.out.println(playerState.goUp);
+                    System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerStateComponent.class).goUp);
                 }
                 return true;
             }
@@ -238,7 +241,8 @@ public class Gui implements Screen {
     }
 
     /** do it after systems are added to engine */
-    public void addSystemsReferences() {
+    public void addSystemsReferences(Engine engine) {
+        this.engine = engine;
         signal.add(engine.getSystem(ActionSystem.class));
         signal.add(engine.getSystem(ShootingSystem.class));
         player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
@@ -328,6 +332,11 @@ public class Gui implements Screen {
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15);
     }
 
+    public void setPlayerEntity(){
+        this.player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        playerState = player.getComponent(PlayerStateComponent.class);
+    }
+
     public Stage getStage() {
         return stage;
     }
@@ -340,7 +349,6 @@ public class Gui implements Screen {
     @Override
     public void render(float delta) {
         float fpss = Gdx.graphics.getFramesPerSecond();
-        player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         fpsNumber = Float.toString(fpss);
         fpsLabel.setText(fpsNumber);
         climbing.setText("climbing " + playerState.climbing);

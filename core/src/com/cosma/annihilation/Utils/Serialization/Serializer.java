@@ -6,7 +6,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
@@ -14,7 +13,6 @@ import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Utils.Enums.EntityID;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
 import java.util.ArrayList;
 
@@ -42,33 +40,32 @@ public class Serializer{
         file.writeString(json.prettyPrint(engineWrapper),false);
     }
 
-    public void load(){
+    public void load() {
 //        System.out.println(engine.getEntities().size());
 //        System.out.println(world.getBodyCount());
-        StateManager.pause = true;
-        for(Entity entity: engine.getEntitiesFor(Family.all(BodyComponent.class).get())){
+
+        for (Entity entity : engine.getEntitiesFor(Family.all(BodyComponent.class).get())) {
             world.destroyBody(entity.getComponent(BodyComponent.class).body);
         }
         engine.removeAllEntities();
-            ArrayList<EntityWrapper> entityList = json.fromJson(EngineWrapper.class, Gdx.files.local("save.json")).getEntityList();
-            for (EntityWrapper entityWrapper : entityList) {
-                createEntity(entityWrapper);
-            }
-        StateManager.pause = false;
+        ArrayList<EntityWrapper> entityList = json.fromJson(EngineWrapper.class, Gdx.files.local("save.json")).getEntityList();
+        for (EntityWrapper entityWrapper : entityList) {
+            createEntity(entityWrapper);
+        }
+
 //        System.out.println(engine.getEntities().size());
 //        System.out.println(world.getBodyCount());
     }
 
-    private void setPosition (Entity entity){
-        Vector2 position = entity.getComponent(BodyComponent.class).body.getPosition();
-        float angle = entity.getComponent(BodyComponent.class).body.getAngle();
-//        float angle = entity.getComponent(BodyComponent.class).body.getAngle() * MathUtils.degreesToRadians;
-        entity.getComponent(BodyComponent.class).body.setTransform(position,angle);
+    private void setPosition(Vector2 position, float angle, Entity entity) {
+        entity.getComponent(BodyComponent.class).body.setTransform(position, angle);
     }
 
     private void createEntity(EntityWrapper entityWrapper) {
-        SerializationComponent serialization = (SerializationComponent) entityWrapper.getEntitysMap().get("SerializationComponent");
+        SerializationComponent serialization = (SerializationComponent) entityWrapper.getEntityMap().get("SerializationComponent");
         EntityID id = serialization.type;
+        Vector2 position = null;
+        float angle = 0;
         Entity entity = null;
         switch (id) {
             case PLAYER:
@@ -85,15 +82,21 @@ public class Serializer{
                 break;
         }
         if (entity != null) {
-            for (Component component : entityWrapper.getEntitysMap().values()) {
+            for (Component component : entityWrapper.getEntityMap().values()) {
+                if(component instanceof BodyComponent){
+                    position = ((BodyComponent) component).getPosition();
+                    angle = ((BodyComponent) component).getAngle();
+                    continue;
+                }
                 entity.add(component);
             }
             if(entity.getComponent(SerializationComponent.class).type.equals(EntityID.DOOR)) {
                 if (entity.getComponent(DoorComponent.class).isOpen) {
                     engine.getSystem(ActionSystem.class).loadDoor(entity);
                 }
+
             }
-            setPosition(entity);
         }
+        setPosition(position,angle,entity);
     }
 }

@@ -257,13 +257,12 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         if(fa.getUserData() == BodyID.BULLET ){
             if(fb.getBody().getUserData()instanceof Entity){
                 Entity entity = (Entity) fa.getBody().getUserData();
-                entityEventSignal.setEvent(GameEvent.OBJECT_HIT,(Entity) fb.getBody().getUserData(),entity.getComponent(BulletComponent.class).dmg,entity.getComponent(BulletComponent.class).accuracy);
+                entityEventSignal.setEvent(GameEvent.OBJECT_HIT,(Entity) fb.getBody().getUserData(),entity.getComponent(BulletComponent.class).dmg,entity.getComponent(BulletComponent.class).isBulletHit);
                 signal.dispatch(entityEventSignal);
             }
             if (!bodiesToRemove.contains(fa.getBody(),true)){
                 bodiesToRemove.add(fa.getBody());
                 getEngine().removeEntity((Entity) fa.getBody().getUserData());
-
             }
         }
     }
