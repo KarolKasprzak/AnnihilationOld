@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
@@ -37,7 +38,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
 
     public CollisionSystem(World world) {
-        super(Family.all(PlayerComponent.class).get());
+        super(Family.all(PlayerComponent.class).get(),Constants.PHYSIC_SYSTEM);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);

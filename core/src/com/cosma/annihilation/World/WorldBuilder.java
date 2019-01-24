@@ -72,7 +72,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new AnimationSystem(assetLoader));
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new ActionSystem(world,gui));
-        engine.addSystem(new ShootingSystem(world,assetLoader));
+        engine.addSystem(new ShootingSystem(world,rayHandler));
         engine.getSystem(CollisionSystem.class).SetSignal();
 
         gui.addSystemsReferences(engine);

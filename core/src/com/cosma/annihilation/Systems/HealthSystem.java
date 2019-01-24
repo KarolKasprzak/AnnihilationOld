@@ -6,16 +6,11 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector3;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
-import com.cosma.annihilation.Utils.TextActor;
-
-import java.util.concurrent.TimeUnit;
 
 public class HealthSystem extends IteratingSystem implements Listener<EntityEventSignal> {
 
@@ -25,7 +20,7 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     private  OrthographicCamera camera;
 
     public HealthSystem(Gui gui, OrthographicCamera camera) {
-        super(Family.all(HealthComponent.class).get(), Constants.HEALTHSYSTEM);
+        super(Family.all(HealthComponent.class).get(), Constants.HEALTH_SYSTEM);
         this.gui = gui;
         this.camera = camera;
 

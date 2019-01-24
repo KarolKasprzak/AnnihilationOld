@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Utils.Constants;
 
 public class CameraSystem extends IteratingSystem {
 
@@ -18,7 +19,7 @@ public class CameraSystem extends IteratingSystem {
 
     public CameraSystem(OrthographicCamera camera) {
 
-        super(Family.all(PlayerComponent.class).get());
+        super(Family.all(PlayerComponent.class).get(),Constants.CAMERA_SYSTEM);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.camera = camera;

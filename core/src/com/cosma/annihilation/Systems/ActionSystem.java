@@ -11,10 +11,12 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Gui;
+import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.sun.org.apache.bcel.internal.classfile.Constant;
 
 public class ActionSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -27,7 +29,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     Filter filter1;
 
     public ActionSystem(World world,Gui gui) {
-        super(Family.all(PlayerComponent.class).get(), 11);
+        super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
         this.world = world;
         this.gui = gui;
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);

@@ -1,5 +1,7 @@
 package com.cosma.annihilation.Systems;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -7,28 +9,25 @@ import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.AssetLoader;
-import com.cosma.annihilation.Utils.EntityEventSignal;
+import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.SfxAssetDescriptors;
-import com.cosma.annihilation.Utils.StateManager;
-
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ShootingSystem extends IteratingSystem implements Listener<GameEvent>{
+public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<PlayerDateComponent> playerDateMapper;
-    private ComponentMapper<PlayerStatsComponent>playerStatsMapper;
-    private AssetLoader assetLoader;
+    private ComponentMapper<PlayerStatsComponent> playerStatsMapper;
     private World world;
     private PlayerComponent playerComponent;
     private PlayerDateComponent playerDateComponent;
@@ -39,14 +38,16 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private RayCastCallback callback;
     private boolean isWeaponShooting;
     private PlayerStateComponent stateComponent;
-   private Entity targetEntity;
-
+    private Entity targetEntity;
+    private RayHandler rayHandler;
+    private PointLight weaponLight;
+    private int direction = 1;
 
     private Vector2 raycastEnd;
-    public ShootingSystem(World world, AssetLoader assetLoader) {
-        super(Family.all(PlayerComponent.class).get(),11);
+    public ShootingSystem(World world, RayHandler rayHandler) {
+        super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
         this.world = world;
-        this.assetLoader = assetLoader;
+        this.rayHandler = rayHandler;
 
         weaponMagazine = new WeaponMagazine();
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
@@ -56,12 +57,24 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         playerStatsMapper = ComponentMapper.getFor(PlayerStatsComponent.class);
         raycastEnd = new Vector2();
 
+        weaponLight = new PointLight(rayHandler, 90, new Color(1,0.8f,0,0.8f), 0.8f,0,0);
+        weaponLight.setStaticLight(false);
+        Filter filter = new Filter();
+        filter.maskBits = CollisionID.CAST_SHADOW;
+        weaponLight.setContactFilter(filter);
+        weaponLight.setSoftnessLength(0.3f);
+        weaponLight.setSoft(true);
+        weaponLight.setActive(false);
+
+
+
+
         callback = new RayCastCallback() {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                 if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class ) != null){
                     targetEntity =(Entity)fixture.getBody().getUserData();
-                }
+                }else targetEntity = null;
                 return 0;
             }
         };
@@ -74,6 +87,14 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         stateComponent = stateMapper.get(entity);
         playerStats = playerStatsMapper.get(entity);
         body = bodyMapper.get(entity).body;
+
+        if (!stateComponent.playerDirection) {
+            direction = -1;
+        }else direction = 1;
+
+        weaponLight.attachToBody(body,1*direction,0.3f);
+
+
     }
 
     @Override
@@ -115,6 +136,15 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         }
     }
 
+    private void shootLight(){
+        weaponLight.setActive(true);
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+              weaponLight.setActive(false);
+            }
+        }, 0.1f);
+    }
     private void meleeAttack(){
         if (!playerComponent.isWeaponHidden) {
             if(stateComponent.playerDirection){
@@ -133,17 +163,15 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     }
 
     private void weaponShoot() {
-        int direction = 1;
-        if (!stateComponent.playerDirection) {
-            direction = -1;
-        }
+
         if (weaponMagazine.hasAmmo()) {
             world.rayCast(callback,body.getPosition(),raycastEnd.set(body.getPosition().x+15*direction,body.getPosition().y));
-            if(calculateAttackAccuracy()){
+            if(calculateAttackAccuracy() && targetEntity != null){
                 targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
             }
+            shootLight();
             EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f);
-            Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
+            Sound sound = Annihilation.getAssets().get(SfxAssetDescriptors.pistolSound);
             sound.play();
             weaponMagazine.removeAmmoFromMagazine();
         } else {
