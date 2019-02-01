@@ -10,27 +10,33 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
-import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.SfxAssetDescriptors;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerComponent> playerMapper;
-    private ComponentMapper<PlayerDateComponent> playerDateMapper;
+    private ComponentMapper<PlayerInventoryComponent> playerDateMapper;
     private ComponentMapper<PlayerStatsComponent> playerStatsMapper;
+    private ComponentMapper<AnimationComponent> playerAnimMapper;
+
     private World world;
+    private AnimationComponent playerAnim;
     private PlayerComponent playerComponent;
-    private PlayerDateComponent playerDateComponent;
+    private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent playerStats;
     private ComponentMapper<PlayerStateComponent> stateMapper;
     private Body body;
@@ -42,7 +48,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private RayHandler rayHandler;
     private PointLight weaponLight;
     private int direction = 1;
-
+    Animation<TextureRegion> meleeAnimation;
     private Vector2 raycastEnd;
     public ShootingSystem(World world, RayHandler rayHandler) {
         super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
@@ -53,8 +59,10 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
-        playerDateMapper = ComponentMapper.getFor(PlayerDateComponent.class);
+        playerDateMapper = ComponentMapper.getFor(PlayerInventoryComponent.class);
         playerStatsMapper = ComponentMapper.getFor(PlayerStatsComponent.class);
+        playerAnimMapper = ComponentMapper.getFor(AnimationComponent.class);
+
         raycastEnd = new Vector2();
 
         weaponLight = new PointLight(rayHandler, 90, new Color(1,0.8f,0,0.8f), 0.8f,0,0);
@@ -66,6 +74,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         weaponLight.setSoft(true);
         weaponLight.setActive(false);
 
+
+        meleeAnimation = new Animation(0.1f,Annihilation.getAssets().get(GfxAssetDescriptors.player_attack_melee).getRegions(), Animation.PlayMode.NORMAL);
 
 
 
@@ -83,9 +93,11 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
-        playerDateComponent = playerDateMapper.get(entity);
+        playerInventoryComponent = playerDateMapper.get(entity);
         stateComponent = stateMapper.get(entity);
         playerStats = playerStatsMapper.get(entity);
+        playerAnim = playerAnimMapper.get(entity);
+
         body = bodyMapper.get(entity).body;
 
         if (!stateComponent.playerDirection) {
@@ -136,21 +148,13 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         }
     }
 
-    private void shootLight(){
-        weaponLight.setActive(true);
-        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
-            @Override
-            public void run() {
-              weaponLight.setActive(false);
-            }
-        }, 0.1f);
-    }
-    private void meleeAttack(){
+    private void meleeAttack() {
         if (!playerComponent.isWeaponHidden) {
-            if(stateComponent.playerDirection){
-                world.rayCast(callback,body.getPosition(),new Vector2(body.getPosition().x+1,body.getPosition().y));
-            }else
-                world.rayCast(callback,body.getPosition(),new Vector2(body.getPosition().x-1,body.getPosition().y));
+            if (stateComponent.playerDirection) {
+                world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+                playerAnim.time = 0;
+                playerAnim.currentAnimation = meleeAnimation;
+            }
         }
     }
 
@@ -268,11 +272,11 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private int addAmmoFromInventory() {
         int ammoInInventory = 0;
-        for (InventoryItemLocation item : playerDateComponent.inventoryItem) {
+        for (InventoryItemLocation item : playerInventoryComponent.inventoryItem) {
             if (item.getItemID().equals(playerComponent.activeWeapon.getAmmoID().toString())) {
                 ammoInInventory = item.getItemsAmount();
                 if (ammoInInventory < playerComponent.activeWeapon.getMaxAmmoInMagazine()) {
-                    playerDateComponent.inventoryItem.removeValue(item, false);
+                    playerInventoryComponent.inventoryItem.removeValue(item, false);
                     return ammoInInventory;
                 } else {
                     item.setItemsAmount(item.getItemsAmount() - playerComponent.activeWeapon.getMaxAmmoInMagazine());
@@ -283,20 +287,42 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         return ammoInInventory;
     }
 
-    private class WeaponMagazine{
+
+    private void shootLight(){
+        weaponLight.setActive(true);
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                weaponLight.setActive(false);
+            }
+        }, 0.1f);
+    }
+
+    void playAnimation(Animation animation, float animationTime) {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                weaponLight.setActive(false);
+            }
+        }, animationTime);
+    }
+
+
+    private class WeaponMagazine {
+
         private int ammoInMagazine;
         private int maxAmmoInMagazine;
 
-        private WeaponMagazine(){
+        private WeaponMagazine() {
 
         }
 
-        void reload(){
+        void reload() {
             setAmmoInMagazine(addAmmoFromInventory());
         }
 
-        boolean hasAmmo(){
-            if(ammoInMagazine > 0){
+        boolean hasAmmo() {
+            if (ammoInMagazine > 0) {
                 return true;
             }
             return false;
@@ -311,13 +337,14 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             this.ammoInMagazine = ammoInMagazine;
         }
 
-        void removeAmmoFromMagazine(){
-            ammoInMagazine --;
+        void removeAmmoFromMagazine() {
+            ammoInMagazine--;
         }
 
         void setMaxAmmoInMagazine(int maxAmmoInMagazine) {
             this.maxAmmoInMagazine = maxAmmoInMagazine;
         }
+
     }
 }
 

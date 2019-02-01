@@ -9,10 +9,11 @@ import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.*;
-import com.cosma.annihilation.Utils.Enums.ActionID;
+import com.cosma.annihilation.Utils.Enums.EntityAction;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityID;
+import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 import java.util.ArrayList;
@@ -189,7 +190,7 @@ public class EntityFactory {
         textureComponent.renderSizeX = 2;
         textureComponent.renderSizeY = 2;
 
-        actionComponent.action = ActionID.OPEN_DOOR;
+        actionComponent.action = EntityAction.OPEN_DOOR;
 
         //----------Body Component----------------------
         BodyDef bodyDef = new BodyDef();
@@ -247,7 +248,7 @@ public class EntityFactory {
 
 
         serializationComponent.type = EntityID.BOX;
-        actionComponent.action = ActionID.OPEN;
+        actionComponent.action = EntityAction.OPEN;
         containerComponent.name = "box";
         containerComponent.itemLocations = itemList;
 
@@ -299,7 +300,7 @@ public class EntityFactory {
         serializationComponent.type = EntityID.BOX;
 
 
-        actionComponent.action = ActionID.OPEN;
+        actionComponent.action = EntityAction.OPEN;
         containerComponent.name = "box";
         //----------Body Component----------------------
         BodyDef bodyDef = new BodyDef();
@@ -353,13 +354,15 @@ public class EntityFactory {
         PlayerComponent playerComponent = new PlayerComponent();
         HealthComponent healthComponent = new HealthComponent();
         SerializationComponent typeComponent = new SerializationComponent();
-        PlayerDateComponent playerDateComponent = new PlayerDateComponent();
+        PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
         TextureComponent textureComponent = new TextureComponent();
         PlayerStateComponent stateComponent = new PlayerStateComponent();
         PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
-
+        AnimationComponent animationComponent = new AnimationComponent();
 //        textureComponent.texturePatch = GfxPlayerAssetDescriptors.player_stand_melee.fileName;
 //        textureComponent.setTexture();
+
+//        animationComponent.animatedSprite = new AnimatedSprite();
 
         textureComponent.renderSizeX = 2;
         textureComponent.renderSizeY = 2;
@@ -367,8 +370,8 @@ public class EntityFactory {
         typeComponent.type = EntityID.PLAYER;
         healthComponent.hp = 67;
         playerComponent.collisionEntityList = new ArrayList<Entity>();
-        playerDateComponent.inventoryItem = new Array<InventoryItemLocation>();
-        playerDateComponent.equippedItem = new Array<InventoryItemLocation>();
+        playerInventoryComponent.inventoryItem = new Array<InventoryItemLocation>();
+        playerInventoryComponent.equippedItem = new Array<InventoryItemLocation>();
 
         //Player body
         BodyDef bodyDef = new BodyDef();
@@ -405,10 +408,11 @@ public class EntityFactory {
         footFixtureDef.filter.maskBits = CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(footFixtureDef).setUserData(BodyID.PLAYER_FOOT);
         //Add entity
+        entity.add(animationComponent);
         entity.add(playerStatsComponent);
         entity.add(stateComponent);
         entity.add(textureComponent);
-        entity.add(playerDateComponent);
+        entity.add(playerInventoryComponent);
         entity.add(typeComponent);
         entity.add(healthComponent);
         entity.add(playerComponent);

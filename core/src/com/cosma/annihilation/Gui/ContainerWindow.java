@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.PlayerDateComponent;
+import com.cosma.annihilation.Components.PlayerInventoryComponent;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Gui.Inventory.InventorySlot;
 import com.cosma.annihilation.Gui.Inventory.InventorySlotTarget;
@@ -62,14 +62,14 @@ class ContainerWindow extends Window {
     }
 
     private void moveItemToPlayerEquipment(InventorySlot inventorySlot) {
-        if (engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.size <= 24) {
+        if (engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerInventoryComponent.class).inventoryItem.size <= 24) {
 
             InventoryItemLocation inventoryItemLocation = new InventoryItemLocation();
             inventoryItemLocation.setTableIndex(findEmptySlotInEquipment());
             inventoryItemLocation.setItemsAmount(inventorySlot.getItemsNumber());
             inventoryItemLocation.setItemID(inventorySlot.getInventoryItem().getItemID().toString());
 
-            engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem.add(inventoryItemLocation);
+            engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerInventoryComponent.class).inventoryItem.add(inventoryItemLocation);
 
             for (InventoryItemLocation item : engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class)
                     .processedEntity.getComponent(ContainerComponent.class).itemLocations) {
@@ -88,7 +88,7 @@ class ContainerWindow extends Window {
 
     private int findEmptySlotInEquipment() {
         int n = 0;
-        Array<InventoryItemLocation> inventoryItem = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerDateComponent.class).inventoryItem;
+        Array<InventoryItemLocation> inventoryItem = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerInventoryComponent.class).inventoryItem;
 
         Array<Integer> numbers = new Array<Integer>();
 

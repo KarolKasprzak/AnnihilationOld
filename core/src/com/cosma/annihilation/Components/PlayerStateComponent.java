@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
 
 public class PlayerStateComponent implements Component {
-    public float time = 0f;
+
 
     public boolean canJump = true;
     public boolean onGround = false;
@@ -18,6 +18,7 @@ public class PlayerStateComponent implements Component {
 
     public boolean canMoveOnSide = true;
     public boolean canClimbDown = false;
+    public boolean crouch = false;
 
 
     /** right = true, left = false  */

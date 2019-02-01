@@ -9,6 +9,7 @@ package com.cosma.annihilation.Utils.Enums;
         WEAPON_STOP_SHOOT,
         PERFORM_ACTION,
         JUMP,
-        OBJECT_HIT
+        OBJECT_HIT,
+        CROUCH
     }
 

@@ -11,7 +11,9 @@ public class TextureComponent implements Component, Json.Serializable {
     public String texturePatch;
     public Texture texture;
     public TextureRegion texture_;
-
+    public boolean flipTexture = false;
+//    public TextureRegion texture1;
+//    public TextureRegion texture2;
     public float renderSizeX = 0;
     public float renderSizeY = 0;
 

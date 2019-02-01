@@ -26,7 +26,6 @@ import com.cosma.annihilation.Components.PlayerStateComponent;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
-import com.cosma.annihilation.Utils.Enums.ActionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
@@ -44,7 +43,7 @@ public class Gui implements Screen {
     private Label canJump;
     private Label canClimbDown;
     private Label weaponHidden;
-
+    private Label crouch;
 
     private String fpsNumber;
     private ImageButton actionButtonRightUp;
@@ -70,7 +69,6 @@ public class Gui implements Screen {
     private MenuWindow menuWindow;
     private boolean rightUpButtonPressed = false;
 
-
     public Gui(final Engine engine, World world, AssetLoader assetLoader) {
         this.world = world;
         this.engine = engine;
@@ -83,9 +81,6 @@ public class Gui implements Screen {
         stage = new Stage(viewport);
         viewport.apply(true);
 
-
-
-
         containerWindow = new ContainerWindow("", skin, 4, engine);
         containerWindow.setSize(Utilities.setWindowWidth(0.4f), Utilities.setWindowHeight(0.5f));
         containerWindow.setVisible(false);
@@ -96,13 +91,11 @@ public class Gui implements Screen {
         climbing = new Label("", skin);
         onground = new Label("", skin);
         footContact = new Label("", skin);
-
+        crouch = new Label("", skin);
         canClimb = new Label("", skin);
         canJump = new Label("", skin);
         canClimbDown = new Label("", skin);
         weaponHidden = new Label("", skin);
-
-
 
         actionNameDisplayed = new Label("", skin);
         actionButtonRightUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_b"))));
@@ -113,23 +106,6 @@ public class Gui implements Screen {
         actionButtonLeft = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_left"))));
         actionButtonRight = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_right"))));
 
-//        actionButtonRightUp.addListener(new ActorGestureListener() {
-//            @Override
-//            public void tap(InputEvent event, float x, float y, int count, int button) {
-//                super.tap(event, x, y, count, button);
-//                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-//                if (player.getComponent(PlayerComponent.class).isWeaponHidden) {
-//                    signal.dispatch(GameEvent.PERFORM_ACTION);
-//                } else
-//                    signal.dispatch(GameEvent.WEAPON_SHOOT);
-//            }
-//
-//            @Override
-//            public boolean longPress(Actor actor, float x, float y) {
-//                signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
-//                return true;
-//            }
-//        });
         actionButtonRightUp.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -142,7 +118,6 @@ public class Gui implements Screen {
                 signal.dispatch(GameEvent.PERFORM_ACTION);
                 return true;
             }
-
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -190,8 +165,15 @@ public class Gui implements Screen {
         actionButtonDown.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (playerState.canClimbDown) {
+                    playerState.goDown = true;
+                } else {
+                    if (playerState.crouch) {
+                        playerState.crouch = false;
+                    } else
+                        playerState.crouch = true;
+                }
 
-                playerState.goDown = true;
                 return true;
             }
 
@@ -263,8 +245,6 @@ public class Gui implements Screen {
         bTable.bottom().left();
         bTable.setFillParent(true);
 
-
-
         stage.addActor(table);
         stage.addActor(bTable);
 
@@ -297,27 +277,28 @@ public class Gui implements Screen {
 
         });
 
-        table.add(debugButton).padTop(10).padLeft(10).left().width(180).height(50);
+        table.add(debugButton).padTop(10).padLeft(10).left().width(180).height(32);
         table.add(actionNameDisplayed).center().expandX();
-        table.add(menuButton).padTop(10).padRight(10).right().width(180).height(50);
+        table.add(menuButton).padTop(10).padRight(10).right().width(180).height(32);
         table.row();
-        table.add(fpsLabel).padTop(0).padLeft(10).left().width(150).height(50);
+        table.add(fpsLabel).padTop(0).padLeft(10).left().width(150).height(32);
         table.row();
-        table.add(climbing).padTop(0).padLeft(10).left().width(250).height(50);
+        table.add(climbing).padTop(0).padLeft(10).left().width(250).height(32);
         table.row();
-        table.add(onground).padTop(0).padLeft(10).left().width(250).height(50);
+        table.add(onground).padTop(0).padLeft(10).left().width(250).height(32);
         table.row();
-        table.add(canClimb).padTop(0).padLeft(10).left().width(250).height(50);
+        table.add(canClimb).padTop(0).padLeft(10).left().width(250).height(32);
         table.row();
-        table.add(canJump).padTop(0).padLeft(10).left().width(250).height(50);
+        table.add(canJump).padTop(0).padLeft(10).left().width(250).height(32);
         table.row();
-        table.add(canClimbDown).padTop(10).padLeft(10).left().width(250).height(50);
+        table.add(crouch).padTop(10).padLeft(10).left().width(250).height(32);
         table.row();
-        table.add(weaponHidden).padTop(0).padLeft(10).left().width(250).height(50);
+        table.add(canClimbDown).padTop(10).padLeft(10).left().width(250).height(32);
+        table.row();
+        table.add(weaponHidden).padTop(0).padLeft(10).left().width(250).height(32);
         table.row();
 
         //-------------------Gui button table------------------------------------------------
-
         bTable.add().width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).center().pad(10);
         bTable.add(actionButtonUp).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).center().pad(10);
         bTable.add().width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).center().pad(10);
@@ -332,7 +313,7 @@ public class Gui implements Screen {
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15);
     }
 
-    public void setPlayerEntity(){
+    void setPlayerEntity(){
         this.player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         playerState = player.getComponent(PlayerStateComponent.class);
     }
@@ -351,6 +332,7 @@ public class Gui implements Screen {
         float fpss = Gdx.graphics.getFramesPerSecond();
         fpsNumber = Float.toString(fpss);
         fpsLabel.setText(fpsNumber);
+        crouch.setText("crouch " + playerState.crouch);
         climbing.setText("climbing " + playerState.climbing);
         onground.setText("onGround " + playerState.onGround);
         canClimb.setText("canclimb " + playerState.canClimb);

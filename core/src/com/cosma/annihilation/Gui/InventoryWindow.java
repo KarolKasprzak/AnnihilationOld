@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.PlayerDateComponent;
+import com.cosma.annihilation.Components.PlayerInventoryComponent;
 import com.cosma.annihilation.Gui.Inventory.*;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Items.ItemFactory;
@@ -262,20 +262,20 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
 
     void saveInventory(Engine engine) {
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        player.getComponent(PlayerDateComponent.class).inventoryItem = getItemsTable(inventorySlotsTable);
-        player.getComponent(PlayerDateComponent.class).equippedItem = getItemsTable(equipmentSlotsTable);
+        player.getComponent(PlayerInventoryComponent.class).inventoryItem = getItemsTable(inventorySlotsTable);
+        player.getComponent(PlayerInventoryComponent.class).equippedItem = getItemsTable(equipmentSlotsTable);
     }
 
     void loadInventory(Engine engine) {
         clearItemsTable(equipmentSlotsTable);
         clearItemsTable(inventorySlotsTable);
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        if (player.getComponent(PlayerDateComponent.class).equippedItem != null) {
-            Array equipment = player.getComponent(PlayerDateComponent.class).equippedItem;
+        if (player.getComponent(PlayerInventoryComponent.class).equippedItem != null) {
+            Array equipment = player.getComponent(PlayerInventoryComponent.class).equippedItem;
             fillInventory(equipmentSlotsTable, equipment, dragAndDrop);
         }
-        if (player.getComponent(PlayerDateComponent.class).inventoryItem != null) {
-            Array inventory = player.getComponent(PlayerDateComponent.class).inventoryItem;
+        if (player.getComponent(PlayerInventoryComponent.class).inventoryItem != null) {
+            Array inventory = player.getComponent(PlayerInventoryComponent.class).inventoryItem;
             fillInventory(inventorySlotsTable, inventory, dragAndDrop);
         }
         setDmgLabel();

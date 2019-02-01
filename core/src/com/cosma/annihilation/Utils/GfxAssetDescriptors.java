@@ -33,7 +33,7 @@ public class GfxAssetDescriptors {
 
     public static final AssetDescriptor<TextureAtlas> gui_human_animation = new AssetDescriptor<TextureAtlas>("gfx/gui/human/gui_human.txt", TextureAtlas.class);
     public static final AssetDescriptor<TextureAtlas> gui_buttons = new AssetDescriptor<TextureAtlas>("gfx/gui/buttons_gui.txt", TextureAtlas.class);
-
+    public static final AssetDescriptor<TextureAtlas> player_attack_melee = new AssetDescriptor<TextureAtlas>("gfx/player/player_melee.atlas", TextureAtlas.class);
 
     public static final AssetDescriptor<Texture> guiframe64x64 = new AssetDescriptor<Texture>("gfx/gui/gui_frame_64x64.png", Texture.class);
 

@@ -1,10 +1,10 @@
 package com.cosma.annihilation.Utils.Enums;
 
-public enum ActionID {
+public enum EntityAction {
     NOTHING,
     OPEN,
     PICK_UP,
     OPEN_DOOR,
-
+    CROUCH
 
 }

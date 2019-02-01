@@ -1,11 +1,11 @@
 package com.cosma.annihilation.Components;
 
 import com.badlogic.ashley.core.Component;
-import com.cosma.annihilation.Utils.Enums.ActionID;
+import com.cosma.annihilation.Utils.Enums.EntityAction;
 
 public class ActionComponent implements Component {
-    public ActionID action;
-    public ActionID action1;
-    public ActionID action2;
-    public ActionID action3;
+    public EntityAction action;
+    public EntityAction action1;
+    public EntityAction action2;
+    public EntityAction action3;
 }

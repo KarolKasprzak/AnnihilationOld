@@ -4,19 +4,13 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.PlayerStateComponent;
-import com.cosma.annihilation.Components.TextureComponent;
+import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.*;
-import net.dermetfan.gdx.graphics.g2d.AnimatedBox2DSprite;
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
-import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 public class AnimationSystem extends IteratingSystem {
 
@@ -24,6 +18,7 @@ public class AnimationSystem extends IteratingSystem {
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<TextureComponent> textureMapper;
     private ComponentMapper<PlayerStateComponent> stateMapper;
+    private ComponentMapper<AnimationComponent> animationMapper;
 
     private Body playerBody;
     private AssetLoader assetLoader;
@@ -43,7 +38,7 @@ public class AnimationSystem extends IteratingSystem {
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
-
+        animationMapper = ComponentMapper.getFor(AnimationComponent.class);
          TextureAtlas textureAtlasWalk = (TextureAtlas) LoaderOLD.getResource("player_move");
 //        textureAtlas2 = (TextureAtlas) LoaderOLD.getResource("player_move_start");
 //        playerStand = (Texture) LoaderOLD.getResource("player_stand");
@@ -51,11 +46,13 @@ public class AnimationSystem extends IteratingSystem {
 
 
         walkAnimation = new Animation(0.1f, textureAtlasWalk.getRegions(), Animation.PlayMode.LOOP);
+
 //        startwalkanimation = new Animation(1 / 10f, textureAtlas2.getRegions());
 //        animatedSprite1 = new AnimatedSprite(startwalkanimation);
 
         animatedSprite = new AnimatedSprite(walkAnimation);
         animatedSprite.getAnimation().getKeyFrame(animatedSprite.getTime());
+
 
     }
 
@@ -64,27 +61,42 @@ public class AnimationSystem extends IteratingSystem {
         playerComponent = playerMapper.get(entity);
         PlayerStateComponent stateComponent = stateMapper.get(entity);
         TextureComponent textureComponent = textureMapper.get(entity);
+        AnimationComponent animComponent = animationMapper.get(entity);
         playerBody = bodyMapper.get(entity).body;
 
-        stateComponent.time += deltaTime;
+        if(!stateComponent.playerDirection){
+            textureComponent.flipTexture = true;
+            System.out.println(textureComponent.flipTexture);
+        }else{
+            textureComponent.flipTexture = false;
+            System.out.println(textureComponent.flipTexture);
+        }
 
-        TextureRegion renderTexture;
+        animComponent.time += deltaTime;
 
-        //Walk animation
+//        if(textureComponent.texture_ != null){
+//            if (stateComponent.playerDirection) {
+//                if (textureComponent.texture_.isFlipX()) {
+//                    textureComponent.texture_.flip(true, false);
+//                }
+//            } else {
+//                if (!textureComponent.texture_.isFlipX()) {
+//                    textureComponent.texture_.flip(true, false);
+//                }
+//            }
+//        }
+
+
+
+
+        if (animationMapper.get(entity).currentAnimation != null) {
+            textureComponent.texture_ = animComponent.currentAnimation.getKeyFrame(animComponent.time);
+        }
+
         if (!stateComponent.climbing) {
             float velocityX = playerBody.getLinearVelocity().x;
             if (velocityX != 0) {
-                if (stateComponent.playerDirection) {
-                    textureComponent.texture_ = walkAnimation.getKeyFrame(stateComponent.time);
-                    if (textureComponent.texture_.isFlipX()) {
-                        textureComponent.texture_.flip(true, false);
-                    }
-                } else {
-                    textureComponent.texture_ = walkAnimation.getKeyFrame(stateComponent.time);
-                    if (!textureComponent.texture_.isFlipX()) {
-                        textureComponent.texture_.flip(true, false);
-                    }
-                }
+                textureComponent.texture_ = walkAnimation.getKeyFrame(animComponent.time);
             }
         }
 
