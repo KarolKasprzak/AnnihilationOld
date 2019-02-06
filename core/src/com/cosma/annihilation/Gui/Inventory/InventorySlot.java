@@ -46,7 +46,7 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
         stack.add(backgroundImage);
     }
 
-    public boolean doesAcceptItemUseType(int itemType){
+    public boolean isAcceptItemUseType(int itemType){
         if( itemTypeFilter == 0 ){
             return true;
         }else

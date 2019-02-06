@@ -92,9 +92,14 @@ public class RenderSystem extends IteratingSystem implements Disposable {
         if (textureComponent.texture_ != null ) {
             position.x = position.x - textureComponent.texture_.getRegionWidth()/32/2;
             position.y = position.y - textureComponent.texture_.getRegionHeight()/32/2;
-            batch.draw(textureComponent.texture_, position.x, position.y,(float)textureComponent.texture_.getRegionWidth()/2,(float)textureComponent.texture_.getRegionHeight()/2,
-                     textureComponent.texture_.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.texture_.getRegionHeight()/32,
+
+
+            batch.draw(textureComponent.texture_, position.x+(textureComponent.flipTexture ? textureComponent.texture_.getRegionWidth()/32 : 0), position.y,(float)textureComponent.texture_.getRegionWidth()/2,(float)textureComponent.texture_.getRegionHeight()/2,
+                    textureComponent.texture_.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.texture_.getRegionHeight()/32,
                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
+//            batch.draw(textureComponent.texture_, position.x, position.y,(float)textureComponent.texture_.getRegionWidth()/2,(float)textureComponent.texture_.getRegionHeight()/2,
+//                     textureComponent.texture_.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.texture_.getRegionHeight()/32,
+//                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
         }
         batch.end();
 

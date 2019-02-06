@@ -64,13 +64,7 @@ public class AnimationSystem extends IteratingSystem {
         AnimationComponent animComponent = animationMapper.get(entity);
         playerBody = bodyMapper.get(entity).body;
 
-        if(!stateComponent.playerDirection){
-            textureComponent.flipTexture = true;
-            System.out.println(textureComponent.flipTexture);
-        }else{
-            textureComponent.flipTexture = false;
-            System.out.println(textureComponent.flipTexture);
-        }
+        textureComponent.flipTexture = !stateComponent.playerDirection;
 
         animComponent.time += deltaTime;
 

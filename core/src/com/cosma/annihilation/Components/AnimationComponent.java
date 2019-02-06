@@ -8,5 +8,4 @@ import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 public class AnimationComponent implements Component {
     public float time = 0f;
     public Animation<TextureRegion> currentAnimation;
-//    public AnimatedSprite animatedSprite;
 }

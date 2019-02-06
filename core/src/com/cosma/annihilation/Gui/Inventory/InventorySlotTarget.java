@@ -1,8 +1,6 @@
 package com.cosma.annihilation.Gui.Inventory;
 
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
-import com.cosma.annihilation.Gui.Inventory.InventorySlot;
-import com.cosma.annihilation.Gui.Inventory.InventorySlotSource;
 import com.cosma.annihilation.Items.InventoryItem;
 
 public class InventorySlotTarget extends DragAndDrop.Target {
@@ -31,7 +29,7 @@ public class InventorySlotTarget extends DragAndDrop.Target {
             return;
         }
 
-        if( !targetSlot.doesAcceptItemUseType(sourceItem.getItemUseType()))  {
+        if( !targetSlot.isAcceptItemUseType(sourceItem.getItemUseType()))  {
             sourceSlot.add(sourceItem);
             return;
         }

@@ -34,10 +34,10 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private ComponentMapper<AnimationComponent> playerAnimMapper;
 
     private World world;
-    private AnimationComponent playerAnim;
+    private AnimationComponent animationComponent;
     private PlayerComponent playerComponent;
     private PlayerInventoryComponent playerInventoryComponent;
-    private PlayerStatsComponent playerStats;
+    private PlayerStatsComponent statsComponent;
     private ComponentMapper<PlayerStateComponent> stateMapper;
     private Body body;
     private WeaponMagazine weaponMagazine;
@@ -48,6 +48,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private RayHandler rayHandler;
     private PointLight weaponLight;
     private int direction = 1;
+    private boolean isMeleeAttackFinish = true;
     Animation<TextureRegion> meleeAnimation;
     private Vector2 raycastEnd;
     public ShootingSystem(World world, RayHandler rayHandler) {
@@ -95,8 +96,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         playerComponent = playerMapper.get(entity);
         playerInventoryComponent = playerDateMapper.get(entity);
         stateComponent = stateMapper.get(entity);
-        playerStats = playerStatsMapper.get(entity);
-        playerAnim = playerAnimMapper.get(entity);
+        statsComponent = playerStatsMapper.get(entity);
+        animationComponent = playerAnimMapper.get(entity);
 
         body = bodyMapper.get(entity).body;
 
@@ -149,12 +150,20 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     }
 
     private void meleeAttack() {
-        if (!playerComponent.isWeaponHidden) {
-            if (stateComponent.playerDirection) {
-                world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
-                playerAnim.time = 0;
-                playerAnim.currentAnimation = meleeAnimation;
-            }
+        if (!playerComponent.isWeaponHidden & isMeleeAttackFinish) {
+            isMeleeAttackFinish = false;
+            world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+            System.out.println("attack");
+            animationComponent.time = 0;
+            animationComponent.currentAnimation = meleeAnimation;
+            stateComponent.canMoveOnSide = false;
+            com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                @Override
+                public void run() {
+                    stateComponent.canMoveOnSide = true;
+                    isMeleeAttackFinish = true;
+                }
+            }, animationComponent.currentAnimation.getAnimationDuration());
         }
     }
 
@@ -226,19 +235,19 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         switch (weaponType) {
             case 4:
-                playerSkill = playerStats.meleeWeapons;
+                playerSkill = statsComponent.meleeWeapons;
                 break;
             case 8:
-                playerSkill = playerStats.energeticWeapons;
+                playerSkill = statsComponent.energeticWeapons;
                 break;
             case 16:
-                playerSkill = playerStats.energeticWeapons;
+                playerSkill = statsComponent.energeticWeapons;
                 break;
             case 32:
-                playerSkill = playerStats.smallWeapons;
+                playerSkill = statsComponent.smallWeapons;
                 break;
             case 64:
-                playerSkill = playerStats.smallWeapons;
+                playerSkill = statsComponent.smallWeapons;
                 break;
         }
         float playerAccuracy = ((float)playerSkill*0.005f + weaponAccuracy);
