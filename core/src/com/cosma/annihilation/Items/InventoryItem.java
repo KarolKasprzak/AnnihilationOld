@@ -119,8 +119,8 @@ public class InventoryItem extends Image {
        return stackable;
     }
 
-    public boolean isSameItemType(InventoryItem candidateInventoryItem){
-        return itemID == candidateInventoryItem.getItemID();
+    public boolean isSameItemType(InventoryItem inventoryItem){
+        return itemID == inventoryItem.getItemID();
     }
 
     public int getTradeValue(){

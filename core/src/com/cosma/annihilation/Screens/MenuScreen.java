@@ -63,12 +63,26 @@ public class MenuScreen implements Screen {
         TextButton exitGameButton = new TextButton("Exit", skin);
         Utilities.setButtonColor(exitGameButton);
         table.add(exitGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
+        table.row();
+
+        TextButton editorGameButton = new TextButton("Editor", skin);
+        Utilities.setButtonColor(editorGameButton);
+        table.add(editorGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
 
         exitGameButton.addListener(new InputListener(){
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.exit();
+                return true;
+            }
+        });
+
+        editorGameButton.addListener(new InputListener(){
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                game.setEditorScreen();
                 return true;
             }
         });
