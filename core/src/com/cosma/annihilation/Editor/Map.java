@@ -30,8 +30,8 @@ public class Map {
     }
 
 
-    public void addMapLayer(){
-        MapLayer mapLayer = new MapLayer(width,height);
+    public void addMapLayer(String name){
+        MapLayer mapLayer = new MapLayer(width,height,name);
         mapLayers.add(mapLayer);
     }
 

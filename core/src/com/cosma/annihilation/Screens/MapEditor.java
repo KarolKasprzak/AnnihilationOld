@@ -10,33 +10,34 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Editor.Grid;
-import com.cosma.annihilation.Editor.Map;
-import com.cosma.annihilation.Editor.MapLayer;
-import com.cosma.annihilation.Editor.MapRender;
+import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Gui.BackgroundColor;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.Menu;
+import com.kotcrab.vis.ui.widget.MenuBar;
+import com.kotcrab.vis.ui.widget.MenuItem;
 
 public class MapEditor implements Screen, InputProcessor {
     private Skin skin;
-    private SpriteBatch batch, batchui;
+    private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
-    private Stage stage, stageui;
+    private Stage stage;
     private Viewport viewport, viewportUi;
-    private OrthographicCamera camera,cameraui;
+    private OrthographicCamera camera,cameraUi;
     private World world;
     private final float TIME_STEP = 1 / 300f;
     private float accumulator = 0f;
@@ -54,53 +55,75 @@ public class MapEditor implements Screen, InputProcessor {
     TextButton buttonSave;
     TextButton buttonLoad;
     private Map map;
+
+
     private MapRender mapRender;
+    private MenuBar menuBar;
 
     public MapEditor(Annihilation game){
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
-        stage = new Stage();
-        stageui = new Stage();
-        cameraui = new OrthographicCamera();
-        cameraui.update();
-        viewportUi = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),cameraui);
-        stageui.setViewport(viewportUi);
-        viewportUi.apply(true);
 
+        cameraUi = new OrthographicCamera();
+        cameraUi.update();
+        viewportUi = new ScreenViewport();
+
+        stage = new Stage(viewportUi);
+        VisUI.load(VisUI.SkinScale.X1);
 
         map = new Map(50,50,32);
-        map.addMapLayer();
+        map.addMapLayer("layer1");
+
+//        Json json = new Json();
+//        System.out.println(json.prettyPrint(map));
+        final Table root = new Table();
+        root.setFillParent(true);
+        root.setDebug(true);
+        stage.addActor(root);
+        stage.addActor(new TestTree());
+
+
         mapRender = new MapRender(shapeRenderer,map);
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
         camera.update();
-        System.out.println();
-        viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
         viewport.apply(true);
-        stage.setViewport(viewport);
         world = new World(new Vector2(0,9),false);
         camera.zoom = zoom;
-
         skin = Annihilation.getAssets().get(GfxAssetDescriptors.skin);
 
 
         im = new InputMultiplexer();
-        im.addProcessor(stageui);
         im.addProcessor(stage);
         im.addProcessor(this);
         batch = new SpriteBatch();
-        batchui = new SpriteBatch();
 
-        setupGui();
+        menuBar = new MenuBar();
+        root.add(menuBar.getTable()).expandX().fillX().row();
+        root.add().expand().fill();
+
+        Menu fileMenu = new Menu("File");
+        fileMenu.addItem(new MenuItem("New map"));
+        fileMenu.addItem(new MenuItem("Save").setShortcut("ctrl + s"));
+        fileMenu.addItem(new MenuItem("Save as"));
+        fileMenu.addItem(new MenuItem("Map options"));
+        fileMenu.addItem(new MenuItem("Exit"));
+
+
+
+        menuBar.addMenu(fileMenu);
+
+//        setupGui();
 
     }
 
     void setupGui (){
+
         Table table = new Table();
-        table.top();
+        stage.addActor(table);
         table.setFillParent(true);
         table.setDebug(true);
-        stageui.addActor(table);
+
         //Fps
 
         //Buttons
@@ -200,22 +223,20 @@ public class MapEditor implements Screen, InputProcessor {
 //        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
-      shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
 
         shapeRenderer.begin();
         mapRender.renderMap();
         shapeRenderer.end();
 
-        stageui.act(delta);
         stage.act(delta);
         if(runSim) {
             act(delta);
         }
         stage.draw();
-        stageui.draw();
 
         camera.update();
-        cameraui.update();
+        cameraUi.update();
     }
 
     @Override
