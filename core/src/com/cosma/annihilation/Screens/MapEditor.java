@@ -11,27 +11,25 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.*;
-import com.cosma.annihilation.Gui.BackgroundColor;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.Utilities;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.Menu;
 import com.kotcrab.vis.ui.widget.MenuBar;
 import com.kotcrab.vis.ui.widget.MenuItem;
 
 public class MapEditor implements Screen, InputProcessor {
+
     private Skin skin;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
@@ -54,8 +52,8 @@ public class MapEditor implements Screen, InputProcessor {
     boolean canDrag = false;
     TextButton buttonSave;
     TextButton buttonLoad;
-    private Map map;
-
+    private GameMap gameMap;
+    private CreateMapWindow createMapWindow;
 
     private MapRender mapRender;
     private MenuBar menuBar;
@@ -67,23 +65,28 @@ public class MapEditor implements Screen, InputProcessor {
         cameraUi = new OrthographicCamera();
         cameraUi.update();
         viewportUi = new ScreenViewport();
-
         stage = new Stage(viewportUi);
         VisUI.load(VisUI.SkinScale.X1);
 
-        map = new Map(50,50,32);
-        map.addMapLayer("layer1");
+
+        createMapWindow = new CreateMapWindow(this);
+
+//        gameMap = new GameMap(50,50,32);
+//        gameMap.addMapLayer("layer1");
 
 //        Json json = new Json();
-//        System.out.println(json.prettyPrint(map));
+//        System.out.println(json.prettyPrint(gameMap));
+//        mapRender = new MapRender(shapeRenderer,gameMap);
+
+
         final Table root = new Table();
         root.setFillParent(true);
-        root.setDebug(true);
+        root.setDebug(false);
         stage.addActor(root);
-        stage.addActor(new TestTree());
+        stage.addActor(new RightPanel(this));
 
 
-        mapRender = new MapRender(shapeRenderer,map);
+
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(16/1.3f, 9/1.3f,camera);
         camera.update();
@@ -103,19 +106,32 @@ public class MapEditor implements Screen, InputProcessor {
         root.add().expand().fill();
 
         Menu fileMenu = new Menu("File");
-        fileMenu.addItem(new MenuItem("New map"));
+
+        fileMenu.addItem(new MenuItem("New gameMap", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+                stage.addActor(createMapWindow);
+            }
+        }));
         fileMenu.addItem(new MenuItem("Save").setShortcut("ctrl + s"));
         fileMenu.addItem(new MenuItem("Save as"));
-        fileMenu.addItem(new MenuItem("Map options"));
+        fileMenu.addItem(new MenuItem("GameMap options"));
         fileMenu.addItem(new MenuItem("Exit"));
-
-
 
         menuBar.addMenu(fileMenu);
 
 //        setupGui();
 
     }
+
+    public void createNewMap(int x,int y,int scale){
+        gameMap = new GameMap(x,y,scale);
+        gameMap.addMapLayer("Tile layer 1");
+        mapRender = new MapRender(shapeRenderer,gameMap);
+
+    }
+
 
     void setupGui (){
 
@@ -226,6 +242,7 @@ public class MapEditor implements Screen, InputProcessor {
         shapeRenderer.setProjectionMatrix(camera.combined);
 
         shapeRenderer.begin();
+        if(gameMap != null)
         mapRender.renderMap();
         shapeRenderer.end();
 
