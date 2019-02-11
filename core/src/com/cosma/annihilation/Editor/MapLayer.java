@@ -4,17 +4,28 @@ public class MapLayer {
     private int width;
     private int height;
     private Cell[][] cells;
-    private String name;
+    private String name = "";
+    private boolean visible;
+    private int renderPriority;
 
     public MapLayer(int width,int height,String name) {
         this.width = width;
         this.height = height;
         this.cells = new Cell[width][height];
         this.name = name;
+        visible = true;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isLayerVisible(){
+        return visible;
     }
 
     public Cell getCell (int x, int y) {

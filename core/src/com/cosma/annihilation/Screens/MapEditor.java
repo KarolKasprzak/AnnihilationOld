@@ -27,6 +27,7 @@ import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.Menu;
 import com.kotcrab.vis.ui.widget.MenuBar;
 import com.kotcrab.vis.ui.widget.MenuItem;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
 
 public class MapEditor implements Screen, InputProcessor {
 
@@ -57,6 +58,7 @@ public class MapEditor implements Screen, InputProcessor {
 
     private MapRender mapRender;
     private MenuBar menuBar;
+    private FileChooser fileChooser;
 
     public MapEditor(Annihilation game){
         shapeRenderer = new ShapeRenderer();
@@ -67,7 +69,6 @@ public class MapEditor implements Screen, InputProcessor {
         viewportUi = new ScreenViewport();
         stage = new Stage(viewportUi);
         VisUI.load(VisUI.SkinScale.X1);
-
 
         createMapWindow = new CreateMapWindow(this);
 
@@ -127,9 +128,11 @@ public class MapEditor implements Screen, InputProcessor {
 
     public void createNewMap(int x,int y,int scale){
         gameMap = new GameMap(x,y,scale);
-        gameMap.addMapLayer("Tile layer 1");
         mapRender = new MapRender(shapeRenderer,gameMap);
 
+    }
+    public GameMap getMap(){
+        return gameMap;
     }
 
 

@@ -10,12 +10,14 @@ public class DesktopLauncher {
 		config.title = "Annihilation";
 		config.width = 1280;
 		config.height = 720;
+		config.forceExit = false;
 
 
 //			config.width = 1920;
 //	        config.height = 1200;
 //
 //		config.fullscreen = true;
+
 
 		new LwjglApplication(new Annihilation(), config);
 	}
