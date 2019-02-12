@@ -1,14 +1,24 @@
 package com.cosma.annihilation.Editor;
 
+import com.badlogic.gdx.graphics.Color;
+
 public class MapLayer {
     private int width;
     private int height;
     private Cell[][] cells;
     private String name = "";
     private boolean visible;
-    private int renderPriority;
+    private Color color;
 
-    public MapLayer(int width,int height,String name) {
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public MapLayer(int width, int height, String name) {
         this.width = width;
         this.height = height;
         this.cells = new Cell[width][height];

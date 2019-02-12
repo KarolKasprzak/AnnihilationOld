@@ -8,11 +8,11 @@ import java.util.Iterator;
 public class MapLayers implements Iterable<MapLayer> {
     private Array<MapLayer> layers = new Array<MapLayer>();
 
-    public MapLayer get (int index) {
+    public MapLayer getLayer (int index) {
         return layers.get(index);
     }
 
-    public MapLayer get (String name) {
+    public MapLayer getLayer (String name) {
         for (int i = 0, n = layers.size; i < n; i++) {
             MapLayer layer = layers.get(i);
             if (name.equals(layer.getName())) {
@@ -22,12 +22,27 @@ public class MapLayers implements Iterable<MapLayer> {
         return null;
     }
 
+    public Array<MapLayer> getLayers() {
+        return layers;
+    }
+
+    public void swapLayerOrder(int layerIndex, int layerIndex1){
+        layers.swap(layerIndex,layerIndex1);
+    }
+    public boolean isEmpty(){
+        if(layers.isEmpty()){
+            return true;
+        }else
+        return false;
+    }
+
+
     public int getIndex (MapLayer layer) {
         return layers.indexOf(layer, true);
     }
 
     public int getIndex (String name) {
-        return getIndex(get(name));
+        return getIndex(getLayer(name));
     }
 
     public int getCount () {
@@ -40,6 +55,19 @@ public class MapLayers implements Iterable<MapLayer> {
 
     public void remove (int index) {
         layers.removeIndex(index);
+    }
+
+//    public void remove (String name) {
+//        for (int i = 0, n = layers.size; i < n; i++) {
+//            MapLayer layer = layers.get(i);
+//            if (name.equals(layer.getName())) {
+//                layers.removeValue(layer)
+//            }
+//        }
+//    }
+
+    public void remove (String name) {
+                layers.removeValue(getLayer(name),true);
     }
 
     public int size () {

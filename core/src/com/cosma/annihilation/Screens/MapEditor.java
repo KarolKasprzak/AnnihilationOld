@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -69,6 +70,13 @@ public class MapEditor implements Screen, InputProcessor {
         viewportUi = new ScreenViewport();
         stage = new Stage(viewportUi);
         VisUI.load(VisUI.SkinScale.X1);
+
+        gameMap = new GameMap(10,10,10);
+        gameMap.getLayers().getLayer(gameMap.createMapLayerAndReturnName()).setColor(Color.OLIVE);
+        gameMap.getLayers().getLayer(gameMap.createMapLayerAndReturnName()).setColor(Color.BLUE);
+        gameMap.getLayers().getLayer(gameMap.createMapLayerAndReturnName()).setVisible(false);
+        mapRender = new MapRender(shapeRenderer,gameMap);
+
 
         createMapWindow = new CreateMapWindow(this);
 

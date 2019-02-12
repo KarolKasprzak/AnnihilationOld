@@ -36,4 +36,10 @@ public class GameMap {
         MapLayer mapLayer = new MapLayer(width,height,name);
         layers.add(mapLayer);
     }
+    public String createMapLayerAndReturnName(){
+        String name = "Layer" +(layers.getCount()+1);
+        MapLayer mapLayer = new MapLayer(width,height,name);
+        layers.add(mapLayer);
+        return name;
+    }
 }

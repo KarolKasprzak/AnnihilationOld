@@ -3,20 +3,25 @@ package com.cosma.annihilation.Editor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Screens.MapEditor;
+import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
+import com.kotcrab.vis.ui.util.adapter.AbstractListAdapter;
+import com.kotcrab.vis.ui.util.adapter.ArrayAdapter;
+import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
 import com.kotcrab.vis.ui.widget.*;
+import javafx.scene.control.CheckBox;
 
 public class RightPanel extends VisWindow {
 
-    private Node tileLayersNode;
-    private VisTree tree;
     private MapEditor mapEditor;
     private VisTable layersTable;
+    private MapLayer selectedLayer;
 
-    public RightPanel(MapEditor mapEditor) {
+    public RightPanel(final MapEditor mapEditor) {
         super("");
         this.mapEditor = mapEditor;
         TableUtils.setSpacingDefaults(this);
@@ -24,12 +29,24 @@ public class RightPanel extends VisWindow {
 
         VisTextButton addLayerButton = new VisTextButton("Add");
         VisTextButton removeLayerButton = new VisTextButton("Remove");
+        VisTextButton layerUp = new VisTextButton("^");
+        VisTextButton layerDown = new VisTextButton("v");
+
+        final MapLayerAdapter adapter = new MapLayerAdapter(mapEditor.getMap().getLayers().getLayers(), mapEditor);
+        final ListView<MapLayer> view = new ListView<MapLayer>(adapter);
+        view.setUpdatePolicy(ListView.UpdatePolicy.ON_DRAW);
 
         VisTable buttonTable = new VisTable(true);
-        buttonTable.add(addLayerButton);
-        buttonTable.add(removeLayerButton);
+        buttonTable.setDebug(true);
+
+        buttonTable.add(addLayerButton).top().expandY();
+        buttonTable.add(removeLayerButton).top();
+        buttonTable.add(layerUp).top();
+        buttonTable.add(layerDown).top();
 
         layersTable = new VisTable(true);
+        layersTable.add(view.getMainTable());
+        layersTable.row();
         layersTable.addSeparator();
 
         row();
@@ -37,40 +54,85 @@ public class RightPanel extends VisWindow {
         row();
         add(buttonTable).fill().padBottom(3).expand();
 
-
-        setSize(150, 380);
+        pack();
+        setSize(getWidth(), getHeight() + 200);
         setPosition(774, 303);
 
+//
+//        layerVisibleCheckBox.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                if(selectedLayer != null && !mapEditor.getMap().getLayers().isEmpty()) {
+//                if(layerVisibleCheckBox.isChecked()){
+//                        selectedLayer.setVisible(false);
+//                    }else
+//                        selectedLayer.setVisible(true);
+//                }
+//            }
+//        });
 
         addLayerButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-              addLayer();
+                if (mapEditor.getMap() != null) {
+                    mapEditor.getMap().createMapLayer();
+                    view.rebuildView();
+                }
             }
         });
-    }
 
-    public void addLayer() {
-            final VisCheckBox checkBox = new VisCheckBox("Layer",true);
-            final MapLayer mapLayer = mapEditor.getMap().createMapLayer("layer");
-
-            layersTable.add(checkBox);
-            layersTable.row();
-
-            checkBox.addListener(new ChangeListener() {
-                @Override
-                public void changed (ChangeEvent event, Actor actor) {
-                  if(!checkBox.isChecked()){
-                      for(MapLayer mapLayer_: mapEditor.getMap().getMapLayers())
-                      {
-                          if(mapLayer_ == mapLayer){
-                              mapLayer_.setVisible(false);
-                          }
-                      }
-                  }
-
+        removeLayerButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (selectedLayer != null && !mapEditor.getMap().getLayers().isEmpty()) {
+                    mapEditor.getMap().getLayers().remove(selectedLayer.getName());
+                    view.rebuildView();
                 }
-            });
+            }
+        });
+
+        layerUp.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (selectedLayer != null && !mapEditor.getMap().getLayers().isEmpty()) {
+                    int index = mapEditor.getMap().getLayers().getIndex(selectedLayer.getName());
+                    if (index != 0) {
+                        mapEditor.getMap().getLayers().swapLayerOrder(index, index - 1);
+                        view.rebuildView();
+                    }
+                }
+            }
+        });
+
+        layerDown.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (selectedLayer != null && !mapEditor.getMap().getLayers().isEmpty()) {
+                    int index = mapEditor.getMap().getLayers().getIndex(selectedLayer.getName());
+                    if (index != mapEditor.getMap().getLayers().getCount() - 1) {
+                        mapEditor.getMap().getLayers().swapLayerOrder(index, index + 1);
+                        view.rebuildView();
+                    }
+                }
+            }
+        });
+
+        adapter.setSelectionMode(AbstractListAdapter.SelectionMode.SINGLE);
+        view.setItemClickListener(new ListView.ItemClickListener<MapLayer>() {
+            @Override
+            public void clicked(MapLayer item) {
+            }
+        });
+        adapter.getSelectionManager().setListener(new ListSelectionAdapter<MapLayer, VisTable>() {
+            @Override
+            public void selected(MapLayer item, VisTable view) {
+                selectedLayer = mapEditor.getMap().getLayers().getLayer(item.getName());
+            }
+
+            @Override
+            public void deselected(MapLayer item, VisTable view) {
+            }
+        });
     }
 
     @Override
@@ -79,20 +141,53 @@ public class RightPanel extends VisWindow {
 
     }
 
+    private static class MapLayerAdapter extends ArrayAdapter<MapLayer, VisTable> {
+        private final Drawable bg = VisUI.getSkin().getDrawable("window-bg");
+        private final Drawable selection = VisUI.getSkin().getDrawable("list-selection");
+        private MapEditor mapEditor;
 
-    private void addVisWidgets() {
-        tree = new VisTree();
-        tileLayersNode = new Node(new VisLabel("Tile layers"));
-        Node item2 = new Node(new VisLabel("Image layers"));
-        Node item3 = new Node(new VisLabel("Object layers"));
-        Node item4 = new Node(new VisLabel("Light layers"));
+        public MapLayerAdapter(Array<MapLayer> array, MapEditor mapEditor) {
+            super(array);
+            setSelectionMode(SelectionMode.SINGLE);
+            this.mapEditor = mapEditor;
+        }
 
-        tileLayersNode.setExpanded(true);
+        @Override
+        protected void selectView(VisTable view) {
+            view.setBackground(selection);
+        }
 
-        tree.add(tileLayersNode);
-        tree.add(item2);
-        tree.add(item3);
-        tree.add(item4);
-        add(tree).fill();
+        @Override
+        protected void updateView(VisTable view, MapLayer item) {
+            super.updateView(view, item);
+        }
+
+        @Override
+        protected void deselectView(VisTable view) {
+            view.setBackground(bg);
+        }
+
+        @Override
+        protected VisTable createView(final MapLayer item) {
+            final MapLayer mapLayer = mapEditor.getMap().getLayers().getLayer(item.getName());
+            VisLabel label = new VisLabel(item.getName());
+            VisCheckBox box = new VisCheckBox("",mapLayer.isLayerVisible());
+
+            box.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (mapLayer.isLayerVisible()) {
+                       mapLayer.setVisible(false);
+                    }else
+                        mapLayer.setVisible(true);
+                }
+            });
+
+            VisTable table = new VisTable();
+            table.left();
+            table.add(label);
+            table.add(box);
+            return table;
+        }
     }
 }
