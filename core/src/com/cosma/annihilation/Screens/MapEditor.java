@@ -251,7 +251,12 @@ public class MapEditor implements Screen, InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        float x = Gdx.input.getDeltaX();
+        float y = Gdx.input.getDeltaY();
+        if(canCameraDrag){
+            camera.translate(-x*(camera.zoom *0.02f),y*(camera.zoom *0.02f));
+        }
+        return true;
     }
 
     @Override

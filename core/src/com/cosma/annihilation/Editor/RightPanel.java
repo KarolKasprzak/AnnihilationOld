@@ -1,6 +1,7 @@
 package com.cosma.annihilation.Editor;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -36,40 +37,34 @@ public class RightPanel extends VisWindow {
         final ListView<MapLayer> view = new ListView<MapLayer>(adapter);
         view.setUpdatePolicy(ListView.UpdatePolicy.ON_DRAW);
 
-        VisTable buttonTable = new VisTable(true);
-        buttonTable.setDebug(true);
+        VisTable headerTable = new VisTable();
+        headerTable.add("Map layers:").expandX().left();
+        headerTable.row();
+        headerTable.addSeparator();
 
-        buttonTable.add(addLayerButton).top().expandY();
+        VisTable footerTable = new VisTable();
+        footerTable.addSeparator();
+        footerTable.add("");
+        view.setFooter(footerTable);
+        view.setHeader(headerTable);
+
+        VisTable buttonTable = new VisTable(true);
+        buttonTable.add(addLayerButton).top();
         buttonTable.add(removeLayerButton).top();
         buttonTable.add(layerUp).top();
         buttonTable.add(layerDown).top();
 
-        layersTable = new VisTable(true);
-        layersTable.add(view.getMainTable());
-        layersTable.row();
-        layersTable.addSeparator();
-
         row();
-        add(layersTable).fill();
+        add(view.getMainTable()).fill().expandY().center();
         row();
-        add(buttonTable).fill().padBottom(3).expand();
+        add(buttonTable).padBottom(3);
 
         pack();
-        setSize(getWidth(), getHeight() + 200);
-        setPosition(774, 303);
+        setSize(getWidth(), getHeight() * 5f);
+        setResizable(true);
+        setPosition(1200, Gdx.graphics.getHeight() / 2);
 
-//
-//        layerVisibleCheckBox.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                if(selectedLayer != null && !mapEditor.getMap().getLayers().isEmpty()) {
-//                if(layerVisibleCheckBox.isChecked()){
-//                        selectedLayer.setVisible(false);
-//                    }else
-//                        selectedLayer.setVisible(true);
-//                }
-//            }
-//        });
+
 
         addLayerButton.addListener(new ChangeListener() {
             @Override
@@ -135,11 +130,7 @@ public class RightPanel extends VisWindow {
         });
     }
 
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
 
-    }
 
     private static class MapLayerAdapter extends ArrayAdapter<MapLayer, VisTable> {
         private final Drawable bg = VisUI.getSkin().getDrawable("window-bg");
@@ -171,21 +162,21 @@ public class RightPanel extends VisWindow {
         protected VisTable createView(final MapLayer item) {
             final MapLayer mapLayer = mapEditor.getMap().getLayers().getLayer(item.getName());
             VisLabel label = new VisLabel(item.getName());
-            VisCheckBox box = new VisCheckBox("",mapLayer.isLayerVisible());
+            VisCheckBox box = new VisCheckBox("", mapLayer.isLayerVisible());
 
             box.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     if (mapLayer.isLayerVisible()) {
-                       mapLayer.setVisible(false);
-                    }else
+                        mapLayer.setVisible(false);
+                    } else
                         mapLayer.setVisible(true);
                 }
             });
 
             VisTable table = new VisTable();
-            table.left();
-            table.add(label);
+            table.center();
+            table.add(label).fill().expandX();
             table.add(box);
             return table;
         }
