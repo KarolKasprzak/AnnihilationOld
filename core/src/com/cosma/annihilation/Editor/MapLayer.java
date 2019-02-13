@@ -7,7 +7,7 @@ public class MapLayer {
     private int height;
     private Cell[][] cells;
     private String name = "";
-    private boolean visible;
+    private boolean visible = true;;
     private Color color;
 
     public Color getColor() {
@@ -23,7 +23,6 @@ public class MapLayer {
         this.height = height;
         this.cells = new Cell[width][height];
         this.name = name;
-        visible = true;
     }
 
     public String getName() {
@@ -39,8 +38,8 @@ public class MapLayer {
     }
 
     public Cell getCell (int x, int y) {
-//        if (x < 0 || x >= width) return null;
-//        if (y < 0 || y >= height) return null;
+        if (x < 0 || x >= width) return null;
+        if (y < 0 || y >= height) return null;
         return cells[x][y];
     }
     public void setCell (int x, int y, Cell cell) {

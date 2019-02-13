@@ -4,6 +4,7 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +18,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.*;
+import com.cosma.annihilation.Editor.Cell;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.Menu;
 import com.kotcrab.vis.ui.widget.MenuBar;
@@ -117,9 +120,16 @@ public class MapEditor implements Screen, InputProcessor {
 
     }
 
+    public void setCell(int x, int y){
+
+        Cell cell = new Cell();
+        cell.setTextureRegion(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.map_conc)));
+        gameMap.getLayers().getLayer(0).setCell(x,y,cell);
+    }
+
     public void createNewMap(int x,int y,int scale){
         gameMap = new GameMap(x,y,scale);
-        mapRender = new MapRender(shapeRenderer,gameMap);
+        mapRender = new MapRender(shapeRenderer,gameMap, batch);
         stage.addActor(new RightPanel(this));
         setCameraOnMapCenter();
 
@@ -153,7 +163,6 @@ public class MapEditor implements Screen, InputProcessor {
         if(gameMap != null)
         mapRender.renderMap();
         shapeRenderer.end();
-
         stage.act(delta);
         if(runSim) {
             act(delta);
@@ -225,12 +234,19 @@ public class MapEditor implements Screen, InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 vec = camera.unproject(worldCoordinates);
-        System.out.println(vec.x + " " + vec.y );
+        int x = Math.round(vec.x);
+        int y = Math.round(vec.y);
+        if(gameMap != null){
+            if(!gameMap.getLayers().isEmpty()){
+                setCell(x,y);
+            }
+        }
+
+
 
         if (button == Input.Buttons.MIDDLE){
             canCameraDrag = true;
             System.out.println(canCameraDrag );
-
         }
 
 

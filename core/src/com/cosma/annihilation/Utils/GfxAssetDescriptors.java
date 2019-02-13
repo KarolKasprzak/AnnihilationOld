@@ -29,6 +29,7 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> gui_button_down = new AssetDescriptor<Texture>("gfx/gui/table_button_pressed.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_weapon_slot = new AssetDescriptor<Texture>("gfx/gui/gui_weapon_slot.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_armour_slot = new AssetDescriptor<Texture>("gfx/gui/gui_armour_slot.png", Texture.class);
+    public static final AssetDescriptor<Texture> map_conc = new AssetDescriptor<Texture>("gfx/map/conc.png", Texture.class);
 
 
     public static final AssetDescriptor<TextureAtlas> gui_human_animation = new AssetDescriptor<TextureAtlas>("gfx/gui/human/gui_human.txt", TextureAtlas.class);
