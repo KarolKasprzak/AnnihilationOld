@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 public class MapLayer {
     private int width;
     private int height;
-    private Cell[][] cells;
+    private Tile[][] tiles;
     private String name = "";
     private boolean visible = true;;
     private Color color;
@@ -21,8 +21,10 @@ public class MapLayer {
     public MapLayer(int width, int height, String name) {
         this.width = width;
         this.height = height;
-        this.cells = new Cell[width][height];
+        this.tiles = new Tile[width][height];
         this.name = name;
+
+
     }
 
     public String getName() {
@@ -37,14 +39,15 @@ public class MapLayer {
         return visible;
     }
 
-    public Cell getCell (int x, int y) {
+
+    public Tile getCell (int x, int y) {
         if (x < 0 || x >= width) return null;
         if (y < 0 || y >= height) return null;
-        return cells[x][y];
+        return tiles[x][y];
     }
-    public void setCell (int x, int y, Cell cell) {
+    public void setCell (int x, int y, Tile tile) {
         if (x < 0 || x >= width) return;
         if (y < 0 || y >= height) return;
-        cells[x][y] = cell;
+        tiles[x][y] = tile;
     }
 }

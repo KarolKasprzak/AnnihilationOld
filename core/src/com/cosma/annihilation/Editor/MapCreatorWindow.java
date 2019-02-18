@@ -10,10 +10,10 @@ import com.kotcrab.vis.ui.util.form.SimpleFormValidator;
 import com.kotcrab.vis.ui.widget.*;
 
 
-public class CreateMapWindow extends VisWindow {
+public class MapCreatorWindow extends VisWindow {
 
-    private CreateMapWindow window;
-    public CreateMapWindow(final MapEditor mapEditor) {
+    private MapCreatorWindow window;
+    public MapCreatorWindow(final MapEditor mapEditor) {
         super("");
 
         window = this;

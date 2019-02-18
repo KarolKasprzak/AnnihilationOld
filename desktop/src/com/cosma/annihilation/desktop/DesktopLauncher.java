@@ -1,24 +1,29 @@
 package com.cosma.annihilation.desktop;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.cosma.annihilation.Annihilation;
+
+import java.awt.*;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Annihilation";
-		config.width = 1280;
-		config.height = 720;
-		config.forceExit = false;
+        Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+
+//		config.height = (int) dimension.getHeight();
+//		config.width = (int) dimension.getWidth();
 
 
-//			config.width = 1920;
-//	        config.height = 1200;
+			config.width = 1024;
+	        config.height = 768;
 //
 //		config.fullscreen = true;
 
 
-		new LwjglApplication(new Annihilation(), config);
+        LwjglApplication game = new LwjglApplication(new Annihilation(), config);
 	}
 }

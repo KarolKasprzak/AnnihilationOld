@@ -29,14 +29,14 @@ public class MapRender {
                             }
                             renderer.line(x, y, x + gameMap.getTileSize() / scale, y);
                             renderer.line(x, y, x, y + gameMap.getTileSize() / scale);
-                            Cell cell = mapLayer.getCell(x,y);
-                            if (cell == null) {
+                            Tile tile = mapLayer.getCell(x,y);
+                            if (tile == null) {
                                 continue;
                             }
-                            if(cell.getTextureRegion() == null){
+                            if(tile.getTextureRegion() == null){
                                 continue;
                             }
-                            TextureRegion texture = cell.getTextureRegion();
+                            TextureRegion texture = tile.getTextureRegion();
                             batch.begin();
                             batch.draw(texture,x,y,texture.getRegionWidth()/gameMap.getTileSize(),texture.getRegionHeight()/gameMap.getTileSize());
                             batch.end();

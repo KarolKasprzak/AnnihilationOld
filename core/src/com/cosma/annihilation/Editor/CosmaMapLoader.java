@@ -1,4 +1,4 @@
 package com.cosma.annihilation.Editor;
 
-public class FileChoser {
+public class CosmaMapLoader {
 }

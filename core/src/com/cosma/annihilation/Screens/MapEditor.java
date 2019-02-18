@@ -1,10 +1,10 @@
 package com.cosma.annihilation.Screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -13,13 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.*;
-import com.cosma.annihilation.Editor.Cell;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Editor.Tile;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.Menu;
 import com.kotcrab.vis.ui.widget.MenuBar;
@@ -45,7 +45,10 @@ public class MapEditor implements Screen, InputProcessor {
     float zoomLevel = 0.3f;
 
     private GameMap gameMap;
-    private CreateMapWindow createMapWindow;
+    private MapCreatorWindow mapCreatorWindow;
+    private TilesPanel tilesPanel;
+
+    private LayersPanel layersPanel;
 
     private MapRender mapRender;
     private MenuBar menuBar;
@@ -68,10 +71,12 @@ public class MapEditor implements Screen, InputProcessor {
 //        mapRender = new MapRender(shapeRenderer,gameMap);
 
 
-        createMapWindow = new CreateMapWindow(this);
+        mapCreatorWindow = new MapCreatorWindow(this);
 
 //        gameMap = new GameMap(50,50,32);
 //        gameMap.addMapLayer("layer1");
+
+        stage.addActor(tilesPanel = new TilesPanel(this));
 
 //        Json json = new Json();
 //        System.out.println(json.prettyPrint(gameMap));
@@ -106,10 +111,17 @@ public class MapEditor implements Screen, InputProcessor {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
 
-                stage.addActor(createMapWindow);
+                stage.addActor(mapCreatorWindow);
             }
         }));
-        fileMenu.addItem(new MenuItem("Save").setShortcut("ctrl + s"));
+        fileMenu.addItem(new MenuItem("Save", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+                saveMap();
+            }
+        }).setShortcut("ctrl + s"));
+
         fileMenu.addItem(new MenuItem("Save as"));
         fileMenu.addItem(new MenuItem("GameMap options"));
         fileMenu.addItem(new MenuItem("Exit"));
@@ -120,23 +132,23 @@ public class MapEditor implements Screen, InputProcessor {
 
     }
 
-    public void setCell(int x, int y){
-
-        Cell cell = new Cell();
-        cell.setTextureRegion(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.map_conc)));
-        gameMap.getLayers().getLayer(0).setCell(x,y,cell);
-    }
-
     public void createNewMap(int x,int y,int scale){
         gameMap = new GameMap(x,y,scale);
         mapRender = new MapRender(shapeRenderer,gameMap, batch);
-        stage.addActor(new RightPanel(this));
+        stage.addActor(layersPanel = new LayersPanel(this));
+        stage.addActor(tilesPanel = new TilesPanel(this));
         setCameraOnMapCenter();
-
     }
 
     public void loadMap(){
-        stage.addActor(new RightPanel(this));
+        stage.addActor(new LayersPanel(this));
+    }
+
+    public void saveMap(){
+        Json json = new Json();
+        FileHandle file = Gdx.files.local("map/map.json");
+        file.writeString(json.prettyPrint(gameMap),false);
+        System.out.println(file.path());
     }
 
     public GameMap getMap(){
@@ -230,26 +242,52 @@ public class MapEditor implements Screen, InputProcessor {
         return false;
     }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        Vector3 vec = camera.unproject(worldCoordinates);
-        int x = Math.round(vec.x);
-        int y = Math.round(vec.y);
-        if(gameMap != null){
-            if(!gameMap.getLayers().isEmpty()){
-                setCell(x,y);
+    private void drawTile(int button){
+        if(Input.Buttons.LEFT == button){
+            if (gameMap != null && !gameMap.getLayers().isEmpty()) {
+                Vector3 pos = getWorldCoordinates();
+                int x = (int) pos.x;
+                int y = (int) pos.y;
+
+                if(layersPanel.getSelectedLayer() != null && tilesPanel.getAtlasPath() != null && tilesPanel.getAtlasRegionName() != null){
+                    Tile tile = new Tile();
+                    tile.setTextureRegion(tilesPanel.getAtlasRegionName(),tilesPanel.getAtlasPath());
+                    layersPanel.getSelectedLayer().setCell(x,y,tile);
+                }
             }
         }
+    }
+
+    private void removeTile(int button){
+        if(Input.Buttons.RIGHT == button){
+            if (gameMap != null && !gameMap.getLayers().isEmpty()) {
+                Vector3 pos = getWorldCoordinates();
+                int x = (int) pos.x;
+                int y = (int) pos.y;
+
+                if(layersPanel.getSelectedLayer() != null){
+                    Tile tile = new Tile();
+                    layersPanel.getSelectedLayer().setCell(x,y, tile);
+                }
+            }
+        }
+    }
 
 
+    public Vector3 getWorldCoordinates(){
+        Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        Vector3 vec = camera.unproject(worldCoordinates);
+        return vec;
+    }
 
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        drawTile(button);
+        removeTile(button);
         if (button == Input.Buttons.MIDDLE){
             canCameraDrag = true;
             System.out.println(canCameraDrag );
         }
-
-
         return false;
     }
 

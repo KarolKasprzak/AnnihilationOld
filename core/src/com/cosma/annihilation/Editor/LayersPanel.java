@@ -16,20 +16,27 @@ import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
 import com.kotcrab.vis.ui.widget.*;
 import javafx.scene.control.CheckBox;
 
-public class RightPanel extends VisWindow {
+public class LayersPanel extends VisWindow {
 
     private MapEditor mapEditor;
     private VisTable layersTable;
     private MapLayer selectedLayer;
 
-    public RightPanel(final MapEditor mapEditor) {
-        super("");
+    public MapLayer getSelectedLayer() {
+        if(selectedLayer == null){
+            return null;
+        }
+        return selectedLayer;
+    }
+
+    public LayersPanel(final MapEditor mapEditor) {
+        super("Map layers");
         this.mapEditor = mapEditor;
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
 
-        VisTextButton addLayerButton = new VisTextButton("Add");
-        VisTextButton removeLayerButton = new VisTextButton("Remove");
+        VisTextButton addLayerButton = new VisTextButton("+");
+        VisTextButton removeLayerButton = new VisTextButton("-");
         VisTextButton layerUp = new VisTextButton("^");
         VisTextButton layerDown = new VisTextButton("v");
 
@@ -37,32 +44,34 @@ public class RightPanel extends VisWindow {
         final ListView<MapLayer> view = new ListView<MapLayer>(adapter);
         view.setUpdatePolicy(ListView.UpdatePolicy.ON_DRAW);
 
-        VisTable headerTable = new VisTable();
-        headerTable.add("Map layers:").expandX().left();
-        headerTable.row();
-        headerTable.addSeparator();
-
         VisTable footerTable = new VisTable();
         footerTable.addSeparator();
         footerTable.add("");
         view.setFooter(footerTable);
-        view.setHeader(headerTable);
+//        view.setHeader(headerTable);
 
         VisTable buttonTable = new VisTable(true);
-        buttonTable.add(addLayerButton).top();
-        buttonTable.add(removeLayerButton).top();
-        buttonTable.add(layerUp).top();
-        buttonTable.add(layerDown).top();
+        this.getTitleTable().add(addLayerButton);
+        this.getTitleTable().add(removeLayerButton);
+        this.getTitleTable().add(layerUp);
+        this.getTitleTable().add(layerDown);
+
+//        buttonTable.add(addLayerButton).top();
+//        buttonTable.add(removeLayerButton).top();
+//        buttonTable.add(layerUp).top();
+//        buttonTable.add(layerDown).top();
 
         row();
         add(view.getMainTable()).fill().expandY().center();
         row();
         add(buttonTable).padBottom(3);
+        row();
+
 
         pack();
-        setSize(getWidth(), getHeight() * 5f);
+        setSize(getWidth()*1.2f, getHeight() * 3f);
         setResizable(true);
-        setPosition(1200, Gdx.graphics.getHeight() / 2);
+        setPosition(1900, Gdx.graphics.getHeight() / 2);
 
 
 
