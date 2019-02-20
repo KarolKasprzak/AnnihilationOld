@@ -51,6 +51,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         rayHandler = new RayHandler(world);
         engine = new PooledEngine();
 
+
         EntityFactory.getInstance().setAssetLoader(assetLoader);
         EntityFactory.getInstance().createPlayerEntity(engine,world);
         new WorldLoader(engine, world, tiledMap, rayHandler);
@@ -115,7 +116,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
     @Override
     public void entityAdded(Entity entity) {
-
+            System.out.println(entity.flags);
     }
 
     @Override

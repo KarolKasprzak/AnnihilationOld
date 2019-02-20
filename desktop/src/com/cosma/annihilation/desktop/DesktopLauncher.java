@@ -14,12 +14,12 @@ public class DesktopLauncher {
 		config.title = "Annihilation";
         Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
-//		config.height = (int) dimension.getHeight();
-//		config.width = (int) dimension.getWidth();
+		config.height = (int) dimension.getHeight();
+		config.width = (int) dimension.getWidth();
 
 
-			config.width = 1024;
-	        config.height = 768;
+//			config.width = 1024;
+//	        config.height = 768;
 //
 //		config.fullscreen = true;
 

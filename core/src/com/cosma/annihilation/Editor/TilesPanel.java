@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.tabbedpane.Tab;
@@ -28,6 +27,7 @@ public class TilesPanel extends VisWindow {
     private String atlasRegionName;
     private String atlasPath;
     private Array<FileHandle> textureAtlas;
+    private TabbedPane tabbedPane;
 
     public TilesPanel(final MapEditor mapEditor) {
         super("Tiles");
@@ -39,7 +39,7 @@ public class TilesPanel extends VisWindow {
         columnDefaults(0).left();
         VisTextButton addTilesButton = new VisTextButton("+");
         tilesTable = new VisTable(true);
-        final TabbedPane tabbedPane = new TabbedPane();
+        tabbedPane = new TabbedPane();
         tabbedPane.addListener(new TabbedPaneAdapter() {
             @Override
             public void switchedTab (Tab tab) {
@@ -51,40 +51,47 @@ public class TilesPanel extends VisWindow {
         addTilesButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                FileHandle file = Gdx.files.local("map/map_textures");
-                for(FileHandle texture: file.list(".atlas")){
-                    if(!textureAtlas.contains(texture,false)){
-                        textureAtlas.add(texture);
-                    }
-                }
-                for(FileHandle files: textureAtlas){
-                    boolean canAdd = true;
-                    for(Tab tab: tabbedPane.getTabs()){
-                        if(tab.getTabTitle().equals(files.nameWithoutExtension())){
-                            canAdd = false;
-                        }
-                    }
-                    if(canAdd){
-                        Annihilation.getAssets().load(files.path(),TextureAtlas.class);
-                        Annihilation.getAssets().finishLoading();
-                        AtlasTab atlasTab = new AtlasTab(files.nameWithoutExtension());
-                        atlasTab.getContentTable().add(buildTable(Annihilation.getAssets().get(files.path(),TextureAtlas.class),files.path()));
-                        tabbedPane.add(atlasTab);
-                    }
-                }
-                pack();
+             findTextureAtlas();
             }
         });
+
+
 
         this.getTitleTable().add(addTilesButton);
         add(tabbedPane.getTable()).expandX().fillX();
         row();
         add(tilesTable).expand().fill();
 
+        findTextureAtlas();
         pack();
-        setSize(getWidth(), getHeight() * 3);
-        setResizable(true);
+        setSize(getWidth(), getHeight());
         setPosition(1900, 200);
+    }
+
+    private void findTextureAtlas(){
+        FileHandle file = Gdx.files.local("map/map_textures");
+        for(FileHandle texture: file.list(".atlas")){
+            if(!textureAtlas.contains(texture,false)){
+                textureAtlas.add(texture);
+            }
+        }
+        for(FileHandle files: textureAtlas){
+            boolean canAdd = true;
+            for(Tab tab: tabbedPane.getTabs()){
+                if(tab.getTabTitle().equals(files.nameWithoutExtension())){
+                    canAdd = false;
+                }
+            }
+            if(canAdd){
+                Annihilation.getAssets().load(files.path(),TextureAtlas.class);
+                Annihilation.getAssets().finishLoading();
+                AtlasTab atlasTab = new AtlasTab(files.nameWithoutExtension());
+                atlasTab.getContentTable().add(buildTable(Annihilation.getAssets().get(files.path(),TextureAtlas.class),files.path()));
+                tabbedPane.add(atlasTab);
+            }
+        }
+        setMovable(false);
+        pack();
     }
 
     private VisTable buildTable(final TextureAtlas atlas, String path) {

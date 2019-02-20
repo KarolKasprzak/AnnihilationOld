@@ -2,7 +2,6 @@ package com.cosma.annihilation.Editor;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -13,8 +12,9 @@ import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.util.adapter.AbstractListAdapter;
 import com.kotcrab.vis.ui.util.adapter.ArrayAdapter;
 import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
+import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
+import com.kotcrab.vis.ui.util.dialog.Dialogs;
 import com.kotcrab.vis.ui.widget.*;
-import javafx.scene.control.CheckBox;
 
 public class LayersPanel extends VisWindow {
 
@@ -22,11 +22,11 @@ public class LayersPanel extends VisWindow {
     private VisTable layersTable;
     private MapLayer selectedLayer;
 
-    public MapLayer getSelectedLayer() {
+    public <T extends MapLayer> T getSelectedLayer(Class<T> type) {
         if(selectedLayer == null){
             return null;
         }
-        return selectedLayer;
+        return type.cast(selectedLayer);
     }
 
     public LayersPanel(final MapEditor mapEditor) {
@@ -40,6 +40,7 @@ public class LayersPanel extends VisWindow {
         VisTextButton layerUp = new VisTextButton("^");
         VisTextButton layerDown = new VisTextButton("v");
 
+
         final MapLayerAdapter adapter = new MapLayerAdapter(mapEditor.getMap().getLayers().getLayers(), mapEditor);
         final ListView<MapLayer> view = new ListView<MapLayer>(adapter);
         view.setUpdatePolicy(ListView.UpdatePolicy.ON_DRAW);
@@ -48,18 +49,35 @@ public class LayersPanel extends VisWindow {
         footerTable.addSeparator();
         footerTable.add("");
         view.setFooter(footerTable);
-//        view.setHeader(headerTable);
 
         VisTable buttonTable = new VisTable(true);
-        this.getTitleTable().add(addLayerButton);
+
+        MenuBar menuBar = new MenuBar();
+        Menu layerMenu = new Menu("+");
+        layerMenu.addItem(new MenuItem("Tile", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (mapEditor.getMap() != null) {
+                    mapEditor.getMap().createTileMapLayer();
+                    view.rebuildView();
+                }
+            }
+        }));
+        layerMenu.addItem(new MenuItem("Obj", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (mapEditor.getMap() != null) {
+                    mapEditor.getMap().createObjectMapLayer();
+                    view.rebuildView();
+                }
+            }
+        }));
+        menuBar.addMenu(layerMenu);
+
+        this.getTitleTable().add(menuBar.getTable());
         this.getTitleTable().add(removeLayerButton);
         this.getTitleTable().add(layerUp);
         this.getTitleTable().add(layerDown);
-
-//        buttonTable.add(addLayerButton).top();
-//        buttonTable.add(removeLayerButton).top();
-//        buttonTable.add(layerUp).top();
-//        buttonTable.add(layerDown).top();
 
         row();
         add(view.getMainTable()).fill().expandY().center();
@@ -67,23 +85,24 @@ public class LayersPanel extends VisWindow {
         add(buttonTable).padBottom(3);
         row();
 
-
         pack();
-        setSize(getWidth()*1.2f, getHeight() * 3f);
-        setResizable(true);
-        setPosition(1900, Gdx.graphics.getHeight() / 2);
+        setSize(getWidth()*2, getHeight() +500);
+        setMovable(false);
+        setResizable(false);
+//        setResizable(true);
+//        setPosition(1900, Gdx.graphics.getHeight() / 2);
 
 
 
-        addLayerButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (mapEditor.getMap() != null) {
-                    mapEditor.getMap().createMapLayer();
-                    view.rebuildView();
-                }
-            }
-        });
+//        addLayerButton.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                if (mapEditor.getMap() != null) {
+//                    mapEditor.getMap().createTileMapLayer();
+//                    view.rebuildView();
+//                }
+//            }
+//        });
 
         removeLayerButton.addListener(new ChangeListener() {
             @Override
@@ -130,11 +149,24 @@ public class LayersPanel extends VisWindow {
         adapter.getSelectionManager().setListener(new ListSelectionAdapter<MapLayer, VisTable>() {
             @Override
             public void selected(MapLayer item, VisTable view) {
-                selectedLayer = mapEditor.getMap().getLayers().getLayer(item.getName());
+               selectedLayer = mapEditor.getMap().getLayers().getLayer(item.getName());
+               if(selectedLayer instanceof TileMapLayer){
+                    mapEditor.setTileLayerSelected(true);
+               }else mapEditor.setTileLayerSelected(false);
+                if(selectedLayer instanceof ObjectMapLayer){
+                    mapEditor.setObjectLayerSelected(true);
+                }else mapEditor.setObjectLayerSelected(false);
+                System.out.println(selectedLayer.getName());
             }
 
             @Override
             public void deselected(MapLayer item, VisTable view) {
+                selectedLayer = null;
+                mapEditor.setTileLayerSelected(false);
+                mapEditor.setEntityLayerSelected(false);
+                mapEditor.setLightsLayerSelected(false);
+                mapEditor.setObjectLayerSelected(false);
+
             }
         });
     }
