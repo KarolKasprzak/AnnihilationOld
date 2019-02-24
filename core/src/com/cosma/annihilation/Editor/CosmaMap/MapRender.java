@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Editor.CosmaMap;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -49,7 +50,11 @@ public class MapRender {
             for(ObjectMapLayer layer: gameMap.getLayers().getByType(ObjectMapLayer.class)){
                 if (layer.isLayerVisible()) {
                     for (RectangleObject object: layer.getObjects().getByType(RectangleObject.class)){
+                        if(object.isHighlighted()){
+                            renderer.setColor(Color.ORANGE);
+                        }
                         renderer.rect(object.x,object.y,object.w,object.h);
+                        renderer.setColor(Color.WHITE);
                     }
                 }
             }

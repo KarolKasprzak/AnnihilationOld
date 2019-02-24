@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Editor.CosmaMap;
+package com.cosma.annihilation.Editor;
 
 
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
@@ -39,9 +40,11 @@ public class ObjectPanel extends VisWindow {
 
         addBoxButton = new VisTextButton("Box");
         addCircleButton = new VisTextButton("Circle");
+        VisTextButton openObjectListWindowButton = new VisTextButton("Obj. list");
 
         add(addBoxButton).top();
         add(addCircleButton).top();
+        add(openObjectListWindowButton).top();
         add().expand().fill();
 
         addBoxButton.addListener(new ChangeListener() {
@@ -49,6 +52,14 @@ public class ObjectPanel extends VisWindow {
             public void changed(ChangeEvent event, Actor actor) {
                 canCreateBox = true;
                 createCircle = false;
+            }
+        });
+
+        openObjectListWindowButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ObjectListWindow objectListWindow = new ObjectListWindow(mapEditor);
+                mapEditor.objectPanel.getStage().addActor(objectListWindow);
             }
         });
 

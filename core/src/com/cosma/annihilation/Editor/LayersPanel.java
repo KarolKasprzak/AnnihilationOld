@@ -158,7 +158,6 @@ public class LayersPanel extends VisWindow {
                     mapEditor.objectPanel.setPanelButtonsDisable(false);
                     mapEditor.setObjectLayerSelected(true);
                 }else mapEditor.setObjectLayerSelected(false);
-                System.out.println(selectedLayer.getName());
             }
 
             @Override
@@ -168,7 +167,6 @@ public class LayersPanel extends VisWindow {
                 mapEditor.setEntityLayerSelected(false);
                 mapEditor.setLightsLayerSelected(false);
                 mapEditor.setObjectLayerSelected(false);
-
             }
         });
     }
