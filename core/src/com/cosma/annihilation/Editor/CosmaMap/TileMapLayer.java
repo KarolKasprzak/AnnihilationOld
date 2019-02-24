@@ -1,6 +1,4 @@
-package com.cosma.annihilation.Editor;
-
-import com.badlogic.gdx.graphics.Color;
+package com.cosma.annihilation.Editor.CosmaMap;
 
 public class TileMapLayer extends MapLayer {
     private int width;

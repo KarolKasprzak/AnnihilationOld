@@ -1,8 +1,11 @@
-package com.cosma.annihilation.Editor;
+package com.cosma.annihilation.Editor.CosmaMap;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
+
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class MapRender {
 
@@ -40,6 +43,13 @@ public class MapRender {
                             batch.end();
 
                         }
+                    }
+                }
+            }
+            for(ObjectMapLayer layer: gameMap.getLayers().getByType(ObjectMapLayer.class)){
+                if (layer.isLayerVisible()) {
+                    for (RectangleObject object: layer.getObjects().getByType(RectangleObject.class)){
+                        renderer.rect(object.x,object.y,object.w,object.h);
                     }
                 }
             }

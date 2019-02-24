@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Editor;
+package com.cosma.annihilation.Editor.CosmaMap;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

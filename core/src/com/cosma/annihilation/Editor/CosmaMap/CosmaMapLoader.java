@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Editor;
+package com.cosma.annihilation.Editor.CosmaMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;

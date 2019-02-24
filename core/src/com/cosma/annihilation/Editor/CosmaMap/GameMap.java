@@ -1,9 +1,4 @@
-package com.cosma.annihilation.Editor;
-
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.Array;
-
-import java.util.ArrayList;
+package com.cosma.annihilation.Editor.CosmaMap;
 
 public class GameMap {
 
@@ -22,7 +17,6 @@ public class GameMap {
     public GameMap() {
 
     }
-
 
     public MapLayers getLayers () {
         return layers;
@@ -50,12 +44,5 @@ public class GameMap {
         String name = "Object_layer" +(layers.getCount()+1);
         ObjectMapLayer mapLayer = new ObjectMapLayer(width,height,name);
         layers.add(mapLayer);
-    }
-
-    public String createMapLayerAndReturnName(){
-        String name = "Layer" +(layers.getCount()+1);
-        MapLayer mapLayer = new MapLayer(width,height,name);
-        layers.add(mapLayer);
-        return name;
     }
 }

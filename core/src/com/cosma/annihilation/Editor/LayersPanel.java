@@ -1,19 +1,19 @@
 package com.cosma.annihilation.Editor;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Editor.CosmaMap.MapLayer;
+import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
+import com.cosma.annihilation.Editor.CosmaMap.TileMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.util.adapter.AbstractListAdapter;
 import com.kotcrab.vis.ui.util.adapter.ArrayAdapter;
 import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
-import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
-import com.kotcrab.vis.ui.util.dialog.Dialogs;
 import com.kotcrab.vis.ui.widget.*;
 
 public class LayersPanel extends VisWindow {
@@ -152,8 +152,10 @@ public class LayersPanel extends VisWindow {
                selectedLayer = mapEditor.getMap().getLayers().getLayer(item.getName());
                if(selectedLayer instanceof TileMapLayer){
                     mapEditor.setTileLayerSelected(true);
+                    mapEditor.objectPanel.setPanelButtonsDisable(true);
                }else mapEditor.setTileLayerSelected(false);
                 if(selectedLayer instanceof ObjectMapLayer){
+                    mapEditor.objectPanel.setPanelButtonsDisable(false);
                     mapEditor.setObjectLayerSelected(true);
                 }else mapEditor.setObjectLayerSelected(false);
                 System.out.println(selectedLayer.getName());

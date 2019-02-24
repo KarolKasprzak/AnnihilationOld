@@ -2,6 +2,7 @@ package com.cosma.annihilation.Screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,7 +18,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.*;
-import com.cosma.annihilation.Editor.Tile;
+import com.cosma.annihilation.Editor.CosmaMap.*;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
@@ -32,15 +33,17 @@ public class MapEditor implements Screen, InputProcessor {
     private World world;
     private final float TIME_STEP = 1 / 300f;
     private float accumulator = 0f;
-    InputMultiplexer im;
+    public InputMultiplexer im;
 
     private boolean canCameraDrag = false;
     float zoomLevel = 0.3f;
 
     private GameMap gameMap;
     private MapCreatorWindow mapCreatorWindow;
+
     private TilesPanel tilesPanel;
-    private LayersPanel layersPanel;
+    public LayersPanel layersPanel;
+    public ObjectPanel objectPanel;
     private MapRender mapRender;
 
     private boolean isTileLayerSelected;
@@ -48,12 +51,20 @@ public class MapEditor implements Screen, InputProcessor {
     private boolean isLightsLayerSelected;
     private boolean isEntityLayerSelected;
 
+//    private boolean startDraw = false;
+    private boolean canDraw = false;
+
     private VisLabel editorModeLabel;
 
     private VisTable rightTable;
 
     private MenuBar menuBar;
     private FileChooser fileChooser;
+
+    private float x1;
+    private float y1;
+    private float x2;
+    private float y2;
 
     public MapEditor(Annihilation game) {
         shapeRenderer = new ShapeRenderer();
@@ -84,14 +95,14 @@ public class MapEditor implements Screen, InputProcessor {
         batch = new SpriteBatch();
 
         editorModeLabel = new VisLabel("");
-        editorModeLabel.setFontScale(0.9f);
+        editorModeLabel.setColor(Color.ORANGE);
 
         rightTable = new VisTable();
         VisTable leftTable = new VisTable();
 
         menuBar = new MenuBar();
-        menuBar.getTable().add().expandX();
-        menuBar.getTable().add(editorModeLabel).right();
+//        menuBar.getTable().add().expandX();
+        menuBar.getTable().add(editorModeLabel).center().expand();
 
         root.add(leftTable).expand().fill();
         root.add(rightTable).fillY();
@@ -132,11 +143,15 @@ public class MapEditor implements Screen, InputProcessor {
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         layersPanel = new LayersPanel(this);
-        layersPanel.setModal(false);
         rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight()*0.25f).maxHeight(layersPanel.getParent().getHeight()*0.35f);
         rightTable.row();
+
         tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(layersPanel.getParent().getHeight()*0.25f).maxHeight(layersPanel.getParent().getHeight()*0.35f);
+        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight()*0.25f).maxHeight(tilesPanel.getParent().getHeight()*0.35f);
+        rightTable.row();
+
+        objectPanel = new ObjectPanel(this);
+        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight()*0.25f).maxHeight(objectPanel.getParent().getHeight()*0.35f);
         rightTable.row();
         rightTable.add().expandY();
         setCameraOnMapCenter();
@@ -161,7 +176,6 @@ public class MapEditor implements Screen, InputProcessor {
     private void loadMap() {
         CosmaMapLoader loader = new CosmaMapLoader("map/map.json");
         this.gameMap = loader.getMap();
-        System.out.print(gameMap.getLayers().getCount());
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
         stage.addActor(layersPanel = new LayersPanel(this));
     }
@@ -170,7 +184,6 @@ public class MapEditor implements Screen, InputProcessor {
         Json json = new Json();
         FileHandle file = Gdx.files.local("map/map.json");
         file.writeString(json.prettyPrint(gameMap), false);
-        System.out.println(file.path());
     }
 
     private void setEditorModeLabel(){
@@ -198,25 +211,26 @@ public class MapEditor implements Screen, InputProcessor {
 
     @Override
     public void show() {
+
         Gdx.input.setInputProcessor(im);
     }
 
     @Override
     public void render(float delta) {
-//        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0.8f, 0.8f, 0.8f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
-
         setEditorModeLabel();
         shapeRenderer.setProjectionMatrix(camera.combined);
-
+        if(canDraw){
+            drawBox();
+        }
         shapeRenderer.begin();
         if (gameMap != null)
             mapRender.renderMap();
         shapeRenderer.end();
         stage.act(delta);
         stage.draw();
-
         camera.update();
         cameraUi.update();
     }
@@ -286,7 +300,6 @@ public class MapEditor implements Screen, InputProcessor {
                 int y = (int) pos.y;
 
                 if (tilesPanel.getAtlasPath() != null && tilesPanel.getAtlasRegionName() != null) {
-                    System.out.println("sadsadsad");
                     Tile tile = new Tile();
                     tile.setTextureRegion(tilesPanel.getAtlasRegionName(), tilesPanel.getAtlasPath());
                     layersPanel.getSelectedLayer(TileMapLayer.class).setTile(x, y, tile);
@@ -317,14 +330,30 @@ public class MapEditor implements Screen, InputProcessor {
         return vec;
     }
 
+    private void drawBox() {
+//            Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+//            Vector3 vec_ = camera.unproject(worldCoordinates);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.rect(x1, y1, x2-x1, y2-y1);
+            shapeRenderer.end();
+    }
+
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         drawTile(button);
         removeTile(button);
         if (button == Input.Buttons.MIDDLE) {
             canCameraDrag = true;
-            System.out.println(canCameraDrag);
         }
+
+        if (button == Input.Buttons.LEFT && isObjectLayerSelected() && objectPanel.canCreateBox()) {
+            Vector3 worldCoordinates= new Vector3(screenX, screenY, 0);
+            Vector3 vec = camera.unproject(worldCoordinates);
+            canDraw = true;
+            x1 = vec.x;
+            y1 = vec.y;
+        }
+
         return false;
     }
 
@@ -333,7 +362,13 @@ public class MapEditor implements Screen, InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.MIDDLE) {
             canCameraDrag = false;
-            System.out.println(canCameraDrag);
+
+        }
+
+        if (button == Input.Buttons.LEFT && isObjectLayerSelected() && objectPanel.canCreateBox()) {
+            System.out.println(x1 + " " + y1 + " " + x2 + " " + y2 );
+            canDraw = false;
+            objectPanel.createObject(x1,y1,x2-x1,y2-y1);
         }
 
         return false;
@@ -345,6 +380,13 @@ public class MapEditor implements Screen, InputProcessor {
         float y = Gdx.input.getDeltaY();
         if (canCameraDrag) {
             camera.translate(-x * (camera.zoom * 0.02f), y * (camera.zoom * 0.02f));
+        }
+        if (canDraw) {
+            Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
+            Vector3 vec = camera.unproject(worldCoordinates);
+            x2 = vec.x;
+            y2 = vec.y;
+            System.out.println();
         }
         return true;
     }
@@ -379,5 +421,21 @@ public class MapEditor implements Screen, InputProcessor {
 
     public void setEntityLayerSelected(boolean entityLayerSelected) {
         isEntityLayerSelected = entityLayerSelected;
+    }
+
+    public boolean isTileLayerSelected() {
+        return isTileLayerSelected;
+    }
+
+    public boolean isObjectLayerSelected() {
+        return isObjectLayerSelected;
+    }
+
+    public boolean isLightsLayerSelected() {
+        return isLightsLayerSelected;
+    }
+
+    public boolean isEntityLayerSelected() {
+        return isEntityLayerSelected;
     }
 }

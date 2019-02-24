@@ -1,6 +1,6 @@
-package com.cosma.annihilation.Editor.CosmaEditorObject;
+package com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject;
 
-public class MapObject {
+public abstract class MapObject {
     private String name;
     private boolean visible = true;
 

@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Editor;
+package com.cosma.annihilation.Editor.CosmaMap;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
