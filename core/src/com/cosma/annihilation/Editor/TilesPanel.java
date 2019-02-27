@@ -63,8 +63,7 @@ public class TilesPanel extends VisWindow {
         add(tilesTable).expand().fill();
 
         findTextureAtlas();
-        pack();
-        setSize(getWidth(), getHeight());
+        setSize(Gdx.graphics.getWidth()*0.15f, Gdx.graphics.getHeight()*0.25f);
         setPosition(1900, 200);
     }
 
@@ -91,7 +90,6 @@ public class TilesPanel extends VisWindow {
             }
         }
         setMovable(false);
-        pack();
     }
 
     private VisTable buildTable(final TextureAtlas atlas, String path) {

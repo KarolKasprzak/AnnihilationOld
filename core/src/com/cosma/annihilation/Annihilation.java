@@ -24,8 +24,6 @@ public class Annihilation extends Game {
         assetLoader = new AssetLoader();
     }
 
-
-
     @Override
     public void create() {
         isGameLoaded = false;

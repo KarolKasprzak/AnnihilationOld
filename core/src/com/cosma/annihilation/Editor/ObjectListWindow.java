@@ -2,6 +2,7 @@ package com.cosma.annihilation.Editor;
 
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -20,6 +21,17 @@ public class ObjectListWindow extends VisWindow {
 
     private MapEditor mapEditor;
     private VisTable layersTable;
+    private ListView<MapObject> view;
+
+    public void rebuildView(){
+        view.rebuildView();
+    }
+
+    @Override
+    protected void close() {
+        super.close();
+        mapEditor.objectPanel.setObjectListWindowOpen(false);
+    }
 
     public ObjectListWindow(final MapEditor mapEditor) {
         super("Map layers");
@@ -27,10 +39,11 @@ public class ObjectListWindow extends VisWindow {
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
 
+        addCloseButton();
 
         final ObjectAdapter adapter = new ObjectAdapter(mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObjects(), mapEditor);
-        final ListView<MapObject> view = new ListView<MapObject>(adapter);
-        view.setUpdatePolicy(ListView.UpdatePolicy.ON_DRAW);
+        view = new ListView<MapObject>(adapter);
+        view.setUpdatePolicy(ListView.UpdatePolicy.MANUAL);
 
         VisTable footerTable = new VisTable();
         footerTable.addSeparator();
@@ -38,27 +51,12 @@ public class ObjectListWindow extends VisWindow {
         view.setFooter(footerTable);
 
         row();
-        add(view.getMainTable()).fill().expandY().center();
+        add(view.getMainTable()).fill().expand().center();
         row();
 
-        pack();
-        setSize(getWidth()*2, getHeight() +500);
-        setMovable(false);
+        setSize(Gdx.graphics.getWidth()*0.1f, Gdx.graphics.getHeight()*0.5f);
+        setMovable(true);
         setResizable(false);
-//        setResizable(true);
-//        setPosition(1900, Gdx.graphics.getHeight() / 2);
-
-
-
-//        addLayerButton.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                if (mapEditor.getMap() != null) {
-//                    mapEditor.getMap().createTileMapLayer();
-//                    view.rebuildView();
-//                }
-//            }
-//        });
 
         adapter.setSelectionMode(AbstractListAdapter.SelectionMode.SINGLE);
         view.setItemClickListener(new ListView.ItemClickListener<MapObject>() {
@@ -77,16 +75,16 @@ public class ObjectListWindow extends VisWindow {
                         item.setHighlighted(false);
             }
         });
+
+
     }
-
-
 
     private static class ObjectAdapter extends ArrayAdapter<MapObject, VisTable> {
         private final Drawable bg = VisUI.getSkin().getDrawable("window-bg");
         private final Drawable selection = VisUI.getSkin().getDrawable("list-selection");
         private MapEditor mapEditor;
 
-        public ObjectAdapter(Array<MapObject> array, MapEditor mapEditor) {
+        private ObjectAdapter(Array<MapObject> array, MapEditor mapEditor) {
             super(array);
             setSelectionMode(SelectionMode.SINGLE);
             this.mapEditor = mapEditor;
@@ -112,7 +110,6 @@ public class ObjectListWindow extends VisWindow {
 //            final MapObject mapObject = mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObject(item.getName());
             VisLabel label = new VisLabel(item.getName());
             VisTextButton delete = new VisTextButton("x");
-
             delete.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -120,7 +117,6 @@ public class ObjectListWindow extends VisWindow {
                            view.rebuildView();
                 }
             });
-
             VisTable table = new VisTable();
             table.center();
             table.add(label).fill().expandX();

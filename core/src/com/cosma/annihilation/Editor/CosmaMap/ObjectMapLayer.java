@@ -20,7 +20,7 @@ public class ObjectMapLayer extends MapLayer {
     }
 
     public void createBoxObject(float x, float y, float w, float h) {
-        String name = "object" + (objects.getCount() + 1);
+        String name = "Rectangle_" + (objects.getCount() + 1);
         RectangleObject rec = new RectangleObject(x,y,w,h,0);
         rec.setName(name);
         objects.add(rec);

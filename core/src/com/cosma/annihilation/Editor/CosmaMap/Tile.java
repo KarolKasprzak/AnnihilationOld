@@ -45,7 +45,7 @@ public class Tile implements Json.Serializable {
 
     @Override
     public void read(Json json, JsonValue jsonData) {
-        if(jsonData.has("atlasRegion")&& jsonData.has("atlasPath")){
+        if(jsonData.has("atlasRegion") && jsonData.has("atlasPath")){
             atlasRegionName = jsonData.getString("atlasRegionName");
             atlasPath = jsonData.getString("atlasPath");
             textureRegion = Annihilation.getAssets().get(atlasPath,TextureAtlas.class).findRegion(atlasRegionName);

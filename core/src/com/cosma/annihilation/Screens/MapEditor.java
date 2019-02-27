@@ -24,7 +24,6 @@ import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 
 public class MapEditor implements Screen, InputProcessor {
-
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private Stage stage;
@@ -33,7 +32,8 @@ public class MapEditor implements Screen, InputProcessor {
     private World world;
     private final float TIME_STEP = 1 / 300f;
     private float accumulator = 0f;
-    public InputMultiplexer im;
+    private InputMultiplexer im;
+
 
     private boolean canCameraDrag = false;
     float zoomLevel = 0.3f;
@@ -45,13 +45,13 @@ public class MapEditor implements Screen, InputProcessor {
     public LayersPanel layersPanel;
     public ObjectPanel objectPanel;
     private MapRender mapRender;
+    private ObjectListWindow objectListWindow;
 
     private boolean isTileLayerSelected;
     private boolean isObjectLayerSelected;
     private boolean isLightsLayerSelected;
     private boolean isEntityLayerSelected;
 
-//    private boolean startDraw = false;
     private boolean canDraw = false;
 
     private VisLabel editorModeLabel;
@@ -61,10 +61,7 @@ public class MapEditor implements Screen, InputProcessor {
     private MenuBar menuBar;
     private FileChooser fileChooser;
 
-    private float x1;
-    private float y1;
-    private float x2;
-    private float y2;
+
 
     public MapEditor(Annihilation game) {
         shapeRenderer = new ShapeRenderer();
@@ -121,7 +118,6 @@ public class MapEditor implements Screen, InputProcessor {
         fileMenu.addItem(new MenuItem("Save", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
                 saveMap();
             }
         }).setShortcut("ctrl + s"));
@@ -139,21 +135,22 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void createNewMap() {
-        gameMap = new GameMap(5,5, 32);
+        gameMap = new GameMap(5, 5, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         layersPanel = new LayersPanel(this);
-        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight()*0.25f).maxHeight(layersPanel.getParent().getHeight()*0.35f);
+        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.35f);
         rightTable.row();
 
         tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight()*0.25f).maxHeight(tilesPanel.getParent().getHeight()*0.35f);
+        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
         rightTable.row();
 
         objectPanel = new ObjectPanel(this);
-        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight()*0.25f).maxHeight(objectPanel.getParent().getHeight()*0.35f);
+        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight() * 0.25f).maxHeight(objectPanel.getParent().getHeight() * 0.35f);
         rightTable.row();
         rightTable.add().expandY();
+        im.addProcessor(objectPanel);
         setCameraOnMapCenter();
     }
 
@@ -164,10 +161,10 @@ public class MapEditor implements Screen, InputProcessor {
 
         layersPanel = new LayersPanel(this);
         layersPanel.setModal(false);
-        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight()*0.25f).maxHeight(layersPanel.getParent().getHeight()*0.35f);
+        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.35f);
         rightTable.row();
         tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(layersPanel.getParent().getHeight()*0.25f).maxHeight(layersPanel.getParent().getHeight()*0.35f);
+        rightTable.add(tilesPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.35f);
         rightTable.row();
         rightTable.add().expandY();
         setCameraOnMapCenter();
@@ -176,8 +173,12 @@ public class MapEditor implements Screen, InputProcessor {
     private void loadMap() {
         CosmaMapLoader loader = new CosmaMapLoader("map/map.json");
         this.gameMap = loader.getMap();
-        mapRender = new MapRender(shapeRenderer, gameMap, batch);
-        stage.addActor(layersPanel = new LayersPanel(this));
+        if(mapRender == null){
+            mapRender = new MapRender(shapeRenderer, gameMap, batch);
+            tilesPanel = new TilesPanel(this);
+            rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
+        }
+        System.out.println(gameMap.getLayers().getCount());
     }
 
     private void saveMap() {
@@ -186,17 +187,17 @@ public class MapEditor implements Screen, InputProcessor {
         file.writeString(json.prettyPrint(gameMap), false);
     }
 
-    private void setEditorModeLabel(){
-        if(isTileLayerSelected){
+    private void setEditorModeLabel() {
+        if (isTileLayerSelected) {
             editorModeLabel.setText("Tile edit mode");
         }
-        if(isEntityLayerSelected){
+        if (isEntityLayerSelected) {
             editorModeLabel.setText("Entity edit mode");
         }
-        if(isLightsLayerSelected){
+        if (isLightsLayerSelected) {
             editorModeLabel.setText("Light edit mode");
         }
-        if(isObjectLayerSelected){
+        if (isObjectLayerSelected) {
             editorModeLabel.setText("Object edit mode");
         }
     }
@@ -219,17 +220,18 @@ public class MapEditor implements Screen, InputProcessor {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.8f, 0.8f, 0.8f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.setProjectionMatrix(camera.combined);
         setEditorModeLabel();
         shapeRenderer.setProjectionMatrix(camera.combined);
-        if(canDraw){
-            drawBox();
-        }
-        shapeRenderer.begin();
-        if (gameMap != null)
-            mapRender.renderMap();
-        shapeRenderer.end();
         stage.act(delta);
+
+        if (gameMap != null) {
+            mapRender.renderGrid();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+            mapRender.renderMap();
+        }
         stage.draw();
         camera.update();
         cameraUi.update();
@@ -242,7 +244,6 @@ public class MapEditor implements Screen, InputProcessor {
         cameraUi.update();
         viewportUi.update(width, height);
     }
-
 
     private void act(float delta) {
         // Fixed time step
@@ -323,19 +324,10 @@ public class MapEditor implements Screen, InputProcessor {
         }
     }
 
-
     public Vector3 getWorldCoordinates() {
         Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 vec = camera.unproject(worldCoordinates);
         return vec;
-    }
-
-    private void drawBox() {
-//            Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-//            Vector3 vec_ = camera.unproject(worldCoordinates);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(x1, y1, x2-x1, y2-y1);
-            shapeRenderer.end();
     }
 
     @Override
@@ -345,15 +337,6 @@ public class MapEditor implements Screen, InputProcessor {
         if (button == Input.Buttons.MIDDLE) {
             canCameraDrag = true;
         }
-
-        if (button == Input.Buttons.LEFT && isObjectLayerSelected() && objectPanel.canCreateBox()) {
-            Vector3 worldCoordinates= new Vector3(screenX, screenY, 0);
-            Vector3 vec = camera.unproject(worldCoordinates);
-            canDraw = true;
-            x1 = vec.x;
-            y1 = vec.y;
-        }
-
         return false;
     }
 
@@ -364,41 +347,35 @@ public class MapEditor implements Screen, InputProcessor {
             canCameraDrag = false;
 
         }
-
-        if (button == Input.Buttons.LEFT && isObjectLayerSelected() && objectPanel.canCreateBox()) {
-            System.out.println(x1 + " " + y1 + " " + x2 + " " + y2 );
-            canDraw = false;
-            objectPanel.createObject(x1,y1,x2-x1,y2-y1);
-        }
-
         return false;
+    }
+
+    public ShapeRenderer getShapeRenderer() {
+        return shapeRenderer;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        float x = Gdx.input.getDeltaX();
-        float y = Gdx.input.getDeltaY();
         if (canCameraDrag) {
+            float x = Gdx.input.getDeltaX();
+            float y = Gdx.input.getDeltaY();
             camera.translate(-x * (camera.zoom * 0.02f), y * (camera.zoom * 0.02f));
-        }
-        if (canDraw) {
-            Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
-            Vector3 vec = camera.unproject(worldCoordinates);
-            x2 = vec.x;
-            y2 = vec.y;
-            System.out.println();
         }
         return true;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+
         return false;
     }
 
     @Override
     public boolean scrolled(int amount) {
-
         if (amount == 1) {
             camera.zoom += zoomLevel;
         } else if (amount == -1) {
