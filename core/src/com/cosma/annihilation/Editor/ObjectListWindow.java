@@ -3,6 +3,8 @@ package com.cosma.annihilation.Editor;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -17,7 +19,7 @@ import com.kotcrab.vis.ui.util.adapter.ArrayAdapter;
 import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
 import com.kotcrab.vis.ui.widget.*;
 
-public class ObjectListWindow extends VisWindow {
+public class ObjectListWindow extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private VisTable layersTable;
@@ -31,6 +33,7 @@ public class ObjectListWindow extends VisWindow {
     protected void close() {
         super.close();
         mapEditor.objectPanel.setObjectListWindowOpen(false);
+        mapEditor.getInputMultiplexer().removeProcessor(this);
     }
 
     public ObjectListWindow(final MapEditor mapEditor) {
@@ -38,6 +41,8 @@ public class ObjectListWindow extends VisWindow {
         this.mapEditor = mapEditor;
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
+
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.HorizontalResize);
 
         addCloseButton();
 
@@ -68,6 +73,7 @@ public class ObjectListWindow extends VisWindow {
             @Override
             public void selected(MapObject item, VisTable view) {
                 item.setHighlighted(true);
+
             }
 
             @Override
@@ -77,6 +83,47 @@ public class ObjectListWindow extends VisWindow {
         });
 
 
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 
     private static class ObjectAdapter extends ArrayAdapter<MapObject, VisTable> {

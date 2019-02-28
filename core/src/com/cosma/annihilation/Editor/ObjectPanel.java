@@ -20,7 +20,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private TabbedPane tabbedPane;
-    private VisTextButton addBoxButton;
+    private VisTextButton createRectangleButton;
     private VisTextButton addCircleButton;
     private float x1;
     private float y1;
@@ -34,8 +34,8 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     private ObjectListWindow objectListWindow;
     private boolean isObjectListWindowOpen = false;
 
-    public void setObjectListWindowOpen(boolean objectListWndowOpen) {
-        isObjectListWindowOpen = objectListWndowOpen;
+    public void setObjectListWindowOpen(boolean objectListWindowOpen) {
+        isObjectListWindowOpen = objectListWindowOpen;
     }
 
     public ObjectPanel(final MapEditor mapEditor) {
@@ -47,16 +47,16 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
 
-        addBoxButton = new VisTextButton("Box");
+        createRectangleButton = new VisTextButton("Box");
         addCircleButton = new VisTextButton("Circle");
         VisTextButton openObjectListWindowButton = new VisTextButton("Obj. list");
 
-        add(addBoxButton).top();
+        add(createRectangleButton).top();
         add(addCircleButton).top();
         add(openObjectListWindowButton).top();
         add().expand().fill();
 
-        addBoxButton.addListener(new ChangeListener() {
+        createRectangleButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 canCreateBox = true;
@@ -67,9 +67,10 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         openObjectListWindowButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(!getStage().getActors().contains(objectListWindow,true)){
+                if(!getStage().getActors().contains(objectListWindow,true) && !mapEditor.getMap().getLayers().getByType(ObjectMapLayer.class).isEmpty()){
                     objectListWindow = new ObjectListWindow(mapEditor);
                     getStage().addActor(objectListWindow);
+                    mapEditor.getInputMultiplexer().addProcessor(objectListWindow);
                     setObjectListWindowOpen(true);
                 }
             }
@@ -106,12 +107,12 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         if(canCreateBox){
             createBoxObject(x,y,w,h);
             canCreateBox = false;
-            addBoxButton.focusGained();
+            createRectangleButton.focusGained();
         }
     }
 
     public void setPanelButtonsDisable(Boolean status){
-        addBoxButton.setDisabled(status);
+        createRectangleButton.setDisabled(status);
         addCircleButton.setDisabled(status);
     }
 

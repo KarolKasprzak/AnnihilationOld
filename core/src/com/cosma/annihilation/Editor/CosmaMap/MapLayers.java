@@ -78,7 +78,7 @@ public class MapLayers implements Iterable<MapLayer> {
         return getByType(type, new Array<T>());
     }
 
-    public <T extends MapLayer> Array<T> getByType (Class<T> type, Array<T> fill) {
+    private  <T extends MapLayer> Array<T> getByType (Class<T> type, Array<T> fill) {
         fill.clear();
         for (int i = 0, n = layers.size; i < n; i++) {
             MapLayer layer = layers.get(i);

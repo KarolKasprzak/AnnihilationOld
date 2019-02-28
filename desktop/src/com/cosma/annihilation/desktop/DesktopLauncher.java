@@ -14,6 +14,7 @@ import java.awt.*;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+
 		config.title = "Annihilation";
         Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 		config.height = (int) dimension.getHeight();
@@ -23,6 +24,8 @@ public class DesktopLauncher {
 //	        config.height = 768;
 		LwjglFrame frame = new LwjglFrame(new Annihilation(),config);
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		Cursor cursor = new Cursor(Cursor.HAND_CURSOR);
+		frame.setCursor(cursor);
 //        LwjglApplication game = new LwjglApplication(new Annihilation(), config);
 	}
 }

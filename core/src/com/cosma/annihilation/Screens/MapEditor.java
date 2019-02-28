@@ -154,6 +154,10 @@ public class MapEditor implements Screen, InputProcessor {
         setCameraOnMapCenter();
     }
 
+    public InputMultiplexer getInputMultiplexer(){
+        return im;
+    }
+
 
     public void createNewMap(int x, int y, int scale) {
         gameMap = new GameMap(x, y, scale);
