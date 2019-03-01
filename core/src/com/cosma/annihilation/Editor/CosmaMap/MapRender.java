@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
-
 public class MapRender {
 
     private ShapeRenderer renderer;
@@ -65,7 +63,7 @@ public class MapRender {
                             renderer.setColor(Color.ORANGE);
                         }
                         renderer.begin();
-                        renderer.rect(object.x,object.y,object.w,object.h);
+                        renderer.rect(object.x,object.y,object.width,object.height);
                         renderer.end();
                     }
                 }

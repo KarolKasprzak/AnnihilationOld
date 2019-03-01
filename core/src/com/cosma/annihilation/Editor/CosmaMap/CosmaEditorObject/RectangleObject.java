@@ -3,8 +3,8 @@ package com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject;
 public class RectangleObject extends MapObject {
     public float x;
     public float y;
-    public float w;
-    public float h;
+    public float width;
+    public float height;
     public float rotation;
 
     public float getX() {
@@ -24,19 +24,19 @@ public class RectangleObject extends MapObject {
     }
 
     public float getWidth() {
-        return w;
+        return width;
     }
 
     public void setWidth(float w) {
-        this.w = w;
+        this.width = w;
     }
 
     public float getHeight() {
-        return h;
+        return height;
     }
 
     public void setHeight(float h) {
-        this.h = h;
+        this.height = h;
     }
 
     public float getRotation() {
@@ -49,11 +49,11 @@ public class RectangleObject extends MapObject {
 
     public RectangleObject() {
     }
-    public RectangleObject(float x,float y, float w,float h, float rotation) {
+    public RectangleObject(float x, float y, float width, float height, float rotation) {
         this.x = x;
         this.y = y;
-        this.w = w;
-        this.h = h;
+        this.width = width;
+        this.height = height;
         this.rotation = rotation;
     }
 

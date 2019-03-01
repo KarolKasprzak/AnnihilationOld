@@ -1,9 +1,13 @@
 package com.cosma.annihilation.Utils;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+
+import java.math.BigDecimal;
 
 public class Utilities {
 
@@ -29,8 +33,22 @@ public class Utilities {
     public static void setButtonColor(TextButton button){
         button.getLabel().setColor(0,82,0,255);
     }
+    /**Return true if number is in range **/
+    public static boolean isFloatInRange(float number, float min, float max){
+        if(number > min && number < max){
+            return true;
+        }
+            return false;
+    }
 
+    public static float roundFloat(float number, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(number);
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
+    }
 
-
-
+    public static Vector3 getWorldCoordinates(int screenX, int screenY, OrthographicCamera camera) {
+        Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
+        return camera.unproject(worldCoordinates);
+    }
 }

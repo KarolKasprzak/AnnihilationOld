@@ -25,7 +25,6 @@ public class MapCreatorWindow extends VisWindow {
         addCloseButton();
         closeOnEscape();
 
-
         VisTextButton cancelButton = new VisTextButton("Cancel");
         VisTextButton acceptButton = new VisTextButton("Accept");
 

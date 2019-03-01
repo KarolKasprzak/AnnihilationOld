@@ -98,7 +98,6 @@ public class MapEditor implements Screen, InputProcessor {
         VisTable leftTable = new VisTable();
 
         menuBar = new MenuBar();
-//        menuBar.getTable().add().expandX();
         menuBar.getTable().add(editorModeLabel).center().expand();
 
         root.add(leftTable).expand().fill();
@@ -135,7 +134,7 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void createNewMap() {
-        gameMap = new GameMap(5, 5, 32);
+        gameMap = new GameMap(10, 10, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         layersPanel = new LayersPanel(this);
@@ -182,7 +181,6 @@ public class MapEditor implements Screen, InputProcessor {
             tilesPanel = new TilesPanel(this);
             rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
         }
-        System.out.println(gameMap.getLayers().getCount());
     }
 
     private void saveMap() {
@@ -226,6 +224,8 @@ public class MapEditor implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        camera.update();
+        cameraUi.update();
         batch.setProjectionMatrix(camera.combined);
         setEditorModeLabel();
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -237,8 +237,7 @@ public class MapEditor implements Screen, InputProcessor {
             mapRender.renderMap();
         }
         stage.draw();
-        camera.update();
-        cameraUi.update();
+
     }
 
     @Override
@@ -369,11 +368,12 @@ public class MapEditor implements Screen, InputProcessor {
             float y = Gdx.input.getDeltaY();
             camera.translate(-x * (camera.zoom * 0.02f), y * (camera.zoom * 0.02f));
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+
 
         return false;
     }

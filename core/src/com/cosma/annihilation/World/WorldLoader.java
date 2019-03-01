@@ -225,8 +225,8 @@ class WorldLoader {
             double theta = (Math.tanh(height / width) * DEGTORAD);
 
             // Finding new position if rotation was with respect to top-left corner of object.
-            // X=x+ radius*cos(theta-angle)+(h/2)cos(90+angle)
-            // Y= y+radius*sin(theta-angle)-(h/2)sin(90+angle)
+            // X=x+ radius*cos(theta-angle)+(height/2)cos(90+angle)
+            // Y= y+radius*sin(theta-angle)-(height/2)sin(90+angle)
             pos = pos.add((float) (radius * Math.cos(-angle + theta)),
                     (float) (radius * Math.sin(-angle + theta))).add(
                     (float) ((height  / 2) * Math.cos(90 * DEGTORAD
