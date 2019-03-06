@@ -1,11 +1,10 @@
 package com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject;
 
+import com.badlogic.gdx.physics.box2d.BodyDef;
+
 public class RectangleObject extends MapObject {
-    public float x;
-    public float y;
-    public float width;
-    public float height;
-    public float rotation;
+    private float x,y,width,height,rotation;
+    private BodyDef.BodyType bodyType;
 
     public float getX() {
         return x;
@@ -47,14 +46,21 @@ public class RectangleObject extends MapObject {
         this.rotation = rotation;
     }
 
+    public BodyDef.BodyType getBodyType() {return bodyType;}
+
+    public void setBodyType(BodyDef.BodyType bodyType) {this.bodyType = bodyType;}
+
     public RectangleObject() {
     }
-    public RectangleObject(float x, float y, float width, float height, float rotation) {
+
+    public RectangleObject(float x, float y, float width, float height, float rotation, BodyDef.BodyType bodyType) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.rotation = rotation;
+        this.bodyType = bodyType;
+
     }
 
 

@@ -2,10 +2,16 @@ package com.cosma.annihilation.Editor;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -22,16 +28,17 @@ import com.kotcrab.vis.ui.util.adapter.ArrayAdapter;
 import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
 import com.kotcrab.vis.ui.widget.*;
 
-public class ObjectListWindow extends VisWindow implements InputProcessor {
+public class ObjectsListWindow extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private VisTable layersTable;
     private ListView<MapObject> view;
     private OrthographicCamera camera;
     private RectangleObject selectedObject;
+    private Body selectedBody;
     private final ObjectAdapter adapter;
-    private boolean canDragRight,canDragLeft, canDragUp, canDragDown, canDragObject, canRotateObject;
-    float startX, startY, lastX, lastY;
+    private boolean canDragRight, canDragLeft, canDragUp, canDragDown, canDragObject, canRotateObject,
+            isLeftButtonPressed, isRightButtonPressed;
 
     @Override
     protected void close() {
@@ -43,7 +50,7 @@ public class ObjectListWindow extends VisWindow implements InputProcessor {
         }
     }
 
-    public ObjectListWindow(final MapEditor mapEditor, OrthographicCamera camera) {
+    public ObjectsListWindow(final MapEditor mapEditor, OrthographicCamera camera) {
         super("Map layers");
         this.mapEditor = mapEditor;
         this.camera = camera;
@@ -53,20 +60,10 @@ public class ObjectListWindow extends VisWindow implements InputProcessor {
         adapter = new ObjectAdapter(mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObjects(), mapEditor);
         view = new ListView<MapObject>(adapter);
         view.setUpdatePolicy(ListView.UpdatePolicy.MANUAL);
-
         VisTable footerTable = new VisTable();
         footerTable.addSeparator();
         footerTable.add("");
         view.setFooter(footerTable);
-
-//        addListener(new InputListener(){
-//            @Override
-//            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//                System.out.println("sdafasasf");
-//                return super.touchDown(event, x, y, pointer, button);
-//            }
-//        });
-
         row();
         add(view.getMainTable()).fill().expand().center();
         row();
@@ -87,7 +84,14 @@ public class ObjectListWindow extends VisWindow implements InputProcessor {
             @Override
             public void selected(MapObject item, VisTable view) {
                 item.setHighlighted(true);
+                Array<Body> bodies = new Array<Body>();
                 selectedObject = (RectangleObject) item;
+                mapEditor.getWorld().getBodies(bodies);
+                for (Body body : bodies) {
+                    if (body.getUserData().equals(item.getName())) {
+                        selectedBody = body;
+                    }
+                }
             }
 
             @Override
@@ -120,13 +124,15 @@ public class ObjectListWindow extends VisWindow implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        startX = Utilities.getWorldCoordinates(screenX, screenY, camera).x;
-        startY = Utilities.getWorldCoordinates(screenX, screenY, camera).y;
+        if (button == Input.Buttons.LEFT) isLeftButtonPressed = true;
+        if (button == Input.Buttons.RIGHT) isRightButtonPressed = true;
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT) isLeftButtonPressed = false;
+        if (button == Input.Buttons.RIGHT) isRightButtonPressed = false;
         return false;
     }
 
@@ -134,40 +140,51 @@ public class ObjectListWindow extends VisWindow implements InputProcessor {
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
         Vector3 vec = camera.unproject(worldCoordinates);
-        Vector3 deltaWorldCoordinates = new Vector3(screenX-Gdx.input.getDeltaX(), screenY-Gdx.input.getDeltaY(), 0);
+        Vector3 deltaWorldCoordinates = new Vector3(screenX - Gdx.input.getDeltaX(), screenY - Gdx.input.getDeltaY(), 0);
         Vector3 deltaVec = camera.unproject(deltaWorldCoordinates);
-        float amountX, amountY;
-        if (canDragRight) {
+        float amountX, amountY, startX, startY;
+        if (canDragRight && isLeftButtonPressed) {
             float width = vec.x - selectedObject.getX();
             if (width < 0.2f) width = 0.2f;
             selectedObject.setWidth(width);
         }
-        if (canDragLeft) {
+        if (canDragLeft && isLeftButtonPressed) {
             amountX = vec.x - deltaVec.x;
             startX = deltaVec.x;
             if (selectedObject.getWidth() - amountX < 0.2f) amountX = 0;
             selectedObject.setX(selectedObject.getX() + amountX);
             selectedObject.setWidth(selectedObject.getWidth() - amountX);
         }
-        if (canDragDown) {
-            float height = vec.y-selectedObject.getY();
-            if(height < 0.2f) height = 0.2f;
+        if (canDragDown && isLeftButtonPressed) {
+            float height = vec.y - selectedObject.getY();
+            if (height < 0.2f) height = 0.2f;
             selectedObject.setHeight(height);
         }
-        if (canDragUp) {
+        if (canDragUp && isLeftButtonPressed) {
             amountY = vec.y - deltaVec.y;
             startY = deltaVec.y;
             if (selectedObject.getHeight() - amountY < 0.2f) amountY = 0;
             selectedObject.setY(selectedObject.getY() + amountY);
             selectedObject.setHeight(selectedObject.getHeight() - amountY);
         }
-        if (canDragObject) {
+        if (canDragObject && isLeftButtonPressed) {
             amountX = vec.x - deltaVec.x;
             amountY = vec.y - deltaVec.y;
             selectedObject.setX(selectedObject.getX() + amountX);
             selectedObject.setY(selectedObject.getY() + amountY);
         }
-
+        if (canRotateObject && isRightButtonPressed) {
+            amountY = vec.y - deltaVec.y;
+            selectedObject.setRotation(selectedObject.getRotation() + amountY * 7);
+        }
+        if (selectedBody != null) {
+            float x = selectedObject.getX();
+            float y = selectedObject.getY();
+            float width = selectedObject.getWidth();
+            float height = selectedObject.getHeight();
+            ((PolygonShape) selectedBody.getFixtureList().first().getShape()).setAsBox(width / 2, height / 2);
+            selectedBody.setTransform(width / 2 + x, height / 2 + y, selectedObject.getRotation() * MathUtils.degreesToRadians);
+        }
         return false;
     }
 
@@ -199,19 +216,22 @@ public class ObjectListWindow extends VisWindow implements InputProcessor {
             } else {
                 canDragUp = false;
             }
-            if (Utilities.roundFloat(y+height, 1) == Utilities.roundFloat(vec.y, 1) && Utilities.isFloatInRange(vec.x, x, x + width)) {
+            if (Utilities.roundFloat(y + height, 1) == Utilities.roundFloat(vec.y, 1) && Utilities.isFloatInRange(vec.x, x, x + width)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize);
                 canDragDown = true;
             } else {
                 canDragDown = false;
             }
-            if (Utilities.isFloatInRange(vec.x,x+0.1f,x+width-0.1f)
-                    && (Utilities.isFloatInRange(vec.y,y+0.1f,y+height-0.1f))) {
+            if (Utilities.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
+                    && (Utilities.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
                 canDragObject = true;
+                canRotateObject = true;
             } else {
                 canDragObject = false;
+                canRotateObject = false;
             }
+
             if (!canDragLeft && !canDragRight && !canDragDown && !canDragUp && !canDragObject) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
             }

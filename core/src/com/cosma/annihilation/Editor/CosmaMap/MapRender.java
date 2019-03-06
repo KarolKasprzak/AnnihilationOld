@@ -2,9 +2,14 @@ package com.cosma.annihilation.Editor.CosmaMap;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 
 public class MapRender {
 
@@ -12,12 +17,14 @@ public class MapRender {
     private int scale;
     private GameMap gameMap;
     private SpriteBatch batch;
+    private TextureAtlas iconPack;
 
     public MapRender (ShapeRenderer renderer, GameMap gameMap,SpriteBatch batch) {
         this.batch = batch;
         this.gameMap = gameMap;
         this.scale = gameMap.getTileSize();
         this.renderer = renderer;
+        iconPack = Annihilation.getAssets().get(GfxAssetDescriptors.editor_icons);
     }
 
     public void renderGrid(){
@@ -55,6 +62,20 @@ public class MapRender {
                     }
                 }
             }
+
+            for(LightsMapLayer mapLayer: gameMap.getLayers().getByType(LightsMapLayer.class)){
+                if (mapLayer.isLayerVisible()) {
+                    for(MapLight light: mapLayer.geLights()){
+                        if(light instanceof MapPointLight){
+                            TextureAtlas.AtlasRegion texture = iconPack.findRegion("point_light");
+                            batch.begin();
+                            batch.draw(texture,light.getX(),light.getY(),texture.getRegionWidth()/gameMap.getTileSize(),texture.getRegionHeight()/gameMap.getTileSize());
+                            batch.end();
+                        }
+                    }
+                }
+            }
+
             for(ObjectMapLayer layer: gameMap.getLayers().getByType(ObjectMapLayer.class)){
                 if (layer.isLayerVisible()) {
                     for (RectangleObject object: layer.getObjects().getByType(RectangleObject.class)){
@@ -63,7 +84,7 @@ public class MapRender {
                             renderer.setColor(Color.ORANGE);
                         }
                         renderer.begin();
-                        renderer.rect(object.x,object.y,object.width,object.height);
+                        renderer.rect(object.getX(),object.getY(),object.getWidth()/2,object.getHeight()/2,object.getWidth(),object.getHeight(),1,1,object.getRotation());
                         renderer.end();
                     }
                 }

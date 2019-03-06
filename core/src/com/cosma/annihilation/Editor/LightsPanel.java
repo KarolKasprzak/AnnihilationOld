@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Editor;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -17,30 +18,34 @@ import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Utils.Utilities;
 import com.kotcrab.vis.ui.util.TableUtils;
-import com.kotcrab.vis.ui.widget.*;
+import com.kotcrab.vis.ui.widget.VisCheckBox;
+import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.kotcrab.vis.ui.widget.VisWindow;
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane;
 
-public class ObjectPanel extends VisWindow implements InputProcessor {
+public class LightsPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
-    private TabbedPane tabbedPane;
-    private VisTextButton createRectangleButton, createJointButton;
+    private VisTextButton createLightButton;
     private float x1, y1, x2, y2;
-    private BodyDef.BodyType bodyType = BodyDef.BodyType.StaticBody;
-    private VisCheckBox setStaticBox, setKinematicBox, setDynamicBox;
+    /**0 = point , 1 = cone, 2 = directional  **/
+    private int lightType = 0;
+    private VisCheckBox setPointLight, setConeLight, setDirectionalLight;
     private boolean canCreateBox = false;
     private ShapeRenderer shapeRenderer;
     private boolean canDraw = false;
     private OrthographicCamera camera;
     private ObjectsListWindow objectsListWindow;
     private boolean isObjectListWindowOpen = false;
+    private RayHandler rayHandler;
 
     public void setObjectListWindowOpen(boolean objectListWindowOpen) {
         isObjectListWindowOpen = objectListWindowOpen;
     }
 
-    public ObjectPanel(final MapEditor mapEditor) {
-        super("Objects:");
+    public LightsPanel(final MapEditor mapEditor, RayHandler rayHandler) {
+        super("Lights:");
+        this.rayHandler = rayHandler;
         this.mapEditor = mapEditor;
         this.shapeRenderer = mapEditor.getShapeRenderer();
         this.camera = mapEditor.getCamera();
@@ -48,55 +53,53 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
 
-        createRectangleButton = new VisTextButton("add box");
-        createJointButton = new VisTextButton("add joint");
-        setStaticBox = new VisCheckBox("Static", true);
-        setStaticBox.setFocusBorderEnabled(false);
-        setDynamicBox = new VisCheckBox("Dynamic");
-        setDynamicBox.setFocusBorderEnabled(false);
-        setKinematicBox = new VisCheckBox("Kinematic");
+        createLightButton = new VisTextButton("add light");
+        setPointLight = new VisCheckBox("Point", true);
+        setPointLight.setFocusBorderEnabled(false);
+        setDirectionalLight = new VisCheckBox("Cone");
+        setDirectionalLight.setFocusBorderEnabled(false);
+        setConeLight = new VisCheckBox("Directional");
         VisTextButton openObjectListWindowButton = new VisTextButton("Obj. list");
 
-        add(setDynamicBox);
-        add(setStaticBox);
-        add(setKinematicBox);
+        add(setDirectionalLight);
+        add(setPointLight);
+        add(setConeLight);
         row();
-        add(createRectangleButton).top();
-        add(createJointButton).top();
+        add(createLightButton).top();
         add(openObjectListWindowButton).top();
         add().expand().fill();
 
-        setStaticBox.addListener(new ClickListener() {
+        setPointLight.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                bodyType = BodyDef.BodyType.StaticBody;
-                setDynamicBox.setChecked(false);
-                setKinematicBox.setChecked(false);
+                lightType = 0;
+                setDirectionalLight.setChecked(false);
+                setConeLight.setChecked(false);
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        setDynamicBox.addListener(new ClickListener() {
+        setDirectionalLight.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                bodyType = BodyDef.BodyType.DynamicBody;
-                setStaticBox.setChecked(false);
-                setKinematicBox.setChecked(false);
+                lightType = 2;
+                setPointLight.setChecked(false);
+                setConeLight.setChecked(false);
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        setKinematicBox.addListener(new ClickListener() {
+        setConeLight.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                bodyType = BodyDef.BodyType.KinematicBody;
-                setDynamicBox.setChecked(false);
-                setStaticBox.setChecked(false);
+                lightType = 1;
+                setDirectionalLight.setChecked(false);
+                setPointLight.setChecked(false);
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
 
-        createRectangleButton.addListener(new ChangeListener() {
+        createLightButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 canCreateBox = true;
@@ -133,20 +136,20 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     }
 
     public void setPanelButtonsDisable(Boolean status) {
-        createRectangleButton.setDisabled(status);
-        setKinematicBox.setDisabled(status);
-        setDynamicBox.setDisabled(status);
-        setStaticBox.setDisabled(status);
+        createLightButton.setDisabled(status);
+        setConeLight.setDisabled(status);
+        setDirectionalLight.setDisabled(status);
+        setPointLight.setDisabled(status);
     }
 
-    private void createBoxObject(float x, float y, float w, float h) {
-        if (mapEditor.isObjectLayerSelected()) {
-            Utilities.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType));
-            canCreateBox = false;
-            if (isObjectListWindowOpen) {
-                objectsListWindow.rebuildView();
-            }
-        }
+    private void createPointLight(float x, float y, float w, float h) {
+//        if (mapEditor.isObjectLayerSelected()) {
+//            Utilities.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType));
+//            canCreateBox = false;
+//            if (isObjectListWindowOpen) {
+//                objectsListWindow.rebuildView();
+//            }
+//        }
     }
 
     @Override
@@ -184,31 +187,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT && canCreateBox()) {
-            canDraw = false;
 
-            float x = x1;
-            float y = y1;
-            float width = x2 - x1;
-            float height = y2 - y1;
-
-            if (width < 0) {
-                x = x - -width;
-                width = -width;
-            }
-            if (height < 0 && width < 0) {
-                x = x - -width;
-                width = -width;
-                y = y - -height;
-                height = -height;
-            }
-            if (height < 0) {
-                y = y - -height;
-                height = -height;
-            }
-
-            createBoxObject(x, y, width, height);
-        }
         return false;
     }
 
@@ -236,14 +215,14 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     }
 
     private void drawBox() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(x1, y1, x2 - x1, y2 - y1);
-        shapeRenderer.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0, 0, 0, 0.2f);
-        shapeRenderer.rect(x1, y1, x2 - x1, y2 - y1);
-        shapeRenderer.end();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.BLACK);
+//        shapeRenderer.rect(x1, y1, x2 - x1, y2 - y1);
+//        shapeRenderer.end();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.setColor(0, 0, 0, 0.2f);
+//        shapeRenderer.rect(x1, y1, x2 - x1, y2 - y1);
+//        shapeRenderer.end();
     }
 
 

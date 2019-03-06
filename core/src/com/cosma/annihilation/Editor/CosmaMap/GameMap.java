@@ -35,14 +35,20 @@ public class GameMap {
     }
 
     public void createTileMapLayer(){
-        String name = "Layer" +(layers.getCount()+1);
+        String name = "Tiles_layer" +(layers.getCount()+1);
         TileMapLayer mapLayer = new TileMapLayer(width,height,name);
         layers.add(mapLayer);
     }
 
     public void createObjectMapLayer(){
-        String name = "Object_layer" +(layers.getCount()+1);
+        String name = "Objects_layer" +(layers.getCount()+1);
         ObjectMapLayer mapLayer = new ObjectMapLayer(width,height,name);
+        layers.add(mapLayer);
+    }
+
+    public void createLightsLayer(){
+        String name = "Lights_layer" +(layers.getCount()+1);
+        LightsMapLayer mapLayer = new LightsMapLayer(width,height,name);
         layers.add(mapLayer);
     }
 }

@@ -53,6 +53,7 @@ public class AssetLoader {
         manager.load(GfxPlayerAssetDescriptors.player_stand_melee);
         manager.load(GfxAssetDescriptors.player_attack_melee);
         manager.load(GfxAssetDescriptors.map_conc);
+        manager.load(GfxAssetDescriptors.editor_icons);
 
         manager.finishLoading();
 

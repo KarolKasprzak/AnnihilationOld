@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Screens;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -24,56 +26,50 @@ import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 
 public class MapEditor implements Screen, InputProcessor {
+    private RayHandler rayHandler;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private Stage stage;
     private Viewport viewport, viewportUi;
     private OrthographicCamera camera, cameraUi;
     private World world;
-    private final float TIME_STEP = 1 / 300f;
-    private float accumulator = 0f;
+    private static final float MAX_STEP_TIME = 1 / 45f;
+    private static float accumulator = 0f;
     private InputMultiplexer im;
-
-
     private boolean canCameraDrag = false;
     float zoomLevel = 0.3f;
-
     private GameMap gameMap;
-    private MapCreatorWindow mapCreatorWindow;
 
+    private MapCreatorWindow mapCreatorWindow;
     private TilesPanel tilesPanel;
     public LayersPanel layersPanel;
     public ObjectPanel objectPanel;
     private MapRender mapRender;
-    private ObjectListWindow objectListWindow;
+    public LightsPanel lightsPanel;
 
-    private boolean isTileLayerSelected;
-    private boolean isObjectLayerSelected;
-    private boolean isLightsLayerSelected;
-    private boolean isEntityLayerSelected;
 
-    private boolean canDraw = false;
-
+    private boolean isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered;
     private VisLabel editorModeLabel;
-
     private VisTable rightTable;
-
     private MenuBar menuBar;
     private FileChooser fileChooser;
-
-
+    private Box2DDebugRenderer debugRenderer;
 
     public MapEditor(Annihilation game) {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
+        world = new World(new Vector2(0, -10), true);
 
         cameraUi = new OrthographicCamera();
         cameraUi.update();
         viewportUi = new ScreenViewport(cameraUi);
         stage = new Stage(viewportUi);
         VisUI.load(VisUI.SkinScale.X1);
+        rayHandler = new RayHandler(world);
+        isLightsRendered = false;
 
         mapCreatorWindow = new MapCreatorWindow(this);
+        debugRenderer = new Box2DDebugRenderer();
 
         final Table root = new Table();
         root.setFillParent(true);
@@ -84,7 +80,6 @@ public class MapEditor implements Screen, InputProcessor {
         camera.update();
         camera.zoom = 5;
         viewport.apply(true);
-        world = new World(new Vector2(0, 9), false);
 
         im = new InputMultiplexer();
         im.addProcessor(stage);
@@ -99,6 +94,16 @@ public class MapEditor implements Screen, InputProcessor {
 
         menuBar = new MenuBar();
         menuBar.getTable().add(editorModeLabel).center().expand();
+        final VisCheckBox lightsButton = new VisCheckBox("Lights: ");
+        lightsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(lightsButton.isChecked()){
+                    isLightsRendered = true;
+                }else isLightsRendered = false;
+            }
+        });
+        menuBar.getTable().add(lightsButton);
 
         root.add(leftTable).expand().fill();
         root.add(rightTable).fillY();
@@ -138,22 +143,28 @@ public class MapEditor implements Screen, InputProcessor {
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         layersPanel = new LayersPanel(this);
-        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.35f);
+        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.25f);
         rightTable.row();
 
         tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
+        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.25f);
         rightTable.row();
 
         objectPanel = new ObjectPanel(this);
-        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight() * 0.25f).maxHeight(objectPanel.getParent().getHeight() * 0.35f);
+        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight() * 0.25f).maxHeight(objectPanel.getParent().getHeight() * 0.25f);
         rightTable.row();
+
+        lightsPanel = new LightsPanel(this,rayHandler);
+        rightTable.add(lightsPanel).fillX().top().minHeight(lightsPanel.getParent().getHeight() * 0.25f).maxHeight(lightsPanel.getParent().getHeight() * 0.25f);
+        rightTable.row();
+
         rightTable.add().expandY();
         im.addProcessor(objectPanel);
+        im.addProcessor(lightsPanel);
         setCameraOnMapCenter();
     }
 
-    public InputMultiplexer getInputMultiplexer(){
+    public InputMultiplexer getInputMultiplexer() {
         return im;
     }
 
@@ -174,13 +185,21 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     private void loadMap() {
+        tilesPanel = new TilesPanel(this);
+        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
         CosmaMapLoader loader = new CosmaMapLoader("map/map.json");
-        this.gameMap = loader.getMap();
-        if(mapRender == null){
-            mapRender = new MapRender(shapeRenderer, gameMap, batch);
-            tilesPanel = new TilesPanel(this);
-            rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
+
+        if (layersPanel != null) {
+            rightTable.clear();
         }
+        this.gameMap = loader.getMap();
+        mapRender = new MapRender(shapeRenderer, gameMap, batch);
+        System.out.println(gameMap.getLayers().getLayer(0).isLayerVisible());
+//        if(mapRender == null){
+//            mapRender = new MapRender(shapeRenderer, gameMap, batch);
+//            tilesPanel = new TilesPanel(this);
+//            rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
+//        }
     }
 
     private void saveMap() {
@@ -224,20 +243,29 @@ public class MapEditor implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        float frameTime = Math.min(delta, 0.25f);
+        accumulator += frameTime;
+        if (accumulator >= MAX_STEP_TIME) {
+            world.step(MAX_STEP_TIME, 6, 2);
+            accumulator -= MAX_STEP_TIME;
+        }
+        debugRenderer.render(world, camera.combined);
         camera.update();
         cameraUi.update();
         batch.setProjectionMatrix(camera.combined);
         setEditorModeLabel();
         shapeRenderer.setProjectionMatrix(camera.combined);
         stage.act(delta);
-
         if (gameMap != null) {
             mapRender.renderGrid();
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
+        if(isLightsRendered){
+            rayHandler.setCombinedMatrix(camera);
+            rayHandler.updateAndRender();
+        }
         stage.draw();
-
     }
 
     @Override
@@ -246,15 +274,6 @@ public class MapEditor implements Screen, InputProcessor {
         camera.update();
         cameraUi.update();
         viewportUi.update(width, height);
-    }
-
-    private void act(float delta) {
-        // Fixed time step
-        accumulator += delta;
-        while (accumulator >= delta) {
-            world.step(TIME_STEP, 6, 2);
-            accumulator -= TIME_STEP;
-        }
     }
 
     @Override
@@ -418,5 +437,9 @@ public class MapEditor implements Screen, InputProcessor {
 
     public boolean isEntityLayerSelected() {
         return isEntityLayerSelected;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }
