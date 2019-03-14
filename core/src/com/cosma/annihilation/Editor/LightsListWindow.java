@@ -1,23 +1,24 @@
 package com.cosma.annihilation.Editor;
 
 
+import box2dLight.Light;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
-import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
-import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
+import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
+import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -28,20 +29,23 @@ import com.kotcrab.vis.ui.widget.*;
 
 public class LightsListWindow extends VisWindow implements InputProcessor {
 
+    public LightsAdvWindow lightsAdvWindow;
+    public boolean isAdvWindowOpen = false;
     private MapEditor mapEditor;
+    private MapLight selectedLight;
+    private Light selectedBox2dLight;
     private VisTable layersTable;
-    private ListView<MapObject> view;
+    private ListView<MapLight> view;
     private OrthographicCamera camera;
-    private RectangleObject selectedObject;
-    private Body selectedBody;
     private final ObjectAdapter adapter;
-    private boolean canDragRight, canDragLeft, canDragUp, canDragDown, canDragObject, canRotateObject,
-            isLeftButtonPressed, isRightButtonPressed;
+    private boolean  canDragObject,isLeftButtonPressed, isRightButtonPressed;
+
+
 
     @Override
     protected void close() {
         super.close();
-        mapEditor.objectPanel.setObjectListWindowOpen(false);
+        mapEditor.lightsPanel.setLightListWindowOpen(false);
         mapEditor.getInputMultiplexer().removeProcessor(this);
         if (!adapter.getSelection().isEmpty()) {
             adapter.getSelectionManager().deselectAll();
@@ -49,14 +53,14 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
     }
 
     public LightsListWindow(final MapEditor mapEditor, OrthographicCamera camera) {
-        super("Map layers");
+        super("Lights");
         this.mapEditor = mapEditor;
         this.camera = camera;
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
         addCloseButton();
-        adapter = new ObjectAdapter(mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObjects(), mapEditor);
-        view = new ListView<MapObject>(adapter);
+        adapter = new ObjectAdapter(mapEditor.layersPanel.getSelectedLayer(LightsMapLayer.class).getLights().getLights(), mapEditor,this);
+        view = new ListView<MapLight>(adapter);
         view.setUpdatePolicy(ListView.UpdatePolicy.MANUAL);
         VisTable footerTable = new VisTable();
         footerTable.addSeparator();
@@ -71,34 +75,28 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         setResizable(true);
 
         adapter.setSelectionMode(AbstractListAdapter.SelectionMode.SINGLE);
-        view.setItemClickListener(new ListView.ItemClickListener<MapObject>() {
+        view.setItemClickListener(new ListView.ItemClickListener<MapLight>() {
             @Override
-            public void clicked(MapObject item) {
-//
-//                    System.out.println(adapter.getSelectionManager().getSelection().first().getName());
+            public void clicked(MapLight item) {
             }
         });
-        adapter.getSelectionManager().setListener(new ListSelectionAdapter<MapObject, VisTable>() {
+        adapter.getSelectionManager().setListener(new ListSelectionAdapter<MapLight, VisTable>() {
             @Override
-            public void selected(MapObject item, VisTable view) {
+            public void selected(MapLight item, VisTable view) {
                 item.setHighlighted(true);
-                Array<Body> bodies = new Array<Body>();
-                selectedObject = (RectangleObject) item;
-                mapEditor.getWorld().getBodies(bodies);
-                for (Body body : bodies) {
-                    if (body.getUserData().equals(item.getName())) {
-                        selectedBody = body;
-                    }
+                selectedLight = item;
+                selectedBox2dLight = mapEditor.lightsPanel.getLightsHashMap().get(item.getName());
+                if(selectedBox2dLight == null){
+                    System.out.println("null");
                 }
             }
-
             @Override
-            public void deselected(MapObject item, VisTable view) {
+            public void deselected(MapLight item, VisTable view) {
                 item.setHighlighted(false);
-
+                selectedLight = null;
+                selectedBox2dLight = null;
             }
         });
-
     }
 
     public void rebuildView() {
@@ -141,47 +139,14 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         Vector3 deltaWorldCoordinates = new Vector3(screenX - Gdx.input.getDeltaX(), screenY - Gdx.input.getDeltaY(), 0);
         Vector3 deltaVec = camera.unproject(deltaWorldCoordinates);
         float amountX, amountY, startX, startY;
-        if (canDragRight && isLeftButtonPressed) {
-            float width = vec.x - selectedObject.getX();
-            if (width < 0.2f) width = 0.2f;
-            selectedObject.setWidth(width);
-        }
-        if (canDragLeft && isLeftButtonPressed) {
-            amountX = vec.x - deltaVec.x;
-            startX = deltaVec.x;
-            if (selectedObject.getWidth() - amountX < 0.2f) amountX = 0;
-            selectedObject.setX(selectedObject.getX() + amountX);
-            selectedObject.setWidth(selectedObject.getWidth() - amountX);
-        }
-        if (canDragDown && isLeftButtonPressed) {
-            float height = vec.y - selectedObject.getY();
-            if (height < 0.2f) height = 0.2f;
-            selectedObject.setHeight(height);
-        }
-        if (canDragUp && isLeftButtonPressed) {
-            amountY = vec.y - deltaVec.y;
-            startY = deltaVec.y;
-            if (selectedObject.getHeight() - amountY < 0.2f) amountY = 0;
-            selectedObject.setY(selectedObject.getY() + amountY);
-            selectedObject.setHeight(selectedObject.getHeight() - amountY);
-        }
-        if (canDragObject && isLeftButtonPressed) {
+
+        if (canDragObject && isLeftButtonPressed && selectedBox2dLight != null) {
+            System.out.println("fdfd");
             amountX = vec.x - deltaVec.x;
             amountY = vec.y - deltaVec.y;
-            selectedObject.setX(selectedObject.getX() + amountX);
-            selectedObject.setY(selectedObject.getY() + amountY);
-        }
-        if (canRotateObject && isRightButtonPressed) {
-            amountY = vec.y - deltaVec.y;
-            selectedObject.setRotation(selectedObject.getRotation() + amountY * 7);
-        }
-        if (selectedBody != null) {
-            float x = selectedObject.getX();
-            float y = selectedObject.getY();
-            float width = selectedObject.getWidth();
-            float height = selectedObject.getHeight();
-            ((PolygonShape) selectedBody.getFixtureList().first().getShape()).setAsBox(width / 2, height / 2);
-            selectedBody.setTransform(width / 2 + x, height / 2 + y, selectedObject.getRotation() * MathUtils.degreesToRadians);
+            selectedLight.setX(selectedLight.getX() + amountX);
+            selectedLight.setY(selectedLight.getY() + amountY);
+            selectedBox2dLight.setPosition(selectedBox2dLight.getX()+amountX,selectedBox2dLight.getY()+amountY);
         }
         return false;
     }
@@ -191,46 +156,18 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
         Vector3 vec = camera.unproject(worldCoordinates);
 
-        if (selectedObject != null) {
-            float x = selectedObject.getX();
-            float y = selectedObject.getY();
-            float width = selectedObject.getWidth();
-            float height = selectedObject.getHeight();
-            if (Utilities.roundFloat(x + width, 1) == Utilities.roundFloat(vec.x, 1) && Utilities.isFloatInRange(vec.y, y, y + height)) {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.HorizontalResize);
-                canDragRight = true;
-            } else {
-                canDragRight = false;
-            }
-            if (Utilities.roundFloat(x, 1) == Utilities.roundFloat(vec.x, 1) && Utilities.isFloatInRange(vec.y, y, y + height)) {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.HorizontalResize);
-                canDragLeft = true;
-            } else {
-                canDragLeft = false;
-            }
-            if (Utilities.roundFloat(y, 1) == Utilities.roundFloat(vec.y, 1) && Utilities.isFloatInRange(vec.x, x, x + width)) {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize);
-                canDragUp = true;
-            } else {
-                canDragUp = false;
-            }
-            if (Utilities.roundFloat(y + height, 1) == Utilities.roundFloat(vec.y, 1) && Utilities.isFloatInRange(vec.x, x, x + width)) {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize);
-                canDragDown = true;
-            } else {
-                canDragDown = false;
-            }
-            if (Utilities.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
-                    && (Utilities.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
+        if (selectedLight != null) {
+            float x = selectedLight.getX();
+            float y = selectedLight.getY();
+
+            if (Utilities.isFloatInRange(vec.x, x -1, x +1) && Utilities.isFloatInRange(vec.y, y -1, y +1)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
                 canDragObject = true;
-                canRotateObject = true;
+                System.out.println("fdfd");
             } else {
                 canDragObject = false;
-                canRotateObject = false;
             }
-
-            if (!canDragLeft && !canDragRight && !canDragDown && !canDragUp && !canDragObject) {
+            if (!canDragObject) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
             }
         }
@@ -242,15 +179,17 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         return false;
     }
 
-    private static class ObjectAdapter extends ArrayAdapter<MapObject, VisTable> {
+    private static class ObjectAdapter extends ArrayAdapter<MapLight, VisTable> {
         private final Drawable bg = VisUI.getSkin().getDrawable("window-bg");
         private final Drawable selection = VisUI.getSkin().getDrawable("list-selection");
         private MapEditor mapEditor;
+        private LightsListWindow window;
 
-        private ObjectAdapter(Array<MapObject> array, MapEditor mapEditor) {
+        private ObjectAdapter(Array<MapLight> array, MapEditor mapEditor, LightsListWindow lightsListWindow) {
             super(array);
             setSelectionMode(SelectionMode.SINGLE);
             this.mapEditor = mapEditor;
+            this.window = lightsListWindow;
         }
 
         @Override
@@ -259,7 +198,7 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         }
 
         @Override
-        protected void updateView(VisTable view, MapObject item) {
+        protected void updateView(VisTable view, MapLight item) {
             super.updateView(view, item);
         }
 
@@ -269,21 +208,37 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         }
 
         @Override
-        protected VisTable createView(final MapObject item) {
-//            final MapObject mapObject = mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObject(item.getName());
+        protected VisTable createView(final MapLight item) {
             VisLabel label = new VisLabel(item.getName());
+            final VisImageButton lightSetting = new VisImageButton(new TextureRegionDrawable(Annihilation.getAssets().get(GfxAssetDescriptors.editor_icons).findRegion("settings_")));
             VisTextButton delete = new VisTextButton("x");
+            lightSetting.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if(!window.getStage().getActors().contains(window.lightsAdvWindow,true)){
+                        window.isAdvWindowOpen = true;
+                        window.lightsAdvWindow = new LightsAdvWindow(window.selectedLight,window.selectedBox2dLight,window);
+                        window.getStage().addActor(window.lightsAdvWindow);
+                    }
+                }
+            });
             delete.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().remove(item.getName());
-                    view.rebuildView();
+                    if(!window.isAdvWindowOpen){
+                        mapEditor.layersPanel.getSelectedLayer(LightsMapLayer.class).getLights().remove(item.getName());
+                        mapEditor.lightsPanel.getLightsHashMap().get(item.getName()).remove(true);
+                        window.selectedBox2dLight = null;
+                        window.selectedLight = null;
+                        view.rebuildView();
+                    }
                 }
             });
             VisTable table = new VisTable();
             table.center();
             table.add(label).fill().expandX();
-            table.add(delete);
+            table.add(lightSetting).size(29);
+            table.add(delete).size(29);
             return table;
         }
     }

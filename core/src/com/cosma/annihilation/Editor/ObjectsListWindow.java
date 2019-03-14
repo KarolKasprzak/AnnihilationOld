@@ -7,11 +7,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -57,7 +55,7 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
         addCloseButton();
-        adapter = new ObjectAdapter(mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObjects(), mapEditor);
+        adapter = new ObjectAdapter(mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObjects(), mapEditor,this);
         view = new ListView<MapObject>(adapter);
         view.setUpdatePolicy(ListView.UpdatePolicy.MANUAL);
         VisTable footerTable = new VisTable();
@@ -97,7 +95,9 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
             @Override
             public void deselected(MapObject item, VisTable view) {
                 item.setHighlighted(false);
-
+                System.out.println("hjhj");
+                selectedBody = null;
+                selectedObject = null;
             }
         });
 
@@ -248,11 +248,15 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
         private final Drawable bg = VisUI.getSkin().getDrawable("window-bg");
         private final Drawable selection = VisUI.getSkin().getDrawable("list-selection");
         private MapEditor mapEditor;
+        private ObjectsListWindow objectsListWindow;
 
-        private ObjectAdapter(Array<MapObject> array, MapEditor mapEditor) {
+
+
+        private ObjectAdapter(Array<MapObject> array, MapEditor mapEditor, ObjectsListWindow objectsListWindow) {
             super(array);
             setSelectionMode(SelectionMode.SINGLE);
             this.mapEditor = mapEditor;
+            this.objectsListWindow = objectsListWindow;
         }
 
         @Override
@@ -272,13 +276,21 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
 
         @Override
         protected VisTable createView(final MapObject item) {
-//            final MapObject mapObject = mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().getObject(item.getName());
             VisLabel label = new VisLabel(item.getName());
             VisTextButton delete = new VisTextButton("x");
             delete.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().remove(item.getName());
+                    Array<Body> bodies = new Array<Body>();
+                    mapEditor.getWorld().getBodies(bodies);
+                    for (Body body : bodies) {
+                        if (body.getUserData().equals(item.getName())) {
+                            mapEditor.getWorld().destroyBody(body);
+                            objectsListWindow.selectedObject = null;
+                            objectsListWindow.selectedBody = null;
+                        }
+                    }
                     view.rebuildView();
                 }
             });

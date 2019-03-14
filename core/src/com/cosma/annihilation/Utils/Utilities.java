@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Utils;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -76,5 +77,9 @@ public class Utilities {
         fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = CollisionID.SCENERY | CollisionID.CAST_SHADOW | CollisionID.JUMPABLE_OBJECT;
         body.createFixture(fixtureDef);
+    }
+
+    public static void createPointLight(){
+
     }
 }

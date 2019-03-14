@@ -2,6 +2,7 @@ package com.cosma.annihilation.Editor.CosmaMap;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLights;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
@@ -20,15 +21,26 @@ public class LightsMapLayer extends MapLayer {
     public LightsMapLayer() {
     }
 
-    public MapLights geLights() {
+    public MapLights getLights() {
         return lights;
     }
 
-    public String createPointLight(float x, float y, Color color, int raysNumber, float maxDistance) {
+    public void createPointLight(float x, float y, Color color, int raysNumber, float maxDistance) {
         String name = "PointLight_" + (lights.getCount() + 1);
         MapPointLight light = new MapPointLight(x,y,color,raysNumber,maxDistance);
         light.setName(name);
         lights.add(light);
-        return name;
+    }
+
+    public void createConeLight(float x, float y, Color color, int raysNumber, float maxDistance,float direction,float coneDegree) {
+        String name = "ConeLight_" + (lights.getCount() + 1);
+        MapConeLight light = new MapConeLight(x,y,color,raysNumber,maxDistance,direction,coneDegree);
+        light.setName(name);
+        lights.add(light);
+    }
+
+    public String getLastLightName(){
+        if(lights.getCount() == 0){return  null;}
+        return  "PointLight_" + (lights.getCount());
     }
 }

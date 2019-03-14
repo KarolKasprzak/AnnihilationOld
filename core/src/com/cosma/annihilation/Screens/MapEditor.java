@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
+import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
@@ -47,8 +48,7 @@ public class MapEditor implements Screen, InputProcessor {
     private MapRender mapRender;
     public LightsPanel lightsPanel;
 
-
-    private boolean isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered;
+    private boolean isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
     private VisLabel editorModeLabel;
     private VisTable rightTable;
     private MenuBar menuBar;
@@ -66,6 +66,7 @@ public class MapEditor implements Screen, InputProcessor {
         stage = new Stage(viewportUi);
         VisUI.load(VisUI.SkinScale.X1);
         rayHandler = new RayHandler(world);
+        RayHandler.useDiffuseLight(true);
         isLightsRendered = false;
 
         mapCreatorWindow = new MapCreatorWindow(this);
@@ -103,6 +104,18 @@ public class MapEditor implements Screen, InputProcessor {
                 }else isLightsRendered = false;
             }
         });
+
+        final VisCheckBox gridButton = new VisCheckBox("Grid: ");
+        gridButton.setChecked(true);
+        gridButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(gridButton.isChecked()){
+                    drawGrid = true;
+                }else drawGrid = false;
+            }
+        });
+        menuBar.getTable().add(gridButton);
         menuBar.getTable().add(lightsButton);
 
         root.add(leftTable).expand().fill();
@@ -139,7 +152,7 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void createNewMap() {
-        gameMap = new GameMap(10, 10, 32);
+        gameMap = new GameMap(20, 20, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         layersPanel = new LayersPanel(this);
@@ -228,7 +241,8 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void setCameraOnMapCenter() {
-        camera.position.set(getMap().getHeight() / 2, getMap().getWidth() / 2, 0);
+        camera.position.set(0, 0, 0);
+//        camera.position.set(getMap().getHeight() / 2, getMap().getWidth() / 2, 0);
     }
 
     @Override
@@ -257,7 +271,7 @@ public class MapEditor implements Screen, InputProcessor {
         shapeRenderer.setProjectionMatrix(camera.combined);
         stage.act(delta);
         if (gameMap != null) {
-            mapRender.renderGrid();
+            if(drawGrid){ mapRender.renderGrid();}
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
@@ -354,6 +368,7 @@ public class MapEditor implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        FocusManager.resetFocus(stage);
         drawTile(button);
         removeTile(button);
         if (button == Input.Buttons.MIDDLE) {

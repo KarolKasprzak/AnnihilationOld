@@ -8,6 +8,7 @@ public abstract class MapLight {
     private boolean isHighlighted = false;
     private int raysNumber;
     private Color color;
+    private float lightDistance;
     private float x;
 
     public MapLight() {
@@ -17,6 +18,23 @@ public abstract class MapLight {
         this.y = y;
         this.color = color;
         this.raysNumber = raysNumber;
+    }
+
+    public MapLight(float x, float y, Color color, int raysNumber, float distance) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.raysNumber = raysNumber;
+        this.lightDistance = distance;
+
+    }
+
+    public float getLightDistance() {
+        return lightDistance;
+    }
+
+    public void setLightDistance(float lightDistance) {
+        this.lightDistance = lightDistance;
     }
 
     public int getRaysNumber() {

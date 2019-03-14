@@ -14,6 +14,10 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
+import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Items.ItemFactory;
@@ -30,7 +34,8 @@ public class WorldBuilder implements Disposable, EntityListener {
     public World world;
     private OrthographicCamera camera;
     private Viewport viewport;
-    private TiledMap tiledMap;
+//    private TiledMap tiledMap;
+    private GameMap gameMap;
     private RayHandler rayHandler;
     private Gui gui;
     private AssetLoader assetLoader;
@@ -45,18 +50,16 @@ public class WorldBuilder implements Disposable, EntityListener {
         camera.update();
         SpriteBatch batch = new SpriteBatch();
 
-        tiledMap = assetLoader.manager.get(GfxAssetDescriptors.tiledMap);
-
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
         rayHandler = new RayHandler(world);
         engine = new PooledEngine();
 
-
         EntityFactory.getInstance().setAssetLoader(assetLoader);
         EntityFactory.getInstance().createPlayerEntity(engine,world);
-        new WorldLoader(engine, world, tiledMap, rayHandler);
 
         gui = new Gui(engine, world,assetLoader);
+
+        CosmaMapLoader loader = new CosmaMapLoader("map/map.json",world,rayHandler);
 
         if (isGameLoaded) {
             gui.loadGame();
@@ -70,7 +73,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
-        engine.addSystem(new TileMapRender(camera,tiledMap));
+        engine.addSystem(new TileMapRender(camera,loader.getMap()));
         engine.addSystem(new AnimationSystem(assetLoader));
         engine.addSystem(new DebugRenderSystem(camera,world));
         engine.addSystem(new ActionSystem(world,gui));
@@ -79,6 +82,9 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         gui.addSystemsReferences(engine);
         engine.addEntityListener(this);
+
+        Body playerBody = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(BodyComponent.class).body;
+        playerBody.setTransform(2,4,0);
     }
 
     public void update(float delta) {

@@ -74,6 +74,7 @@ class WorldLoader {
                             float[] dimension = getDimension(mo);
                             Entity entity = entityFactory.createTestEnemy();
                             entity.getComponent(BodyComponent.class).body.setTransform(dimension[0],dimension[1],0);
+
                             continue;
                         }
                         if("ladder".equals(mo.getName())){

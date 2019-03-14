@@ -1,78 +1,103 @@
 package com.cosma.annihilation.Editor;
 
+import box2dLight.ConeLight;
+import box2dLight.Light;
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.Utilities;
+import com.kotcrab.vis.ui.FocusManager;
+import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
-import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane;
+import com.kotcrab.vis.ui.widget.color.ColorPicker;
+import com.kotcrab.vis.ui.widget.color.ColorPickerAdapter;
+import com.kotcrab.vis.ui.widget.spinner.SimpleFloatSpinnerModel;
+import com.kotcrab.vis.ui.widget.spinner.Spinner;
+
+import java.util.HashMap;
 
 public class LightsPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private VisTextButton createLightButton;
-    private float x1, y1, x2, y2;
-    /**0 = point , 1 = cone, 2 = directional  **/
-    private int lightType = 0;
+    private HashMap<String, Light> lightsMap;
+    /** 0 = point , 1 = cone, 2 = directional**/
+    private int selectedLightType = 0;
     private VisCheckBox setPointLight, setConeLight, setDirectionalLight;
-    private boolean canCreateBox = false;
-    private ShapeRenderer shapeRenderer;
-    private boolean canDraw = false;
+    private boolean canCreateLight = false;
+    private Spinner distanceSpinner;
     private OrthographicCamera camera;
-    private ObjectsListWindow objectsListWindow;
-    private boolean isObjectListWindowOpen = false;
+    private LightsListWindow lightsListWindow;
+    private boolean isLightListWindowOpen = false;
     private RayHandler rayHandler;
+    private ColorPicker picker;
+    private final Drawable white = VisUI.getSkin().getDrawable("white");
+    private Color selectedColor;
 
-    public void setObjectListWindowOpen(boolean objectListWindowOpen) {
-        isObjectListWindowOpen = objectListWindowOpen;
+    public void setLightListWindowOpen(boolean isLightListWindowOpen) {
+        this.isLightListWindowOpen = isLightListWindowOpen;
     }
 
     public LightsPanel(final MapEditor mapEditor, RayHandler rayHandler) {
         super("Lights:");
         this.rayHandler = rayHandler;
         this.mapEditor = mapEditor;
-        this.shapeRenderer = mapEditor.getShapeRenderer();
         this.camera = mapEditor.getCamera();
+
+        final Image image = new Image(white);
+        lightsMap = new HashMap<>();
+
+        picker = new ColorPicker("color picker", new ColorPickerAdapter() {
+            @Override
+            public void finished(Color newColor) {
+                selectedColor = newColor;
+                image.setColor(newColor);
+            }
+        });
+
+        distanceSpinner = new Spinner("distance", new SimpleFloatSpinnerModel(5f, 1f, 25f, 0.5f, 2));
+        distanceSpinner.getTextField().setFocusBorderEnabled(false);
+        distanceSpinner.getTextField().addListener(new FocusListener() {
+            @Override
+            public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+                super.scrollFocusChanged(event, actor, focused);
+                if(focused == true){
+                    getStage().setScrollFocus(null);
+                }
+            }
+        });
 
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
 
-        createLightButton = new VisTextButton("add light");
-        setPointLight = new VisCheckBox("Point", true);
+        createLightButton = new VisTextButton("create light");
+        setPointLight = new VisCheckBox("point", true);
         setPointLight.setFocusBorderEnabled(false);
-        setDirectionalLight = new VisCheckBox("Cone");
+        setDirectionalLight = new VisCheckBox("sun");
         setDirectionalLight.setFocusBorderEnabled(false);
-        setConeLight = new VisCheckBox("Directional");
-        VisTextButton openObjectListWindowButton = new VisTextButton("Obj. list");
-
-        add(setDirectionalLight);
-        add(setPointLight);
-        add(setConeLight);
-        row();
-        add(createLightButton).top();
-        add(openObjectListWindowButton).top();
-        add().expand().fill();
+        setConeLight = new VisCheckBox("cone");
+        VisTextButton openLightsListWindowButton = new VisTextButton("lights list");
 
         setPointLight.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                lightType = 0;
+                selectedLightType = 0;
                 setDirectionalLight.setChecked(false);
                 setConeLight.setChecked(false);
                 return super.touchDown(event, x, y, pointer, button);
@@ -82,7 +107,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setDirectionalLight.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                lightType = 2;
+                selectedLightType = 2;
                 setPointLight.setChecked(false);
                 setConeLight.setChecked(false);
                 return super.touchDown(event, x, y, pointer, button);
@@ -92,7 +117,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setConeLight.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                lightType = 1;
+                selectedLightType = 1;
                 setDirectionalLight.setChecked(false);
                 setPointLight.setChecked(false);
                 return super.touchDown(event, x, y, pointer, button);
@@ -102,37 +127,48 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         createLightButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                canCreateBox = true;
+                canCreateLight = true;
             }
         });
-        openObjectListWindowButton.addListener(new ChangeListener() {
+        openLightsListWindowButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!getStage().getActors().contains(objectsListWindow, true) && !mapEditor.getMap().getLayers().getByType(ObjectMapLayer.class).isEmpty()) {
-                    objectsListWindow = new ObjectsListWindow(mapEditor, camera);
-                    getStage().addActor(objectsListWindow);
-                    mapEditor.getInputMultiplexer().addProcessor(0, objectsListWindow);
-                    setObjectListWindowOpen(true);
+                if (!getStage().getActors().contains(lightsListWindow, true) && !mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).isEmpty()) {
+                    lightsListWindow = new LightsListWindow(mapEditor, camera);
+                    getStage().addActor(lightsListWindow);
+                    mapEditor.getInputMultiplexer().addProcessor(0, lightsListWindow);
+                    setLightListWindowOpen(true);
                 }
             }
         });
 
+        image.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                getStage().addActor(picker.fadeIn());
+                return super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+        picker.setColor(Color.WHITE);
+        image.setColor(Color.WHITE);
+        selectedColor = Color.WHITE;
+
+        add(setDirectionalLight).left().top();
+        row();
+        add(setPointLight).left().top();
+        row();
+        add(setConeLight).left().top();
+        row();
+        add(distanceSpinner);
+        row();
+        add(createLightButton).center().top();
+        add(openLightsListWindowButton).center().top();
+        add(image).top().size(25).center().top().expandX().expandY();
         setPanelButtonsDisable(true);
         pack();
         setSize(getWidth(), getHeight());
         setPosition(1900, 200);
-    }
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        if (canDraw) {
-            Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            Vector3 vec = camera.unproject(worldCoordinates);
-            x2 = vec.x;
-            y2 = vec.y;
-            drawBox();
-        }
     }
 
     public void setPanelButtonsDisable(Boolean status) {
@@ -142,20 +178,8 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setPointLight.setDisabled(status);
     }
 
-    private void createPointLight(float x, float y, float w, float h) {
-//        if (mapEditor.isObjectLayerSelected()) {
-//            Utilities.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType));
-//            canCreateBox = false;
-//            if (isObjectListWindowOpen) {
-//                objectsListWindow.rebuildView();
-//            }
-//        }
-    }
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-
+    public HashMap<String, Light> getLightsHashMap() {
+        return lightsMap;
     }
 
     @Override
@@ -175,14 +199,33 @@ public class LightsPanel extends VisWindow implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT && canCreateBox() && mapEditor.isObjectLayerSelected()) {
+
+        if (button == Input.Buttons.LEFT && canCreateLight && mapEditor.isLightsLayerSelected()) {
             Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
             Vector3 vec = camera.unproject(worldCoordinates);
-            canDraw = true;
-            x1 = vec.x;
-            y1 = vec.y;
+            if (selectedLightType == 0) {
+                mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createPointLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance());
+                PointLight light = new PointLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y);
+                lightsMap.put(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
+            }
+            if (selectedLightType == 1) {
+                mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createConeLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance(),0,90);
+                ConeLight light = new ConeLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y,270,25);
+                
+                lightsMap.put(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
+                System.out.println(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName());
+
+            }
+            canCreateLight = false;
+            if (isLightListWindowOpen) {
+                lightsListWindow.rebuildView();
+            }
         }
         return false;
+    }
+
+    private float getMaxLightDistance(){
+        return ((SimpleFloatSpinnerModel) distanceSpinner.getModel()).getValue();
     }
 
     @Override
@@ -203,27 +246,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
+
         return false;
     }
-
-    public boolean canCreateBox() {
-        return canCreateBox;
-    }
-
-    public void setCanCreateBox(boolean canCreateBox) {
-        this.canCreateBox = canCreateBox;
-    }
-
-    private void drawBox() {
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.setColor(Color.BLACK);
-//        shapeRenderer.rect(x1, y1, x2 - x1, y2 - y1);
-//        shapeRenderer.end();
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//        shapeRenderer.setColor(0, 0, 0, 0.2f);
-//        shapeRenderer.rect(x1, y1, x2 - x1, y2 - y1);
-//        shapeRenderer.end();
-    }
-
-
 }

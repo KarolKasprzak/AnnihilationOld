@@ -49,6 +49,7 @@ public class Tile implements Json.Serializable {
 
     @Override
     public void read(Json json, JsonValue jsonData) {
+
         if(jsonData.has("atlasRegionName") && jsonData.has("atlasPath")){
             atlasRegionName = jsonData.getString("atlasRegionName");
             atlasPath = jsonData.getString("atlasPath");

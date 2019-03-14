@@ -7,8 +7,12 @@ import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Editor.TilesPanel;
+import com.kotcrab.vis.ui.widget.tabbedpane.Tab;
 
 public class AssetLoader {
     public AssetManager manager;
@@ -23,6 +27,11 @@ public class AssetLoader {
         loadMap();
         loadFonts();
 
+        FileHandle file = Gdx.files.local("map/map_textures");
+        for(FileHandle texture: file.list(".atlas")){
+            manager.load(texture.path(),TextureAtlas.class);
+            System.out.println(texture.pathWithoutExtension());
+        }
         manager.load(GfxAssetDescriptors.box);
         manager.load(SfxAssetDescriptors.pistolSound);
         manager.load(GfxAssetDescriptors.bulletShell);

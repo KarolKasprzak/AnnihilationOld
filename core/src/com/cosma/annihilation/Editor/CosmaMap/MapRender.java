@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
@@ -28,17 +29,17 @@ public class MapRender {
     }
 
     public void renderGrid(){
+        renderer.begin();
         for (int x = 0; x < gameMap.getWidth(); x++) {
             for (int y = 0; y < gameMap.getHeight(); y++) {
-                renderer.begin();
                 renderer.setColor(Color.BLACK);
                 renderer.rect(0,0,gameMap.getWidth(),gameMap.getHeight());
                 renderer.setColor(0,0,0,0.2f);
                 renderer.line(x, y, x + gameMap.getTileSize() / scale, y);
                 renderer.line(x, y, x, y + gameMap.getTileSize() / scale);
-                renderer.end();
             }
         }
+        renderer.end();
     }
 
     public void renderMap() {
@@ -65,11 +66,19 @@ public class MapRender {
 
             for(LightsMapLayer mapLayer: gameMap.getLayers().getByType(LightsMapLayer.class)){
                 if (mapLayer.isLayerVisible()) {
-                    for(MapLight light: mapLayer.geLights()){
+                    for(MapLight light: mapLayer.getLights()){
                         if(light instanceof MapPointLight){
                             TextureAtlas.AtlasRegion texture = iconPack.findRegion("point_light");
+                            if(light.isHighlighted()){texture = iconPack.findRegion("point_light_h");}
                             batch.begin();
-                            batch.draw(texture,light.getX(),light.getY(),texture.getRegionWidth()/gameMap.getTileSize(),texture.getRegionHeight()/gameMap.getTileSize());
+                            batch.draw(texture,light.getX()-(texture.getRegionWidth()/gameMap.getTileSize())/4,light.getY()-(texture.getRegionHeight()/gameMap.getTileSize())/4,texture.getRegionWidth()/gameMap.getTileSize()/2,texture.getRegionHeight()/gameMap.getTileSize()/2);
+                            batch.end();
+                        }
+                        if(light instanceof MapConeLight){
+                            TextureAtlas.AtlasRegion texture = iconPack.findRegion("cone_light");
+                            if(light.isHighlighted()){texture = iconPack.findRegion("point_light_h");}
+                            batch.begin();
+                            batch.draw(texture,light.getX()-(texture.getRegionWidth()/gameMap.getTileSize())/4,light.getY()-(texture.getRegionHeight()/gameMap.getTileSize())/4,texture.getRegionWidth()/gameMap.getTileSize()/2,texture.getRegionHeight()/gameMap.getTileSize()/2);
                             batch.end();
                         }
                     }
