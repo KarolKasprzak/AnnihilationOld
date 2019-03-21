@@ -35,13 +35,13 @@ import java.util.HashMap;
 public class LightsPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
-    private VisTextButton createLightButton;
+    private VisTextButton createLightButton,openLightsListWindowButton;
     private HashMap<String, Light> lightsMap;
     /** 0 = point , 1 = cone, 2 = directional**/
     private int selectedLightType = 0;
     private VisCheckBox setPointLight, setConeLight, setDirectionalLight;
     private boolean canCreateLight = false;
-    private Spinner distanceSpinner;
+    private Spinner distanceSpinner, softDistanceSpinner;
     private OrthographicCamera camera;
     private LightsListWindow lightsListWindow;
     private boolean isLightListWindowOpen = false;
@@ -92,7 +92,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setDirectionalLight = new VisCheckBox("sun");
         setDirectionalLight.setFocusBorderEnabled(false);
         setConeLight = new VisCheckBox("cone");
-        VisTextButton openLightsListWindowButton = new VisTextButton("lights list");
+        openLightsListWindowButton = new VisTextButton("lights list");
 
         setPointLight.addListener(new ClickListener() {
             @Override
@@ -133,7 +133,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         openLightsListWindowButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!getStage().getActors().contains(lightsListWindow, true) && !mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).isEmpty()) {
+                if (!getStage().getActors().contains(lightsListWindow, true) && !mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).isEmpty() && mapEditor.isLightsLayerSelected()) {
                     lightsListWindow = new LightsListWindow(mapEditor, camera);
                     getStage().addActor(lightsListWindow);
                     mapEditor.getInputMultiplexer().addProcessor(0, lightsListWindow);
@@ -176,6 +176,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setConeLight.setDisabled(status);
         setDirectionalLight.setDisabled(status);
         setPointLight.setDisabled(status);
+        openLightsListWindowButton.setDisabled(status);
     }
 
     public HashMap<String, Light> getLightsHashMap() {
@@ -206,15 +207,14 @@ public class LightsPanel extends VisWindow implements InputProcessor {
             if (selectedLightType == 0) {
                 mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createPointLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance());
                 PointLight light = new PointLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y);
+
                 lightsMap.put(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }
             if (selectedLightType == 1) {
-                mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createConeLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance(),0,90);
-                ConeLight light = new ConeLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y,270,25);
+                mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createConeLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance(),270,45);
+                ConeLight light = new ConeLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y,270,45);
                 
                 lightsMap.put(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
-                System.out.println(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName());
-
             }
             canCreateLight = false;
             if (isLightListWindowOpen) {

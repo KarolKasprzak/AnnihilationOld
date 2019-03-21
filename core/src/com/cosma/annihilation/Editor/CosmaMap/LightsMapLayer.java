@@ -41,6 +41,6 @@ public class LightsMapLayer extends MapLayer {
 
     public String getLastLightName(){
         if(lights.getCount() == 0){return  null;}
-        return  "PointLight_" + (lights.getCount());
+        return  lights.getLight(lights.getCount()-1).getName();
     }
 }

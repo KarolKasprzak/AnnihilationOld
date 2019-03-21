@@ -10,6 +10,10 @@ public abstract class MapLight {
     private Color color;
     private float lightDistance;
     private float x;
+    private float y;
+    private boolean staticLight = false;
+    private boolean softLight = true;
+    private float softLength = 2.5f;
 
     public MapLight() {
     }
@@ -69,8 +73,9 @@ public abstract class MapLight {
         this.y = y;
     }
 
-    private float y;
+    public boolean isStaticLight() {return staticLight;}
 
+    public void setStaticLight(boolean staticLight) {this.staticLight = staticLight;}
 
     public boolean isHighlighted() {
         return isHighlighted;
@@ -95,4 +100,20 @@ public abstract class MapLight {
     public void setVisible (boolean visible) {
         this.visible = visible;
     }
+    public boolean isSoftLight() {
+        return softLight;
+    }
+
+    public void setSoftLight(boolean softLight) {
+        this.softLight = softLight;
+    }
+
+    public float getSoftLength() {
+        return softLength;
+    }
+
+    public void setSoftLength(float softLength) {
+        this.softLength = softLength;
+    }
+
 }

@@ -24,7 +24,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private TabbedPane tabbedPane;
-    private VisTextButton createRectangleButton, createJointButton;
+    private VisTextButton createRectangleButton, createJointButton,openObjectListWindowButton;
     private float x1, y1, x2, y2;
     private BodyDef.BodyType bodyType = BodyDef.BodyType.StaticBody;
     private VisCheckBox setStaticBox, setKinematicBox, setDynamicBox;
@@ -55,7 +55,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         setDynamicBox = new VisCheckBox("Dynamic");
         setDynamicBox.setFocusBorderEnabled(false);
         setKinematicBox = new VisCheckBox("Kinematic");
-        VisTextButton openObjectListWindowButton = new VisTextButton("Obj. list");
+        openObjectListWindowButton = new VisTextButton("Obj. list");
 
         add(setDynamicBox);
         add(setStaticBox);
@@ -105,7 +105,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         openObjectListWindowButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!getStage().getActors().contains(objectsListWindow, true) && !mapEditor.getMap().getLayers().getByType(ObjectMapLayer.class).isEmpty()) {
+                if (!getStage().getActors().contains(objectsListWindow, true) && !mapEditor.getMap().getLayers().getByType(ObjectMapLayer.class).isEmpty() && mapEditor.isObjectLayerSelected()) {
                     objectsListWindow = new ObjectsListWindow(mapEditor, camera);
                     getStage().addActor(objectsListWindow);
                     mapEditor.getInputMultiplexer().addProcessor(0, objectsListWindow);
@@ -137,6 +137,8 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         setKinematicBox.setDisabled(status);
         setDynamicBox.setDisabled(status);
         setStaticBox.setDisabled(status);
+        openObjectListWindowButton.setDisabled(status);
+        createJointButton.setDisabled(status);
     }
 
     private void createBoxObject(float x, float y, float w, float h) {

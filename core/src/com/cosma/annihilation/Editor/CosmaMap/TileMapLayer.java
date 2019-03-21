@@ -16,6 +16,11 @@ public class TileMapLayer extends MapLayer {
 
     }
 
+    public void getTIleSIze(){
+        System.out.println(tiles[0][0] == null);
+        System.out.println(tiles[1][0] == null);
+    }
+
     public Tile getTile(int x, int y) {
         if (x < 0 || x >= width) return null;
         if (y < 0 || y >= height) return null;

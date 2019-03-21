@@ -34,10 +34,10 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 
-//		config.setMaximized(true);
+		config.setMaximized(true);
 		config.setWindowIcon("icon/editor.png");
 		config.setTitle("Cosma Map editor");
-		config.setWindowedMode(1024,768);
+//		config.setWindowedMode(1024,768);
 //			config.width = 1024;
 //	        config.height = 768;
 		Lwjgl3Application frame =  new Lwjgl3Application(new Annihilation(),config);

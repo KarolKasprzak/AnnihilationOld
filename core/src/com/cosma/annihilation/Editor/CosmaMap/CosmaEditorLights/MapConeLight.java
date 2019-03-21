@@ -10,9 +10,26 @@ public class MapConeLight extends MapLight {
     public MapConeLight() {
     }
 
-    public MapConeLight(float x, float y, Color color, int raysNumber, float maxDistance,float direction,float coneDegree) {
+    public float getDirection() {
+        return direction;
+    }
+
+    public void setDirection(float direction) {
+        this.direction = direction;
+    }
+
+    public float getConeDegree() {
+        return coneDegree;
+    }
+
+    public void setConeDegree(float coneDegree) {
+        this.coneDegree = coneDegree;
+    }
+
+    public MapConeLight(float x, float y, Color color, int raysNumber, float maxDistance, float direction, float coneDegree) {
     super(x,y,color,raysNumber,maxDistance);
     this.direction = direction;
+
     this.coneDegree = coneDegree;
     }
 }

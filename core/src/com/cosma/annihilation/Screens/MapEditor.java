@@ -26,6 +26,9 @@ import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapEditor implements Screen, InputProcessor {
     private RayHandler rayHandler;
     private SpriteBatch batch;
@@ -54,11 +57,13 @@ public class MapEditor implements Screen, InputProcessor {
     private MenuBar menuBar;
     private FileChooser fileChooser;
     private Box2DDebugRenderer debugRenderer;
+    private CareTaker careTaker;
 
     public MapEditor(Annihilation game) {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         world = new World(new Vector2(0, -10), true);
+        careTaker = new CareTaker();
 
         cameraUi = new OrthographicCamera();
         cameraUi.update();
@@ -99,9 +104,9 @@ public class MapEditor implements Screen, InputProcessor {
         lightsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(lightsButton.isChecked()){
+                if (lightsButton.isChecked()) {
                     isLightsRendered = true;
-                }else isLightsRendered = false;
+                } else isLightsRendered = false;
             }
         });
 
@@ -110,11 +115,31 @@ public class MapEditor implements Screen, InputProcessor {
         gridButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(gridButton.isChecked()){
+                if (gridButton.isChecked()) {
                     drawGrid = true;
-                }else drawGrid = false;
+                } else drawGrid = false;
             }
         });
+
+        final VisTextButton undoButton = new VisTextButton("<");
+        undoButton.setChecked(true);
+        undoButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+            }
+        });
+
+        final VisTextButton redoButton = new VisTextButton(">");
+        redoButton.setChecked(true);
+        redoButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
+
+        menuBar.getTable().add(undoButton);
+        menuBar.getTable().add(redoButton);
         menuBar.getTable().add(gridButton);
         menuBar.getTable().add(lightsButton);
 
@@ -152,35 +177,15 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void createNewMap() {
-        gameMap = new GameMap(20, 20, 32);
+        gameMap = new GameMap(600, 100, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
-        layersPanel = new LayersPanel(this);
-        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.25f);
-        rightTable.row();
-
-        tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.25f);
-        rightTable.row();
-
-        objectPanel = new ObjectPanel(this);
-        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight() * 0.25f).maxHeight(objectPanel.getParent().getHeight() * 0.25f);
-        rightTable.row();
-
-        lightsPanel = new LightsPanel(this,rayHandler);
-        rightTable.add(lightsPanel).fillX().top().minHeight(lightsPanel.getParent().getHeight() * 0.25f).maxHeight(lightsPanel.getParent().getHeight() * 0.25f);
-        rightTable.row();
-
-        rightTable.add().expandY();
-        im.addProcessor(objectPanel);
-        im.addProcessor(lightsPanel);
-        setCameraOnMapCenter();
+        loadPanels();
     }
 
     public InputMultiplexer getInputMultiplexer() {
         return im;
     }
-
 
     public void createNewMap(int x, int y, int scale) {
         gameMap = new GameMap(x, y, scale);
@@ -198,16 +203,13 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     private void loadMap() {
-        tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
-        CosmaMapLoader loader = new CosmaMapLoader("map/map.json");
-
-        if (layersPanel != null) {
+        CosmaMapLoader loader = new CosmaMapLoader("map/map.json", world, rayHandler);
+        this.gameMap = loader.getMap();
+        if (rightTable.hasChildren()) {
             rightTable.clear();
         }
-        this.gameMap = loader.getMap();
+        loadPanels();
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
-        System.out.println(gameMap.getLayers().getLayer(0).isLayerVisible());
 //        if(mapRender == null){
 //            mapRender = new MapRender(shapeRenderer, gameMap, batch);
 //            tilesPanel = new TilesPanel(this);
@@ -241,8 +243,7 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void setCameraOnMapCenter() {
-        camera.position.set(0, 0, 0);
-//        camera.position.set(getMap().getHeight() / 2, getMap().getWidth() / 2, 0);
+        camera.position.set(4, 4, 0);
     }
 
     @Override
@@ -271,11 +272,13 @@ public class MapEditor implements Screen, InputProcessor {
         shapeRenderer.setProjectionMatrix(camera.combined);
         stage.act(delta);
         if (gameMap != null) {
-            if(drawGrid){ mapRender.renderGrid();}
+            if (drawGrid) {
+                mapRender.renderGrid();
+            }
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
-        if(isLightsRendered){
+        if (isLightsRendered) {
             rayHandler.setCombinedMatrix(camera);
             rayHandler.updateAndRender();
         }
@@ -318,7 +321,6 @@ public class MapEditor implements Screen, InputProcessor {
         return false;
     }
 
-
     @Override
     public boolean keyUp(int keycode) {
         return false;
@@ -340,6 +342,7 @@ public class MapEditor implements Screen, InputProcessor {
                     Tile tile = new Tile();
                     tile.setTextureRegion(tilesPanel.getAtlasRegionName(), tilesPanel.getAtlasPath());
                     layersPanel.getSelectedLayer(TileMapLayer.class).setTile(x, y, tile);
+
                 }
             }
         }
@@ -353,8 +356,8 @@ public class MapEditor implements Screen, InputProcessor {
                 int y = (int) pos.y;
 
                 if (layersPanel.getSelectedLayer(TileMapLayer.class) != null) {
-                    Tile tile = new Tile();
-                    layersPanel.getSelectedLayer(TileMapLayer.class).setTile(x, y, tile);
+                    layersPanel.getSelectedLayer(TileMapLayer.class).setTile(x, y, null);
+
                 }
             }
         }
@@ -376,7 +379,6 @@ public class MapEditor implements Screen, InputProcessor {
         }
         return false;
     }
-
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -422,6 +424,29 @@ public class MapEditor implements Screen, InputProcessor {
         return false;
     }
 
+    private void loadPanels(){
+        layersPanel = new LayersPanel(this);
+        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.25f);
+        rightTable.row();
+
+        tilesPanel = new TilesPanel(this);
+        rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.25f);
+        rightTable.row();
+
+        objectPanel = new ObjectPanel(this);
+        rightTable.add(objectPanel).fillX().top().minHeight(objectPanel.getParent().getHeight() * 0.25f).maxHeight(objectPanel.getParent().getHeight() * 0.25f);
+        rightTable.row();
+
+        lightsPanel = new LightsPanel(this, rayHandler);
+        rightTable.add(lightsPanel).fillX().top().minHeight(lightsPanel.getParent().getHeight() * 0.25f).maxHeight(lightsPanel.getParent().getHeight() * 0.25f);
+        rightTable.row();
+
+        rightTable.add().expandY();
+        im.addProcessor(objectPanel);
+        im.addProcessor(lightsPanel);
+        setCameraOnMapCenter();
+    }
+
     public void setTileLayerSelected(boolean tileLayerSelected) {
         isTileLayerSelected = tileLayerSelected;
     }
@@ -456,5 +481,52 @@ public class MapEditor implements Screen, InputProcessor {
 
     public World getWorld() {
         return world;
+    }
+
+    public void redoMap() {
+
+    }
+
+    public void undoMap() {
+        for(Memento memento: careTaker.mementoList){
+            System.out.println(memento.getMap().getLayers().size());
+        }
+    }
+
+//    public void saveMapState() {
+//        careTaker.add(new Memento(this.getMap()));
+////        careTaker.clearOldState();
+//    }
+
+    private class CareTaker {
+        private List<Memento> mementoList = new ArrayList<Memento>();
+
+        public void clearOldState() {
+            if (mementoList.size() >= 20) {
+                mementoList.remove(0);
+            }
+        }
+
+        public void add(Memento state) {
+            mementoList.add(state);
+
+        }
+
+        public Memento get(int index) {
+            return mementoList.get(index);
+        }
+    }
+
+    private class Memento {
+        GameMap map;
+
+        public Memento(GameMap map) {
+            this.map = map;
+            System.out.println(map.getLayers().size());
+        }
+
+        public GameMap getMap() {
+            return map;
+        }
     }
 }

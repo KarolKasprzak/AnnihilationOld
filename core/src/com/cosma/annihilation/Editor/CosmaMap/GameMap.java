@@ -1,21 +1,35 @@
 package com.cosma.annihilation.Editor.CosmaMap;
 
-public class GameMap {
+import box2dLight.Light;
+import com.badlogic.gdx.utils.OrderedMap;
+
+import java.util.Observable;
+
+public class GameMap{
 
     private int width;
     private int height;
     private int tileSize;
     private MapLayers layers = new MapLayers();
+    private OrderedMap<String, Light> lightMap;
+
+    public Light getLigh(String name) {
+        return lightMap.get(name);
+    }
+
+    public void putLight(String name,Light light) {
+        lightMap.put(name,light);
+    }
 
     public GameMap(int width, int height, int tileSize) {
         this.width = width;
         this.height = height;
         this.tileSize = tileSize;
+        lightMap = new OrderedMap<>();
 
     }
 
     public GameMap() {
-
     }
 
     public MapLayers getLayers () {
