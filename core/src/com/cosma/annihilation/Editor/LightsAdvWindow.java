@@ -3,35 +3,17 @@ package com.cosma.annihilation.Editor;
 
 import box2dLight.ConeLight;
 import box2dLight.Light;
-import box2dLight.PositionalLight;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
-import com.badlogic.gdx.utils.Array;
-import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
-import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
-import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.Utilities;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.util.TableUtils;
-import com.kotcrab.vis.ui.util.adapter.AbstractListAdapter;
-import com.kotcrab.vis.ui.util.adapter.ArrayAdapter;
-import com.kotcrab.vis.ui.util.adapter.ListSelectionAdapter;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.color.ColorPicker;
 import com.kotcrab.vis.ui.widget.color.ColorPickerAdapter;
-import com.kotcrab.vis.ui.widget.spinner.AbstractSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.SimpleFloatSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
 
@@ -69,7 +51,7 @@ public class LightsAdvWindow extends VisWindow{
             @Override
             public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 super.scrollFocusChanged(event, actor, focused);
-                if(focused == true){
+                if(focused){
                     getStage().setScrollFocus(null);
                 }
             }
@@ -88,7 +70,7 @@ public class LightsAdvWindow extends VisWindow{
             @Override
             public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 super.scrollFocusChanged(event, actor, focused);
-                if(focused == true){
+                if(focused){
                     getStage().setScrollFocus(null);
                 }
             }
@@ -115,7 +97,7 @@ public class LightsAdvWindow extends VisWindow{
                 @Override
                 public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                     super.scrollFocusChanged(event, actor, focused);
-                    if(focused == true){
+                    if(focused){
                         getStage().setScrollFocus(null);
                     }
                 }
@@ -127,7 +109,7 @@ public class LightsAdvWindow extends VisWindow{
                 @Override
                 public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                     super.scrollFocusChanged(event, actor, focused);
-                    if(focused == true){
+                    if(focused){
                         getStage().setScrollFocus(null);
                     }
                 }

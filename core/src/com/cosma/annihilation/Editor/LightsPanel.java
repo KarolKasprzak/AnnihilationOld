@@ -1,14 +1,12 @@
 package com.cosma.annihilation.Editor;
 
 import box2dLight.ConeLight;
-import box2dLight.Light;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -19,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
@@ -30,13 +27,11 @@ import com.kotcrab.vis.ui.widget.color.ColorPickerAdapter;
 import com.kotcrab.vis.ui.widget.spinner.SimpleFloatSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
 
-import java.util.HashMap;
 
 public class LightsPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private VisTextButton createLightButton,openLightsListWindowButton;
-    private HashMap<String, Light> lightsMap;
     /** 0 = point , 1 = cone, 2 = directional**/
     private int selectedLightType = 0;
     private VisCheckBox setPointLight, setConeLight, setDirectionalLight;
@@ -50,7 +45,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
     private final Drawable white = VisUI.getSkin().getDrawable("white");
     private Color selectedColor;
 
-    public void setLightListWindowOpen(boolean isLightListWindowOpen) {
+     void setLightListWindowOpen(boolean isLightListWindowOpen) {
         this.isLightListWindowOpen = isLightListWindowOpen;
     }
 
@@ -61,8 +56,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         this.camera = mapEditor.getCamera();
 
         final Image image = new Image(white);
-        lightsMap = new HashMap<>();
-
         picker = new ColorPicker("color picker", new ColorPickerAdapter() {
             @Override
             public void finished(Color newColor) {
@@ -77,7 +70,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
             @Override
             public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
                 super.scrollFocusChanged(event, actor, focused);
-                if(focused == true){
+                if(focused){
                     getStage().setScrollFocus(null);
                 }
             }
@@ -171,16 +164,12 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setPosition(1900, 200);
     }
 
-    public void setPanelButtonsDisable(Boolean status) {
+    void setPanelButtonsDisable(Boolean status) {
         createLightButton.setDisabled(status);
         setConeLight.setDisabled(status);
         setDirectionalLight.setDisabled(status);
         setPointLight.setDisabled(status);
         openLightsListWindowButton.setDisabled(status);
-    }
-
-    public HashMap<String, Light> getLightsHashMap() {
-        return lightsMap;
     }
 
     @Override
@@ -207,14 +196,12 @@ public class LightsPanel extends VisWindow implements InputProcessor {
             if (selectedLightType == 0) {
                 mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createPointLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance());
                 PointLight light = new PointLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y);
-
-                lightsMap.put(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
+                mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }
             if (selectedLightType == 1) {
                 mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createConeLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance(),270,45);
                 ConeLight light = new ConeLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y,270,45);
-                
-                lightsMap.put(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
+                mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }
             canCreateLight = false;
             if (isLightListWindowOpen) {

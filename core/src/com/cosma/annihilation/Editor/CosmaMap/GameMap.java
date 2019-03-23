@@ -11,9 +11,9 @@ public class GameMap{
     private int height;
     private int tileSize;
     private MapLayers layers = new MapLayers();
-    private OrderedMap<String, Light> lightMap;
+    transient private OrderedMap<String, Light> lightMap;
 
-    public Light getLigh(String name) {
+    public Light getLight(String name) {
         return lightMap.get(name);
     }
 
@@ -26,10 +26,10 @@ public class GameMap{
         this.height = height;
         this.tileSize = tileSize;
         lightMap = new OrderedMap<>();
-
     }
 
     public GameMap() {
+        lightMap = new OrderedMap<>();
     }
 
     public MapLayers getLayers () {

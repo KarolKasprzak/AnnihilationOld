@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -85,9 +84,8 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
             public void selected(MapLight item, VisTable view) {
                 item.setHighlighted(true);
                 selectedLight = item;
-                selectedBox2dLight = mapEditor.lightsPanel.getLightsHashMap().get(item.getName());
+                selectedBox2dLight = mapEditor.getMap().getLight(item.getName());
                 if(selectedBox2dLight == null){
-                    System.out.println("null");
                 }
             }
             @Override
@@ -141,7 +139,6 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         float amountX, amountY, startX, startY;
 
         if (canDragObject && isLeftButtonPressed && selectedBox2dLight != null) {
-            System.out.println("fdfd");
             amountX = vec.x - deltaVec.x;
             amountY = vec.y - deltaVec.y;
             selectedLight.setX(selectedLight.getX() + amountX);
@@ -163,7 +160,6 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
             if (Utilities.isFloatInRange(vec.x, x -1, x +1) && Utilities.isFloatInRange(vec.y, y -1, y +1)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
                 canDragObject = true;
-                System.out.println("fdfd");
             } else {
                 canDragObject = false;
             }
@@ -227,7 +223,7 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
                 public void changed(ChangeEvent event, Actor actor) {
                     if(!window.isAdvWindowOpen){
                         mapEditor.layersPanel.getSelectedLayer(LightsMapLayer.class).getLights().remove(item.getName());
-                        mapEditor.lightsPanel.getLightsHashMap().get(item.getName()).remove(true);
+                        mapEditor.getMap().getLight(item.getName()).remove(true);
                         window.selectedBox2dLight = null;
                         window.selectedLight = null;
                         view.rebuildView();
