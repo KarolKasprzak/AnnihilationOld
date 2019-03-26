@@ -1,6 +1,9 @@
 package com.cosma.annihilation.Screens;
 
 import box2dLight.RayHandler;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -19,8 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Components.HealthComponent;
+import com.cosma.annihilation.Components.TagComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
+import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.*;
@@ -43,7 +49,7 @@ public class MapEditor implements Screen, InputProcessor {
     private boolean canCameraDrag = false;
     float zoomLevel = 0.3f;
     private GameMap gameMap;
-
+    private Engine engine;
     private MapCreatorWindow mapCreatorWindow;
     private TilesPanel tilesPanel;
     public LayersPanel layersPanel;
@@ -63,7 +69,8 @@ public class MapEditor implements Screen, InputProcessor {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         world = new World(new Vector2(0, -10), true);
-        careTaker = new CareTaker();
+        engine = new PooledEngine();
+
 
         cameraUi = new OrthographicCamera();
         cameraUi.update();
@@ -176,11 +183,21 @@ public class MapEditor implements Screen, InputProcessor {
 
     }
 
+    private void loadEntity() {
+        FileHandle file = Gdx.files.local("entity/box.json");
+        Json json = new Json();
+        json.setSerializer(Entity.class,new GameEntitySerializer(world));
+        Entity entity = json.fromJson(Entity.class, file);
+        System.out.println(entity.getComponent(HealthComponent.class).hp);
+        System.out.println(entity.getComponent(TagComponent.class).tag);
+    }
+
     public void createNewMap() {
         gameMap = new GameMap(600, 100, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
+        loadEntity();
     }
 
     public InputMultiplexer getInputMultiplexer() {
@@ -200,6 +217,7 @@ public class MapEditor implements Screen, InputProcessor {
         rightTable.row();
         rightTable.add().expandY();
         setCameraOnMapCenter();
+
     }
 
     private void loadMap() {
@@ -259,6 +277,7 @@ public class MapEditor implements Screen, InputProcessor {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         float frameTime = Math.min(delta, 0.25f);
+        engine.update(delta);
         accumulator += frameTime;
         if (accumulator >= MAX_STEP_TIME) {
             world.step(MAX_STEP_TIME, 6, 2);
