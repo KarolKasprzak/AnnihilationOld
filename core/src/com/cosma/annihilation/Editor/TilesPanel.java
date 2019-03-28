@@ -26,7 +26,7 @@ public class TilesPanel extends VisWindow {
 
     private String atlasRegionName;
     private String atlasPath;
-    private Array<FileHandle> textureAtlas;
+    private Array<FileHandle> textureAtlasArray;
     private TabbedPane tabbedPane;
 
     public TilesPanel(final MapEditor mapEditor) {
@@ -34,7 +34,7 @@ public class TilesPanel extends VisWindow {
         this.mapEditor = mapEditor;
         this.tilesPanel = this;
 
-        textureAtlas = new Array<>();
+        textureAtlasArray = new Array<>();
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
         VisTextButton addTilesButton = new VisTextButton("+");
@@ -70,11 +70,11 @@ public class TilesPanel extends VisWindow {
     private void findTextureAtlas(){
         FileHandle file = Gdx.files.local("map/map_textures");
         for(FileHandle texture: file.list(".atlas")){
-            if(!textureAtlas.contains(texture,false)){
-                textureAtlas.add(texture);
+            if(!textureAtlasArray.contains(texture,false)){
+                textureAtlasArray.add(texture);
             }
         }
-        for(FileHandle files: textureAtlas){
+        for(FileHandle files: textureAtlasArray){
             boolean canAdd = true;
             for(Tab tab: tabbedPane.getTabs()){
                 if(tab.getTabTitle().equals(files.nameWithoutExtension())){

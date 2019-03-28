@@ -3,19 +3,13 @@ package com.cosma.annihilation.Editor.CosmaMap;
 import box2dLight.ConeLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.cosma.annihilation.Components.ActionComponent;
-import com.cosma.annihilation.Components.HealthComponent;
-import com.cosma.annihilation.Components.TagComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
-import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.Utilities;
 
 

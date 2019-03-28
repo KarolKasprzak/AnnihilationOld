@@ -107,6 +107,7 @@ public class MapEditor implements Screen, InputProcessor {
 
         menuBar = new MenuBar();
         menuBar.getTable().add(editorModeLabel).center().expand();
+
         final VisCheckBox lightsButton = new VisCheckBox("Lights: ");
         lightsButton.addListener(new ChangeListener() {
             @Override
@@ -141,6 +142,7 @@ public class MapEditor implements Screen, InputProcessor {
         redoButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                loadEntity();
 
             }
         });
@@ -197,7 +199,8 @@ public class MapEditor implements Screen, InputProcessor {
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
-        loadEntity();
+        EntityTreeWindow entityTreeWindow = new EntityTreeWindow(world);
+        stage.addActor(entityTreeWindow);
     }
 
     public InputMultiplexer getInputMultiplexer() {
@@ -279,10 +282,10 @@ public class MapEditor implements Screen, InputProcessor {
         float frameTime = Math.min(delta, 0.25f);
         engine.update(delta);
         accumulator += frameTime;
-        if (accumulator >= MAX_STEP_TIME) {
-            world.step(MAX_STEP_TIME, 6, 2);
-            accumulator -= MAX_STEP_TIME;
-        }
+//        if (accumulator >= MAX_STEP_TIME) {
+//            world.step(MAX_STEP_TIME, 6, 2);
+//            accumulator -= MAX_STEP_TIME;
+//        }
         debugRenderer.render(world, camera.combined);
         camera.update();
         cameraUi.update();

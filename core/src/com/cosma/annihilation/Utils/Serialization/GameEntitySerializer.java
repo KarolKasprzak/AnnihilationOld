@@ -1,14 +1,14 @@
 package com.cosma.annihilation.Utils.Serialization;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Components.ActionComponent;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.TagComponent;
+import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
 
@@ -27,7 +27,6 @@ public class GameEntitySerializer implements Json.Serializer<Entity> {
     @Override
     public Entity read(Json json, JsonValue jsonData, Class type) {
         Entity entity = new Entity();
-
         if (jsonData.hasChild("BodyComponent")) {
             BodyComponent bodyComponent = new BodyComponent();
             BodyDef bodyDef = new BodyDef();
@@ -37,7 +36,25 @@ public class GameEntitySerializer implements Json.Serializer<Entity> {
             bodyComponent.body.setUserData(entity);
             entity.add(bodyComponent);
             for(JsonValue value: jsonData.get("BodyComponent").get("Fixtures")){
-                System.out.println(value.get("shapeType"));
+                FixtureDef fixtureDef = new FixtureDef();
+                if(value.get("shapeType").asString().equals("box")){
+                    PolygonShape shape = new PolygonShape();
+                    float x = value.get("shapeX").asFloat();
+                    float y = value.get("shapeY").asFloat();
+                    shape.setAsBox(x / 2, y / 2);
+                    fixtureDef.shape = shape;
+                }
+                if(value.get("shapeType").asString().equals("circle")){
+                    float r = value.get("radius").asFloat();
+                    CircleShape shape = new CircleShape();
+                    shape.setRadius(1);
+                    fixtureDef.shape = shape;
+                }
+                fixtureDef.isSensor = value.get("sensor").asBoolean();
+                fixtureDef.density = value.get("destiny").asFloat();
+                fixtureDef.friction = value.get("friction").asFloat();
+                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
+                bodyComponent.body.createFixture(fixtureDef);
             }
         }
 
