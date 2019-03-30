@@ -26,7 +26,7 @@ import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.TagComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
-import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
+import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.*;
@@ -188,7 +188,7 @@ public class MapEditor implements Screen, InputProcessor {
     private void loadEntity() {
         FileHandle file = Gdx.files.local("entity/box.json");
         Json json = new Json();
-        json.setSerializer(Entity.class,new GameEntitySerializer(world));
+        json.setSerializer(Entity.class,new EntitySerializer(world));
         Entity entity = json.fromJson(Entity.class, file);
         System.out.println(entity.getComponent(HealthComponent.class).hp);
         System.out.println(entity.getComponent(TagComponent.class).tag);
@@ -199,7 +199,7 @@ public class MapEditor implements Screen, InputProcessor {
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
-        EntityTreeWindow entityTreeWindow = new EntityTreeWindow(world);
+        EntityTreeWindow entityTreeWindow = new EntityTreeWindow(world, this);
         stage.addActor(entityTreeWindow);
     }
 
@@ -240,6 +240,7 @@ public class MapEditor implements Screen, InputProcessor {
 
     private void saveMap() {
         Json json = new Json();
+        json.setSerializer(Entity.class, new EntitySerializer(world));
         FileHandle file = Gdx.files.local("map/map.json");
         file.writeString(json.prettyPrint(gameMap), false);
     }

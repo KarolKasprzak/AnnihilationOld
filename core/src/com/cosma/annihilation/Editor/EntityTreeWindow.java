@@ -7,7 +7,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
-import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
+import com.cosma.annihilation.Screens.MapEditor;
+import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTree;
@@ -20,18 +21,18 @@ public class EntityTreeWindow extends VisWindow {
 
     private HashMap<String,FileHandle> jsonList;
     private World world;
+    private MapEditor mapEditor;
 
-    public EntityTreeWindow(World world) {
+    public EntityTreeWindow(World world, MapEditor mapEditor) {
         super("Entity:");
         this.world = world;
+        this.mapEditor = mapEditor;
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
         jsonList = new HashMap<>();
 
         final VisTree tree = new VisTree();
         Node treeRoot = new Node(new VisLabel("Entity"));
-
-
 
         FileHandle file = Gdx.files.local("entity");
         for(FileHandle rootDirectory: file.list()){
@@ -59,10 +60,11 @@ public class EntityTreeWindow extends VisWindow {
         tree.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println(((VisLabel) tree.getSelection().first().getActor()).getText());
-                VisLabel label = ((VisLabel) tree.getSelection().first().getActor());
-                if(label.getName() != null){
-                    createEntity(label.getName());
+                if (!tree.getSelection().isEmpty()) {
+                    VisLabel label = ((VisLabel) tree.getSelection().first().getActor());
+                    if (label.getName() != null) {
+                        createEntity(label.getName());
+                    }
                 }
             }
         });
@@ -70,8 +72,9 @@ public class EntityTreeWindow extends VisWindow {
 
     private void createEntity(String key){
         Json json = new Json();
-        json.setSerializer(Entity.class,new GameEntitySerializer(world));
+        json.setSerializer(Entity.class,new EntitySerializer(world));
         Entity entity = json.fromJson(Entity.class, jsonList.get(key));
+        mapEditor.getMap().addEntity(entity);
     }
 
 }
