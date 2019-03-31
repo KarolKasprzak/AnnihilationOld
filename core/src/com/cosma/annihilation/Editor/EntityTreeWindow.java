@@ -2,11 +2,17 @@ package com.cosma.annihilation.Editor;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
+import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -17,13 +23,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 
 import java.util.HashMap;
 
-public class EntityTreeWindow extends VisWindow {
+public class EntityTreeWindow extends VisWindow implements InputProcessor {
 
     private HashMap<String,FileHandle> jsonList;
     private World world;
     private MapEditor mapEditor;
+    private boolean canAddEntity = false;
+    private String selectedEntity;
 
-    public EntityTreeWindow(World world, MapEditor mapEditor) {
+    public EntityTreeWindow(World world, MapEditor mapEditor)  {
         super("Entity:");
         this.world = world;
         this.mapEditor = mapEditor;
@@ -63,18 +71,89 @@ public class EntityTreeWindow extends VisWindow {
                 if (!tree.getSelection().isEmpty()) {
                     VisLabel label = ((VisLabel) tree.getSelection().first().getActor());
                     if (label.getName() != null) {
-                        createEntity(label.getName());
+                        selectedEntity = label.getName();
+                        System.out.println(selectedEntity);
+                        canAddEntity = true;
+                        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
                     }
                 }
             }
         });
     }
 
-    private void createEntity(String key){
+    private void createEntity(String key,float x, float y){
         Json json = new Json();
         json.setSerializer(Entity.class,new EntitySerializer(world));
         Entity entity = json.fromJson(Entity.class, jsonList.get(key));
+        entity.getComponent(BodyComponent.class).body.setTransform(new Vector2(x,y),0);
         mapEditor.getMap().addEntity(entity);
     }
 
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if(canAddEntity && button == Input.Buttons.LEFT){
+            Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
+            Vector3 vec = mapEditor.getCamera().unproject(worldCoordinates);
+            createEntity(selectedEntity,vec.x,vec.y);
+            canAddEntity = false;
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        }
+        if(canAddEntity && button == Input.Buttons.RIGHT){
+            canAddEntity = false;
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
+        Vector3 vec = mapEditor.getCamera().unproject(worldCoordinates);
+
+//        if (selectedLight != null) {
+//            float x = selectedLight.getX();
+//            float y = selectedLight.getY();
+//
+//            if (Utilities.isFloatInRange(vec.x, x -1, x +1) && Utilities.isFloatInRange(vec.y, y -1, y +1)) {
+//                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
+//                canDragObject = true;
+//            } else {
+//                canDragObject = false;
+//            }
+//            if (!canDragObject) {
+//                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+//            }
+//        }
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
 }

@@ -61,8 +61,8 @@ public class GameMap{
         entityList.remove(entity);
     }
 
-    public Entity getEntity(){
-        return null;
+    public ArrayList<Entity> getAllEntity(){
+        return entityList;
     }
 
     public void createTileMapLayer(){

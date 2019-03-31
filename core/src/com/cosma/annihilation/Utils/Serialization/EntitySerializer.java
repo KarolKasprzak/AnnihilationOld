@@ -84,11 +84,12 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             BodyComponent bodyComponent = new BodyComponent();
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.valueOf(jsonData.get("BodyComponent").get("bodyType").asString());
-            bodyDef.position.set(jsonData.get("BodyComponent").get("positionX").asFloat(), jsonData.get("BodyComponent").get("positionY").asFloat());
+//            bodyDef.position.set(jsonData.get("BodyComponent").get("positionX").asFloat(), jsonData.get("BodyComponent").get("positionY").asFloat());
             bodyComponent.body = world.createBody(bodyDef);
             bodyComponent.body.setFixedRotation(jsonData.get("BodyComponent").get("bullet").asBoolean());
             bodyComponent.body.setBullet(jsonData.get("BodyComponent").get("bullet").asBoolean());
             bodyComponent.body.setUserData(entity);
+            bodyComponent.body.setTransform(new Vector2(jsonData.get("BodyComponent").get("positionX").asFloat(), jsonData.get("BodyComponent").get("positionY").asFloat()),0);
             entity.add(bodyComponent);
             for (JsonValue value : jsonData.get("BodyComponent").get("Fixtures")) {
                 FixtureDef fixtureDef = new FixtureDef();

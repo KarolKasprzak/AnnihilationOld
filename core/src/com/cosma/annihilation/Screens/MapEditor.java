@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.TagComponent;
 import com.cosma.annihilation.Editor.*;
@@ -141,8 +143,6 @@ public class MapEditor implements Screen, InputProcessor {
         redoButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                loadEntity();
-
             }
         });
 
@@ -184,22 +184,13 @@ public class MapEditor implements Screen, InputProcessor {
 
     }
 
-    private void loadEntity() {
-        FileHandle file = Gdx.files.local("entity/box.json");
-        Json json = new Json();
-        json.setSerializer(Entity.class,new EntitySerializer(world));
-        Entity entity = json.fromJson(Entity.class, file);
-        System.out.println(entity.getComponent(HealthComponent.class).hp);
-        System.out.println(entity.getComponent(TagComponent.class).tag);
-    }
 
     public void createNewMap() {
         gameMap = new GameMap(600, 100, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
-        EntityTreeWindow entityTreeWindow = new EntityTreeWindow(world, this);
-        stage.addActor(entityTreeWindow);
+
     }
 
     public InputMultiplexer getInputMultiplexer() {
@@ -223,6 +214,12 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     private void loadMap() {
+        if(!getMap().getAllEntity().isEmpty()){
+            for(Entity entity: getMap().getAllEntity()){
+                world.destroyBody(entity.getComponent(BodyComponent.class).body);
+//                getMap().removeEntity(entity);
+            }
+        }
         CosmaMapLoader loader = new CosmaMapLoader("map/map.json", world, rayHandler);
         this.gameMap = loader.getMap();
         if (rightTable.hasChildren()) {
@@ -230,6 +227,8 @@ public class MapEditor implements Screen, InputProcessor {
         }
         loadPanels();
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
+
+
 //        if(mapRender == null){
 //            mapRender = new MapRender(shapeRenderer, gameMap, batch);
 //            tilesPanel = new TilesPanel(this);
@@ -462,6 +461,11 @@ public class MapEditor implements Screen, InputProcessor {
         lightsPanel = new LightsPanel(this, rayHandler);
         rightTable.add(lightsPanel).fillX().top().minHeight(lightsPanel.getParent().getHeight() * 0.25f).maxHeight(lightsPanel.getParent().getHeight() * 0.25f);
         rightTable.row();
+
+        EntityTreeWindow entityTreeWindow = new EntityTreeWindow(world, this);
+        stage.addActor(entityTreeWindow);
+
+        im.addProcessor(entityTreeWindow);
 
         rightTable.add().expandY();
         im.addProcessor(objectPanel);
