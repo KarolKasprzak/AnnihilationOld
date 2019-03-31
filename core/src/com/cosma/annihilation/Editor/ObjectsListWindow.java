@@ -13,11 +13,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
 import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
+import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -277,6 +280,16 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
         @Override
         protected VisTable createView(final MapObject item) {
             VisLabel label = new VisLabel(item.getName());
+            final VisImageButton bodySetting = new VisImageButton(new TextureRegionDrawable(Annihilation.getAssets().get(GfxAssetDescriptors.editor_icons).findRegion("settings_")));
+            bodySetting.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+
+                        BodyFilterWindow window= new BodyFilterWindow(objectsListWindow.selectedBody);
+                        objectsListWindow.getStage().addActor(window);
+
+                }
+            });
             VisTextButton delete = new VisTextButton("x");
             delete.addListener(new ChangeListener() {
                 @Override
@@ -297,6 +310,7 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
             VisTable table = new VisTable();
             table.center();
             table.add(label).fill().expandX();
+            table.add(bodySetting).size(29);
             table.add(delete);
             return table;
         }

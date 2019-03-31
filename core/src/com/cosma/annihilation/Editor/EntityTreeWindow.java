@@ -55,7 +55,7 @@ public class EntityTreeWindow extends VisWindow {
         add(tree).expand().fill();
 
         setSize(150, 380);
-        setPosition(774, 303);
+        setPosition(0, 303);
 
         tree.addListener(new ChangeListener() {
             @Override

@@ -207,7 +207,6 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
         protected VisTable createView(final MapLight item) {
             VisLabel label = new VisLabel(item.getName());
             final VisImageButton lightSetting = new VisImageButton(new TextureRegionDrawable(Annihilation.getAssets().get(GfxAssetDescriptors.editor_icons).findRegion("settings_")));
-            VisTextButton delete = new VisTextButton("x");
             lightSetting.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -218,6 +217,7 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
                     }
                 }
             });
+            VisTextButton delete = new VisTextButton("x");
             delete.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {

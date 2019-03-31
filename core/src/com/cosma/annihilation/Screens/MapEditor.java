@@ -71,7 +71,6 @@ public class MapEditor implements Screen, InputProcessor {
         world = new World(new Vector2(0, -10), true);
         engine = new PooledEngine();
 
-
         cameraUi = new OrthographicCamera();
         cameraUi.update();
         viewportUi = new ScreenViewport(cameraUi);
@@ -283,10 +282,10 @@ public class MapEditor implements Screen, InputProcessor {
         float frameTime = Math.min(delta, 0.25f);
         engine.update(delta);
         accumulator += frameTime;
-//        if (accumulator >= MAX_STEP_TIME) {
-//            world.step(MAX_STEP_TIME, 6, 2);
-//            accumulator -= MAX_STEP_TIME;
-//        }
+        if (accumulator >= MAX_STEP_TIME) {
+            world.step(MAX_STEP_TIME, 6, 2);
+            accumulator -= MAX_STEP_TIME;
+        }
         debugRenderer.render(world, camera.combined);
         camera.update();
         cameraUi.update();

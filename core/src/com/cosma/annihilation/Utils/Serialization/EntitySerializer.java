@@ -67,6 +67,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                     json.writeValue("destiny",fixture.getDensity());
                     json.writeValue("friction",fixture.getFriction());
                     json.writeValue("restitution",fixture.getRestitution());
+                    json.writeValue("categoryBits",fixture.getFilterData().categoryBits);
                     json.writeObjectEnd();
                 }
                 json.writeArrayEnd();
@@ -91,24 +92,35 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(bodyComponent);
             for (JsonValue value : jsonData.get("BodyComponent").get("Fixtures")) {
                 FixtureDef fixtureDef = new FixtureDef();
-                if (value.get("shapeType").asString().equals("Polygon")) {
+
+                if(value.has("shapeX") && value.has("shapeY")){
                     PolygonShape shape = new PolygonShape();
-                    shape.set(value.get("polygon").asFloatArray());
+                    shape.setAsBox(value.get("shapeW").asFloat(),value.get("shapeH").asFloat(),
+                            new Vector2(value.get("shapeX").asFloat(),value.get("shapeY").asFloat()),value.get("shapeA").asFloat());
                     fixtureDef.shape = shape;
                 }
+
+                if(value.has("polygon")){
+                    if (value.get("shapeType").asString().equals("Polygon")) {
+                        PolygonShape shape = new PolygonShape();
+                        shape.set(value.get("polygon").asFloatArray());
+                        fixtureDef.shape = shape;
+                    }
+                }
+
                 if (value.get("shapeType").asString().equals("Circle")) {
-                    float r = value.get("radius").asFloat();
                     CircleShape shape = new CircleShape();
-                    shape.setRadius(1);
+                    shape.setRadius(value.get("radius").asFloat());
                     fixtureDef.shape = shape;
                 }
                 fixtureDef.isSensor = value.get("sensor").asBoolean();
                 fixtureDef.density = value.get("destiny").asFloat();
                 fixtureDef.friction = value.get("friction").asFloat();
                 fixtureDef.restitution = value.get("restitution").asFloat();
-//                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
+                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
                 bodyComponent.body.getUserData();
                 bodyComponent.body.createFixture(fixtureDef);
+                fixtureDef.shape.dispose();
             }
         }
 
