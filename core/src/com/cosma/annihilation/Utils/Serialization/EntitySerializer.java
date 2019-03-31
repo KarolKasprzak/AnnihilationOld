@@ -50,12 +50,14 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                     json.writeValue("shapeType",fixture.getType().name());
                     if(fixture.getType().equals(Shape.Type.Polygon)){
                         PolygonShape shape = (PolygonShape) fixture.getShape();
-                        Vector2 vector = new Vector2();
-                        shape.getVertex(0,vector);
-                        if(vector.x<0){json.writeValue("shapeX",vector.x*-1*2);}
-                        else json.writeValue("shapeX",vector.x*2);
-                        if(vector.y<0){json.writeValue("shapeY",vector.y*-1*2);}
-                        else json.writeValue("shapeY",vector.y*2);
+                        json.writeArrayStart("polygon");
+                        for(int i = 0; i<shape.getVertexCount(); i++){
+                            Vector2 vector2 = new Vector2();
+                            shape.getVertex(i,vector2);
+                            json.writeValue(vector2.x);
+                            json.writeValue(vector2.y);
+                        }
+                        json.writeArrayEnd();
                     }
                     if(fixture.getType().equals(Shape.Type.Circle)){
                         CircleShape shape = (CircleShape) fixture.getShape();
@@ -69,7 +71,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 }
                 json.writeArrayEnd();
             }
-
             json.writeObjectEnd();
         }
         json.writeObjectEnd();
@@ -92,23 +93,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 FixtureDef fixtureDef = new FixtureDef();
                 if (value.get("shapeType").asString().equals("Polygon")) {
                     PolygonShape shape = new PolygonShape();
-                    float x = value.get("shapeX").asFloat();
-                    float y = value.get("shapeY").asFloat();
-                    shape.setAsBox(x / 2, y / 2);
+                    shape.set(value.get("polygon").asFloatArray());
                     fixtureDef.shape = shape;
-                    shape.dispose();
                 }
-
-                if (value.get("shapeType").asString().equals("Polygon")) {
-                    
-                    PolygonShape shape = new PolygonShape();
-                    float x = value.get("shapeX").asFloat();
-                    float y = value.get("shapeY").asFloat();
-                    shape.setAsBox(x / 2, y / 2,new Vector2(0,-1),0);
-                    fixtureDef.shape = shape;
-                    shape.dispose();
-                }
-
                 if (value.get("shapeType").asString().equals("Circle")) {
                     float r = value.get("radius").asFloat();
                     CircleShape shape = new CircleShape();
