@@ -6,10 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.cosma.annihilation.Components.ActionComponent;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.HealthComponent;
-import com.cosma.annihilation.Components.TagComponent;
+import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
@@ -96,7 +94,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
                 if(value.has("shapeX") && value.has("shapeY")){
                     PolygonShape shape = new PolygonShape();
-                    shape.setAsBox(value.get("shapeW").asFloat(),value.get("shapeH").asFloat(),
+                    shape.setAsBox(value.get("shapeW").asFloat()/2,value.get("shapeH").asFloat()/2,
                             new Vector2(value.get("shapeX").asFloat(),value.get("shapeY").asFloat()),value.get("shapeA").asFloat());
                     fixtureDef.shape = shape;
                 }
@@ -133,6 +131,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         }
 
         if (jsonData.hasChild("TextureComponent")) {
+            TextureComponent textureComponent = new TextureComponent();
+            textureComponent.texture = Annihilation.getAssets().get(jsonData.get("TextureComponent").get("patch").asString());
+            entity.add(textureComponent);
         }
 
         if (jsonData.hasChild("TagComponent")) {
