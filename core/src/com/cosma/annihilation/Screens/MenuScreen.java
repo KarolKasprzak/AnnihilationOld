@@ -50,7 +50,7 @@ public class MenuScreen implements Screen {
         table.add(continueGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
         table.row();
 
-        TextButton newGameButton = new TextButton("New Game", skin);
+        TextButton newGameButton = new TextButton(Annihilation.getLocal("newGame"), skin);
         Utilities.setButtonColor(newGameButton);
         table.add(newGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
         table.row();

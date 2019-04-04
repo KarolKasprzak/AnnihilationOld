@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -26,6 +28,7 @@ import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.TagComponent;
+import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
@@ -186,7 +189,7 @@ public class MapEditor implements Screen, InputProcessor {
 
 
     public void createNewMap() {
-        gameMap = new GameMap(600, 100, 32);
+        gameMap = new GameMap(40, 40, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
@@ -214,7 +217,7 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     private void loadMap() {
-        if(!getMap().getAllEntity().isEmpty()){
+        if(getMap() != null && !getMap().getAllEntity().isEmpty()){
             for(Entity entity: getMap().getAllEntity()){
                 world.destroyBody(entity.getComponent(BodyComponent.class).body);
 //                getMap().removeEntity(entity);
@@ -292,6 +295,9 @@ public class MapEditor implements Screen, InputProcessor {
         setEditorModeLabel();
         shapeRenderer.setProjectionMatrix(camera.combined);
         stage.act(delta);
+
+
+
         if (gameMap != null) {
             if (drawGrid) {
                 mapRender.renderGrid();
@@ -299,6 +305,22 @@ public class MapEditor implements Screen, InputProcessor {
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
+
+        if(gameMap != null && !gameMap.getAllEntity().isEmpty()){
+            batch.begin();
+            for(Entity entity: gameMap.getAllEntity()){
+                TextureComponent textureComponent = entity.getComponent(TextureComponent.class);
+                Body body = entity.getComponent(BodyComponent.class).body;
+                Vector2 position = body.getPosition();
+                position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
+                position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
+                batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
+                        textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
+                        1, 1, body.getAngle() * MathUtils.radiansToDegrees);
+            }
+            batch.end();
+        }
+
         if (isLightsRendered) {
             rayHandler.setCombinedMatrix(camera);
             rayHandler.updateAndRender();

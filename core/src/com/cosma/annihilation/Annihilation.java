@@ -3,16 +3,21 @@ package com.cosma.annihilation;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.cosma.annihilation.Screens.GameScreen;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Screens.MenuScreen;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.LoaderOLD;
 
+import java.util.Locale;
+
 public class Annihilation extends Game {
 
     private LoaderOLD loaderOLD;
     private AssetLoader assetLoader;
+    private I18NBundle myBundle;
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
     private MapEditor mapEditor;
@@ -29,6 +34,11 @@ public class Annihilation extends Game {
         isGameLoaded = false;
         loaderOLD.load();
         assetLoader.load();
+        FileHandle mapTextures = Gdx.files.local("locale/loc");
+        myBundle = I18NBundle.createBundle(mapTextures,Locale.UK);
+
+//        myBundle =  assetLoader.manager.get("locale/loc_pl", I18NBundle.class);
+
         menuScreen = new MenuScreen(this,assetLoader);
         this.setScreen(menuScreen);
     }
@@ -65,6 +75,13 @@ public class Annihilation extends Game {
         return ((Annihilation) Gdx.app.getApplicationListener()).assetLoader.manager;
     }
 
+    public static String getLocal(String key) {
+        return ((Annihilation) Gdx.app.getApplicationListener()).myBundle.get(key);
+    }
+
+    public static String getLocal(String key, Object... args) {
+        return ((Annihilation) Gdx.app.getApplicationListener()).myBundle.format(key,args);
+    }
 
 
 }

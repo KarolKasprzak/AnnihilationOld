@@ -24,7 +24,7 @@ public class Serializer{
     private FileHandle file;
     private EntityFactory entityFactory;
 
-    public Serializer(Engine engine,World world){
+    public Serializer(Engine engine, World world) {
         this.engine = engine;
         this.world = world;
         json = new Json();

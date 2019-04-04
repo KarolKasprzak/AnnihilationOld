@@ -4,10 +4,13 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
@@ -30,8 +33,38 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 json.writeValue("maxHP", ((HealthComponent) component).maxHP);
             }
 
+            if(component instanceof TextureComponent){
+                json.writeValue("patch", Annihilation.getAssets().getAssetFileName(((TextureComponent) component).texture));
+            }
+
+            if(component instanceof PlayerComponent){
+
+            }
+
+            if(component instanceof AnimationComponent){
+                //TODO
+            }
+
+            if(component instanceof PlayerInventoryComponent){
+                //TODO
+            }
+
             if(component instanceof TagComponent){
                 json.writeValue("tag", ((TagComponent) component).tag);
+            }
+
+            if(component instanceof ContainerComponent){
+                json.writeValue("name", ((ContainerComponent) component).name);
+                json.writeArrayStart("itemList");
+                for(InventoryItemLocation location: ((ContainerComponent) component).itemLocations){
+                    json.writeObjectStart();
+                    json.writeValue("tableIndex",location.getTableIndex());
+                    json.writeValue("itemID",location.getItemID());
+                    json.writeValue("itemsAmount",location.getItemsAmount());
+                    json.writeObjectEnd();
+                }
+                json.writeArrayEnd();
+
             }
 
             if(component instanceof BodyComponent){
@@ -66,6 +99,13 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                     json.writeValue("friction",fixture.getFriction());
                     json.writeValue("restitution",fixture.getRestitution());
                     json.writeValue("categoryBits",fixture.getFilterData().categoryBits);
+                    if(fixture.getUserData() != null){
+                        json.writeValue("hasUserDate", true);
+                        if(fixture.getUserData() instanceof BodyID){
+                            json.writeValue("userDate", fixture.getUserData());
+                        }
+                    }else json.writeValue("hasUserDate", false);
+
                     json.writeObjectEnd();
                 }
                 json.writeArrayEnd();
@@ -117,8 +157,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 fixtureDef.friction = value.get("friction").asFloat();
                 fixtureDef.restitution = value.get("restitution").asFloat();
                 fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
-                bodyComponent.body.getUserData();
-                bodyComponent.body.createFixture(fixtureDef);
+                if (value.get("hasUserDate").asBoolean()){
+                    bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.valueOf(value.get("userDate").asString()));
+                }else bodyComponent.body.createFixture(fixtureDef);
                 fixtureDef.shape.dispose();
             }
         }
@@ -131,6 +172,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         }
 
         if (jsonData.hasChild("TextureComponent")) {
+            //TODO
             TextureComponent textureComponent = new TextureComponent();
             textureComponent.texture = Annihilation.getAssets().get(jsonData.get("TextureComponent").get("patch").asString());
             entity.add(textureComponent);
@@ -142,11 +184,43 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(tagComponent);
         }
 
+        if (jsonData.hasChild("ContainerComponent")) {
+            ContainerComponent containerComponent = new ContainerComponent();
+            containerComponent.name = jsonData.get("ContainerComponent").get("name").asString();
+            containerComponent.itemLocations = new Array<>();
+            for(JsonValue value : jsonData.get("ContainerComponent").get("itemList")){
+                InventoryItemLocation location = new InventoryItemLocation();
+                location.setTableIndex(value.get("tableIndex").asInt());
+                location.setItemID(value.get("itemID").asString());
+                location.setItemsAmount(value.get("itemsAmount").asInt());
+                containerComponent.itemLocations.add(location);
+            }
+            entity.add(containerComponent);
+        }
+
         if (jsonData.hasChild("ActionComponent")) {
             ActionComponent actionComponent = new ActionComponent();
             actionComponent.action = EntityAction.valueOf(jsonData.get("ActionComponent").get("action").asString());
             entity.add(actionComponent);
         }
+
+        if(jsonData.hasChild("PlayerComponent")){
+            PlayerComponent playerComponent = new PlayerComponent();
+            entity.add(playerComponent);
+        }
+
+        if(jsonData.hasChild("AnimationComponent")){
+            AnimationComponent animationComponent = new AnimationComponent();
+            entity.add(animationComponent);
+        }
+
+        if(jsonData.hasChild("PlayerInventoryComponent")){
+            PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
+            entity.add(playerInventoryComponent);
+
+        }
+
         return entity;
     }
+
 }
