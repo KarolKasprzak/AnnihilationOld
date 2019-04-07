@@ -49,10 +49,10 @@ public class MapRender {
                 if (mapLayer.isLayerVisible()) {
                     for (int x = 0; x < gameMap.getWidth(); x++) {
                         for (int y = 0; y < gameMap.getHeight(); y++) {
-                            Tile tile = mapLayer.getTile(x, y);
-                            if (tile == null) {
+                            if (mapLayer.getTile(x, y) == null) {
                                 continue;
                             }
+                            Tile tile = mapLayer.getTile(x, y);
                             if (tile.getTextureRegion() == null) {
                                 continue;
                             }

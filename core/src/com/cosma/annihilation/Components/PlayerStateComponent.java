@@ -20,7 +20,6 @@ public class PlayerStateComponent implements Component {
     public boolean canClimbDown = false;
     public boolean crouch = false;
 
-
     /** right = true, left = false  */
     public boolean playerDirection = true;
 }

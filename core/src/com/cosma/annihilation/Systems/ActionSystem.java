@@ -105,18 +105,17 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter1);
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).refilter();
             playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = false;
-            playerComponent.processedEntity.getComponent(TextureComponent.class).setTexture(GfxAssetDescriptors.door.fileName);
+
         } else {
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
             playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
             playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = true;
-            playerComponent.processedEntity.getComponent(TextureComponent.class).setTexture(GfxAssetDescriptors.door_open.fileName);
+
         }
     }
 
     public void loadDoor(Entity entity){
         entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
         entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
-        entity.getComponent(TextureComponent.class).setTexture(GfxAssetDescriptors.door_open.fileName);
     }
 }

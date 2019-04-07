@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Editor.CosmaMap.GameMap;
@@ -22,7 +22,6 @@ import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 
@@ -34,7 +33,6 @@ public class WorldBuilder implements Disposable, EntityListener {
     public World world;
     private OrthographicCamera camera;
     private Viewport viewport;
-//    private TiledMap tiledMap;
     private GameMap gameMap;
     private RayHandler rayHandler;
     private Gui gui;
@@ -55,12 +53,12 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine = new PooledEngine();
 
         EntityFactory.getInstance().setAssetLoader(assetLoader);
-        EntityFactory.getInstance().createPlayerEntity(engine,world);
+//        EntityFactory.getInstance().createPlayerEntity(engine,world);
 
         gui = new Gui(engine, world,assetLoader);
 
-        CosmaMapLoader loader = new CosmaMapLoader("map/map.json",world,rayHandler);
-
+        CosmaMapLoader loader = new CosmaMapLoader("map/map.json",world,rayHandler,engine);
+        System.out.println("hp " + engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(HealthComponent.class).hp);
         if (isGameLoaded) {
             gui.loadGame();
 
@@ -84,7 +82,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addEntityListener(this);
 
         Body playerBody = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(BodyComponent.class).body;
-        playerBody.setTransform(2,4,0);
+
     }
 
     public void update(float delta) {

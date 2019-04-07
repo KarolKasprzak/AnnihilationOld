@@ -189,7 +189,7 @@ public class MapEditor implements Screen, InputProcessor {
 
 
     public void createNewMap() {
-        gameMap = new GameMap(40, 40, 32);
+        gameMap = new GameMap(4, 4, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
@@ -223,7 +223,7 @@ public class MapEditor implements Screen, InputProcessor {
 //                getMap().removeEntity(entity);
             }
         }
-        CosmaMapLoader loader = new CosmaMapLoader("map/map.json", world, rayHandler);
+        CosmaMapLoader loader = new CosmaMapLoader("map/map.json", world, rayHandler,engine);
         this.gameMap = loader.getMap();
         if (rightTable.hasChildren()) {
             rightTable.clear();
@@ -241,7 +241,8 @@ public class MapEditor implements Screen, InputProcessor {
 
     private void saveMap() {
         Json json = new Json();
-        json.setSerializer(Entity.class, new EntitySerializer(world));
+        json.setIgnoreUnknownFields(false);
+        json.setSerializer(Entity.class, new EntitySerializer(world,engine));
         FileHandle file = Gdx.files.local("map/map.json");
         file.writeString(json.prettyPrint(gameMap), false);
     }

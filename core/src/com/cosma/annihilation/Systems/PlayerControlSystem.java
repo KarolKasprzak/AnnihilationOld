@@ -40,8 +40,10 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         }
         // Jumping
         if (stateComponent.onGround && stateComponent.canJump) {
+
                 if (Gdx.input.isKeyPressed(Input.Keys.UP) || stateComponent.goUp) {
-                    playerBody.body.applyLinearImpulse(new Vector2(0, 1.5f),
+                    System.out.println("jump");
+                    playerBody.body.applyLinearImpulse(new Vector2(0, 8f),
                             playerBody.body.getWorldCenter(), true);
                 }
         }

@@ -64,16 +64,9 @@ public class EntityFactory {
 
 //        textureComponent.texture = assetLoader.manager.get(GfxAssetDescriptors.enemy1);
         textureComponent.texturePatch = GfxAssetDescriptors.enemy1.fileName;
-        textureComponent.setTexture();
-
         healthComponent.maxHP = 50;
         healthComponent.hp = 50;
-
-        textureComponent.renderSizeX = 2;
-        textureComponent.renderSizeY = 2;
-
         serializationComponent.type = EntityID.ENEMY_TEST;
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyComponent.body = world.createBody(bodyDef);
@@ -143,7 +136,6 @@ public class EntityFactory {
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
 
         textureComponent.texturePatch = GfxAssetDescriptors.bulletShell.fileName;
-        textureComponent.setTexture();
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -186,9 +178,7 @@ public class EntityFactory {
         healthComponent.maxHP = 100;
 
         textureComponent.texturePatch = GfxAssetDescriptors.door.fileName;
-        textureComponent.setTexture();
-        textureComponent.renderSizeX = 2;
-        textureComponent.renderSizeY = 2;
+
 
         actionComponent.action = EntityAction.OPEN_DOOR;
 
@@ -200,8 +190,6 @@ public class EntityFactory {
         //Physic fixture
         PolygonShape shape = new PolygonShape();
         shape.setAsBox( 0.1f,1);
-        bodyComponent.sizeX = 1f ;
-        bodyComponent.sizeY = 1f ;
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
@@ -241,11 +229,6 @@ public class EntityFactory {
         healthComponent.maxHP = 50;
 
         textureComponent.texturePatch = GfxAssetDescriptors.box.fileName;
-        textureComponent.setTexture();
-
-        textureComponent.renderSizeX = 1;
-        textureComponent.renderSizeY = 1;
-
 
         serializationComponent.type = EntityID.BOX;
         actionComponent.action = EntityAction.OPEN;
@@ -261,8 +244,6 @@ public class EntityFactory {
         //Physic fixture
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(0.93f / 2, 0.93f / 2);
-        bodyComponent.sizeX = 1f / 2;
-        bodyComponent.sizeY = 1f / 2;
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
@@ -310,8 +291,7 @@ public class EntityFactory {
         //Physic fixture
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(1f / 2, 1f / 2);
-        bodyComponent.sizeX = 1f / 2;
-        bodyComponent.sizeY = 1f / 2;
+
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
@@ -363,9 +343,6 @@ public class EntityFactory {
 //        textureComponent.setTexture();
 
 //        animationComponent.animatedSprite = new AnimatedSprite();
-
-        textureComponent.renderSizeX = 2;
-        textureComponent.renderSizeY = 2;
 
         typeComponent.type = EntityID.PLAYER;
         healthComponent.hp = 67;

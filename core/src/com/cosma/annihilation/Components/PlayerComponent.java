@@ -14,7 +14,7 @@ public class PlayerComponent implements Component,Json.Serializable {
     public int numFootContacts = 0;
     public boolean hidde = false;
     public boolean isWeaponHidden = true;
-    public ArrayList<Entity> collisionEntityList;
+    public ArrayList<Entity> collisionEntityList = new ArrayList<Entity>();
     public WeaponItem activeWeapon;
     public int activeWeaponAmmo;
     public Entity processedEntity;

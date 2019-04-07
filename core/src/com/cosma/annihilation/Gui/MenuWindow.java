@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
-import com.cosma.annihilation.Utils.Serialization.Serializer;
 import com.cosma.annihilation.Utils.Utilities;
 
 public class MenuWindow extends Window {
@@ -27,7 +26,7 @@ public class MenuWindow extends Window {
     private Button characterButton;
     private Gui gui;
     private Engine engine;
-    private Serializer serializer;
+
 
     MenuWindow(String title, Skin skin, World world, Engine engine, float x, float y, Gui gui) {
         super(title, skin);
@@ -71,11 +70,6 @@ public class MenuWindow extends Window {
         this.add(leftTable).center().size(this.getWidth() * 0.82f, this.getHeight());
         this.add(rightTable).center().size(this.getWidth() * 0.18f, this.getHeight());
 
-        serializer = new Serializer(engine, world);
-
-
-
-
     }
 
     private void createButtons(final MenuWindow menu) {
@@ -101,7 +95,6 @@ public class MenuWindow extends Window {
 
     void saveGame() {
         inventoryWindow.saveInventory(engine);
-        serializer.save();
     }
 
 
@@ -110,7 +103,6 @@ public class MenuWindow extends Window {
     }
 
     void loadGame() {
-        serializer.load();
         inventoryWindow.loadInventory(engine);
         gui.setPlayerEntity();
     }

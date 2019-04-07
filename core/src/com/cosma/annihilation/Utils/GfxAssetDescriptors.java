@@ -41,7 +41,7 @@ public class GfxAssetDescriptors {
 
     public static final AssetDescriptor<BitmapFont> font = new AssetDescriptor<BitmapFont>("gfx/fonts/font1.fnt", BitmapFont.class);
 
-    public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("Map/map1.tmx", TiledMap.class);
+    public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("map/map1.tmx", TiledMap.class);
 
     private GfxAssetDescriptors(){
 

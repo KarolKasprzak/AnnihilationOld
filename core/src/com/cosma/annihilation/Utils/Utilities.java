@@ -62,7 +62,7 @@ public class Utilities {
         return camera.unproject(worldCoordinates);
     }
 
-    public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name) {
+    public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name,float rotation) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = bodyType;
         bodyDef.position.set(width / 2 + x, height / 2 + y);
@@ -73,10 +73,11 @@ public class Utilities {
         shape.setAsBox(width / 2, height / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 30f;
+        fixtureDef.density = 5f;
         fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = CollisionID.SCENERY | CollisionID.CAST_SHADOW | CollisionID.JUMPABLE_OBJECT;
         body.createFixture(fixtureDef);
+        body.setTransform(body.getPosition(),rotation);
     }
 
     public static void createPointLight(){

@@ -3,6 +3,7 @@ package com.cosma.annihilation.Editor.CosmaMap;
 import box2dLight.ConeLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -18,20 +19,20 @@ import com.cosma.annihilation.Utils.Utilities;
 public class CosmaMapLoader {
     private GameMap map;
     private World world;
-    private RayHandler rayHandler;
+    private Engine engine;
 
 
-    public CosmaMapLoader(String mapPath) {
-        loadMap(mapPath);
-    }
+//    public CosmaMapLoader(String mapPath) {
+//        loadMap(mapPath);
+//    }
 
-    public CosmaMapLoader(String mapPath, World world, RayHandler rayHandler) {
+    public CosmaMapLoader(String mapPath, World world, RayHandler rayHandler, Engine engine) {
         this.world = world;
-        this.rayHandler = rayHandler;
+        this.engine = engine;
         loadMap(mapPath);
         for (ObjectMapLayer layer : map.getLayers().getByType(ObjectMapLayer.class)) {
             for (RectangleObject object : layer.getObjects().getByType(RectangleObject.class)) {
-                Utilities.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName());
+                Utilities.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation());
             }
         }
 
@@ -58,7 +59,7 @@ public class CosmaMapLoader {
         FileHandle mapFile = Gdx.files.local(mapPath);
         Json json = new Json();
         json.setUsePrototypes(false);
-        json.setSerializer(Entity.class,new EntitySerializer(world));
+        json.setSerializer(Entity.class,new EntitySerializer(world,engine));
         map = json.fromJson(GameMap.class, mapFile);
     }
 

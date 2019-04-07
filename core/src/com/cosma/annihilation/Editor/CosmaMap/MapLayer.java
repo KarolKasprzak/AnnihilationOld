@@ -30,4 +30,7 @@ public abstract class MapLayer {
         return visible;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -143,7 +143,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private void createBoxObject(float x, float y, float w, float h) {
         if (mapEditor.isObjectLayerSelected()) {
-            Utilities.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType));
+            Utilities.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType),0);
             canCreateBox = false;
             if (isObjectListWindowOpen) {
                 objectsListWindow.rebuildView();
