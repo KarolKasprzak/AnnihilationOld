@@ -189,7 +189,7 @@ public class MapEditor implements Screen, InputProcessor {
 
 
     public void createNewMap() {
-        gameMap = new GameMap(4, 4, 32);
+        gameMap = new GameMap(50, 50, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
         loadPanels();
@@ -289,16 +289,12 @@ public class MapEditor implements Screen, InputProcessor {
             world.step(MAX_STEP_TIME, 6, 2);
             accumulator -= MAX_STEP_TIME;
         }
-        debugRenderer.render(world, camera.combined);
         camera.update();
         cameraUi.update();
         batch.setProjectionMatrix(camera.combined);
         setEditorModeLabel();
         shapeRenderer.setProjectionMatrix(camera.combined);
         stage.act(delta);
-
-
-
         if (gameMap != null) {
             if (drawGrid) {
                 mapRender.renderGrid();
@@ -306,11 +302,13 @@ public class MapEditor implements Screen, InputProcessor {
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
-
         if(gameMap != null && !gameMap.getAllEntity().isEmpty()){
             batch.begin();
             for(Entity entity: gameMap.getAllEntity()){
                 TextureComponent textureComponent = entity.getComponent(TextureComponent.class);
+                if(textureComponent.texture == null){
+                    continue;
+                }
                 Body body = entity.getComponent(BodyComponent.class).body;
                 Vector2 position = body.getPosition();
                 position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
@@ -326,6 +324,7 @@ public class MapEditor implements Screen, InputProcessor {
             rayHandler.setCombinedMatrix(camera);
             rayHandler.updateAndRender();
         }
+        debugRenderer.render(world, camera.combined);
         stage.draw();
     }
 

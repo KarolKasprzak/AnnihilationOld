@@ -120,6 +120,9 @@ public class LightsListWindow extends VisWindow implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) isLeftButtonPressed = true;
         if (button == Input.Buttons.RIGHT) isRightButtonPressed = true;
+
+
+
         return false;
     }
 

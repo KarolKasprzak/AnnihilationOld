@@ -35,100 +35,115 @@ public class EntitySerializer implements Json.Serializer<Entity> {
     public void write(Json json, Entity object, Class knownType) {
 
         json.writeObjectStart();
-
-        for(Component component: object.getComponents()){
+        for (Component component : object.getComponents()) {
             json.writeObjectStart(component.getClass().getSimpleName());
-
-            System.out.println(component.getClass().getSimpleName());
-
-            if(component instanceof HealthComponent){
+            if (component instanceof HealthComponent) {
                 json.writeValue("hp", ((HealthComponent) component).hp);
                 json.writeValue("maxHP", ((HealthComponent) component).maxHP);
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof TextureComponent){
+            if (component instanceof TextureComponent) {
+                if (((TextureComponent) component).texture == null) {
+                    json.writeObjectEnd();
+                    continue;
+                }
                 json.writeValue("patch", Annihilation.getAssets().getAssetFileName(((TextureComponent) component).texture));
             }
 
-            if(component instanceof ActionComponent){
-                json.writeValue("action",((ActionComponent) component).action.name() );
+            if (component instanceof ActionComponent) {
+                json.writeValue("action", ((ActionComponent) component).action.name());
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof PlayerComponent){
+            if (component instanceof PlayerComponent) {
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof AnimationComponent){
+            if (component instanceof AnimationComponent) {
+                json.writeObjectEnd();
+                continue;
                 //TODO
             }
 
-            if(component instanceof PlayerInventoryComponent){
+            if (component instanceof PlayerInventoryComponent) {
+                json.writeObjectEnd();
+                continue;
                 //TODO
             }
 
-            if(component instanceof PlayerStateComponent){
-
+            if (component instanceof PlayerStateComponent) {
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof PlayerStatsComponent){
-
+            if (component instanceof PlayerStatsComponent) {
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof TagComponent){
+            if (component instanceof TagComponent) {
                 json.writeValue("tag", ((TagComponent) component).tag);
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof ContainerComponent){
+            if (component instanceof ContainerComponent) {
                 json.writeValue("name", ((ContainerComponent) component).name);
                 json.writeArrayStart("itemList");
-                for(InventoryItemLocation location: ((ContainerComponent) component).itemLocations){
+                for (InventoryItemLocation location : ((ContainerComponent) component).itemLocations) {
                     json.writeObjectStart();
-                    json.writeValue("tableIndex",location.getTableIndex());
-                    json.writeValue("itemID",location.getItemID());
-                    json.writeValue("itemsAmount",location.getItemsAmount());
+                    json.writeValue("tableIndex", location.getTableIndex());
+                    json.writeValue("itemID", location.getItemID());
+                    json.writeValue("itemsAmount", location.getItemsAmount());
                     json.writeObjectEnd();
                 }
                 json.writeArrayEnd();
-
+                json.writeObjectEnd();
+                continue;
             }
 
-            if(component instanceof BodyComponent){
+            if (component instanceof BodyComponent) {
                 Body body = ((BodyComponent) component).body;
-                json.writeValue("bodyType",body.getType().name());
-                json.writeValue("positionX",body.getPosition().x);
-                json.writeValue("positionY",body.getPosition().y);
-                json.writeValue("fixedRotation",body.isFixedRotation());
-                json.writeValue("bullet",body.isBullet());
+                json.writeValue("bodyType", body.getType().name());
+                json.writeValue("positionX", body.getPosition().x);
+                json.writeValue("positionY", body.getPosition().y);
+                json.writeValue("fixedRotation", body.isFixedRotation());
+                json.writeValue("bullet", body.isBullet());
 
                 json.writeArrayStart("Fixtures");
-                for(Fixture fixture: body.getFixtureList()){
+                for (Fixture fixture : body.getFixtureList()) {
                     json.writeObjectStart();
-                    json.writeValue("shapeType",fixture.getType().name());
-                    if(fixture.getType().equals(Shape.Type.Polygon)){
+                    json.writeValue("shapeType", fixture.getType().name());
+                    if (fixture.getType().equals(Shape.Type.Polygon)) {
                         PolygonShape shape = (PolygonShape) fixture.getShape();
                         json.writeArrayStart("polygon");
-                        for(int i = 0; i<shape.getVertexCount(); i++){
+                        for (int i = 0; i < shape.getVertexCount(); i++) {
                             Vector2 vector2 = new Vector2();
-                            shape.getVertex(i,vector2);
+                            shape.getVertex(i, vector2);
                             json.writeValue(vector2.x);
                             json.writeValue(vector2.y);
                         }
                         json.writeArrayEnd();
                     }
-                    if(fixture.getType().equals(Shape.Type.Circle)){
+                    if (fixture.getType().equals(Shape.Type.Circle)) {
                         CircleShape shape = (CircleShape) fixture.getShape();
-                        json.writeValue("radius",shape.getRadius());
+                        json.writeValue("radius", shape.getRadius());
                     }
-                    json.writeValue("sensor",fixture.isSensor());
-                    json.writeValue("destiny",fixture.getDensity());
-                    json.writeValue("friction",fixture.getFriction());
-                    json.writeValue("restitution",fixture.getRestitution());
-                    json.writeValue("categoryBits",fixture.getFilterData().categoryBits);
-                    if(fixture.getUserData() != null){
+                    json.writeValue("sensor", fixture.isSensor());
+                    json.writeValue("destiny", fixture.getDensity());
+                    json.writeValue("friction", fixture.getFriction());
+                    json.writeValue("restitution", fixture.getRestitution());
+                    json.writeValue("categoryBits", fixture.getFilterData().categoryBits);
+                    if (fixture.getUserData() != null) {
                         json.writeValue("hasUserDate", true);
-                        if(fixture.getUserData() instanceof BodyID){
+                        if (fixture.getUserData() instanceof BodyID) {
                             json.writeValue("userDate", fixture.getUserData());
                         }
-                    }else json.writeValue("hasUserDate", false);
+                    } else json.writeValue("hasUserDate", false);
 
                     json.writeObjectEnd();
                 }
@@ -151,19 +166,19 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             bodyComponent.body.setFixedRotation(jsonData.get("BodyComponent").get("fixedRotation").asBoolean());
             bodyComponent.body.setBullet(jsonData.get("BodyComponent").get("bullet").asBoolean());
             bodyComponent.body.setUserData(entity);
-            bodyComponent.body.setTransform(new Vector2(jsonData.get("BodyComponent").get("positionX").asFloat(), jsonData.get("BodyComponent").get("positionY").asFloat()),0);
+            bodyComponent.body.setTransform(new Vector2(jsonData.get("BodyComponent").get("positionX").asFloat(), jsonData.get("BodyComponent").get("positionY").asFloat()), 0);
             entity.add(bodyComponent);
             for (JsonValue value : jsonData.get("BodyComponent").get("Fixtures")) {
                 FixtureDef fixtureDef = new FixtureDef();
 
-                if(value.has("shapeX") && value.has("shapeY")){
+                if (value.has("shapeX") && value.has("shapeY")) {
                     PolygonShape shape = new PolygonShape();
-                    shape.setAsBox(value.get("shapeW").asFloat()/2,value.get("shapeH").asFloat()/2,
-                            new Vector2(value.get("shapeX").asFloat(),value.get("shapeY").asFloat()),value.get("shapeA").asFloat());
+                    shape.setAsBox(value.get("shapeW").asFloat() / 2, value.get("shapeH").asFloat() / 2,
+                            new Vector2(value.get("shapeX").asFloat(), value.get("shapeY").asFloat()), value.get("shapeA").asFloat());
                     fixtureDef.shape = shape;
                 }
 
-                if(value.has("polygon")){
+                if (value.has("polygon")) {
                     if (value.get("shapeType").asString().equals("Polygon")) {
                         PolygonShape shape = new PolygonShape();
                         shape.set(value.get("polygon").asFloatArray());
@@ -181,9 +196,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 fixtureDef.friction = value.get("friction").asFloat();
                 fixtureDef.restitution = value.get("restitution").asFloat();
                 fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
-                if (value.get("hasUserDate").asBoolean()){
+                if (value.get("hasUserDate").asBoolean()) {
                     bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.valueOf(value.get("userDate").asString()));
-                }else bodyComponent.body.createFixture(fixtureDef);
+                } else bodyComponent.body.createFixture(fixtureDef);
                 fixtureDef.shape.dispose();
             }
         }
@@ -198,7 +213,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         if (jsonData.has("TextureComponent")) {
             //TODO
             TextureComponent textureComponent = new TextureComponent();
-            textureComponent.texture = Annihilation.getAssets().get(jsonData.get("TextureComponent").get("patch").asString());
+            if (jsonData.get("TextureComponent").has("patch")) {
+                textureComponent.texture = Annihilation.getAssets().get(jsonData.get("TextureComponent").get("patch").asString());
+            }
             entity.add(textureComponent);
         }
 
@@ -212,7 +229,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             ContainerComponent containerComponent = new ContainerComponent();
             containerComponent.name = jsonData.get("ContainerComponent").get("name").asString();
             containerComponent.itemLocations = new Array<>();
-            for(JsonValue value : jsonData.get("ContainerComponent").get("itemList")){
+            for (JsonValue value : jsonData.get("ContainerComponent").get("itemList")) {
                 InventoryItemLocation location = new InventoryItemLocation();
                 location.setTableIndex(value.get("tableIndex").asInt());
                 location.setItemID(value.get("itemID").asString());
@@ -228,28 +245,33 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(actionComponent);
         }
 
-        if(jsonData.has("PlayerComponent")){
+        if (jsonData.has("PlayerComponent")) {
             PlayerComponent playerComponent = new PlayerComponent();
             entity.add(playerComponent);
         }
 
-        if(jsonData.has("AnimationComponent")){
+        if (jsonData.has("AnimationComponent")) {
             AnimationComponent animationComponent = new AnimationComponent();
             entity.add(animationComponent);
         }
 
-        if(jsonData.has("PlayerStateComponent")){
+        if (jsonData.has("PlayerStateComponent")) {
             PlayerStateComponent playerStateComponent = new PlayerStateComponent();
             entity.add(playerStateComponent);
 
         }
 
-        if(jsonData.has("PlayerStatsComponent")){
+        if (jsonData.has("PlayerInventoryComponent")) {
+            PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
+            entity.add(playerInventoryComponent);
+        }
+
+        if (jsonData.has("PlayerStatsComponent")) {
             PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
             entity.add(playerStatsComponent);
 
         }
-        if(engine != null){
+        if (engine != null) {
             engine.addEntity(entity);
         }
         return entity;

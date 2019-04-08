@@ -28,7 +28,6 @@ public class Tile implements Json.Serializable {
               break;
           }
       }
-
     }
 
     public void setAtlasRegionName(String atlasRegionName) {

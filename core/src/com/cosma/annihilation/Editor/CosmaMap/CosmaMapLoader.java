@@ -7,6 +7,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
@@ -32,7 +33,7 @@ public class CosmaMapLoader {
         loadMap(mapPath);
         for (ObjectMapLayer layer : map.getLayers().getByType(ObjectMapLayer.class)) {
             for (RectangleObject object : layer.getObjects().getByType(RectangleObject.class)) {
-                Utilities.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation());
+                Utilities.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation() * MathUtils.degreesToRadians);
             }
         }
 
@@ -54,7 +55,6 @@ public class CosmaMapLoader {
         }
     }
 
-
     private void loadMap(String mapPath) {
         FileHandle mapFile = Gdx.files.local(mapPath);
         Json json = new Json();
@@ -62,8 +62,6 @@ public class CosmaMapLoader {
         json.setSerializer(Entity.class,new EntitySerializer(world,engine));
         map = json.fromJson(GameMap.class, mapFile);
     }
-
-
 
     public GameMap getMap() {
         return map;
