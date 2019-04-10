@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Items.InventoryItem;
+import com.cosma.annihilation.Utils.AnimationFactory;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
@@ -19,16 +21,18 @@ import com.cosma.annihilation.Utils.Enums.EntityAction;
 public class EntitySerializer implements Json.Serializer<Entity> {
     private World world;
     private Engine engine;
+    private AnimationFactory animationFactory;
 
     public EntitySerializer(World world, Engine engine) {
         this.world = world;
         this.engine = engine;
-
+        animationFactory = new AnimationFactory();
     }
 
     public EntitySerializer(World world) {
         this.world = world;
         this.engine = null;
+        animationFactory = new AnimationFactory();
     }
 
     @Override
@@ -64,6 +68,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             }
 
             if (component instanceof AnimationComponent) {
+                json.writeValue("id",((AnimationComponent) component).animationId.name());
                 json.writeObjectEnd();
                 continue;
                 //TODO
@@ -228,7 +233,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         if (jsonData.has("ContainerComponent")) {
             ContainerComponent containerComponent = new ContainerComponent();
             containerComponent.name = jsonData.get("ContainerComponent").get("name").asString();
-            containerComponent.itemLocations = new Array<>();
+            containerComponent.itemLocations = new Array<InventoryItemLocation>();
             for (JsonValue value : jsonData.get("ContainerComponent").get("itemList")) {
                 InventoryItemLocation location = new InventoryItemLocation();
                 location.setTableIndex(value.get("tableIndex").asInt());
@@ -252,6 +257,8 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
         if (jsonData.has("AnimationComponent")) {
             AnimationComponent animationComponent = new AnimationComponent();
+            animationComponent.animationId = AnimationFactory.AnimationId.valueOf(jsonData.get("AnimationComponent").getString("id"));
+            animationComponent.animationMap = animationFactory.createAnimationMap(animationComponent.animationId);
             entity.add(animationComponent);
         }
 
@@ -263,6 +270,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
         if (jsonData.has("PlayerInventoryComponent")) {
             PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
+            InventoryItemLocation item = new InventoryItemLocation(0,InventoryItem.ItemID.FIRE_AXE.name(),1);
+
+            playerInventoryComponent.inventoryItem.add(item);
             entity.add(playerInventoryComponent);
         }
 

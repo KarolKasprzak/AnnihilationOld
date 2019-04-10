@@ -53,12 +53,11 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine = new PooledEngine();
 
         EntityFactory.getInstance().setAssetLoader(assetLoader);
-//        EntityFactory.getInstance().createPlayerEntity(engine,world);
+
 
         gui = new Gui(engine, world,assetLoader);
 
         CosmaMapLoader loader = new CosmaMapLoader("map/map.json",world,rayHandler,engine);
-        System.out.println("hp " + engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(HealthComponent.class).hp);
         if (isGameLoaded) {
             gui.loadGame();
 
@@ -80,8 +79,6 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         gui.addSystemsReferences(engine);
         engine.addEntityListener(this);
-
-        Body playerBody = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(BodyComponent.class).body;
 
     }
 

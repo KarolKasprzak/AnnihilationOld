@@ -40,7 +40,7 @@ public class AssetLoader {
         for(FileHandle local: locale.list()){
             manager.load(local.pathWithoutExtension(),I18NBundle.class);
         }
-
+        manager.load("gfx/player_move.atlas",TextureAtlas.class);
         manager.load(GfxAssetDescriptors.box);
         manager.load(SfxAssetDescriptors.pistolSound);
         manager.load(GfxAssetDescriptors.bulletShell);

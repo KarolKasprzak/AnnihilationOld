@@ -47,13 +47,6 @@ public class AnimationSystem extends IteratingSystem {
 
         walkAnimation = new Animation(0.1f, textureAtlasWalk.getRegions(), Animation.PlayMode.LOOP);
 
-//        startwalkanimation = new Animation(1 / 10f, textureAtlas2.getRegions());
-//        animatedSprite1 = new AnimatedSprite(startwalkanimation);
-
-        animatedSprite = new AnimatedSprite(walkAnimation);
-        animatedSprite.getAnimation().getKeyFrame(animatedSprite.getTime());
-
-
     }
 
     @Override
@@ -90,7 +83,7 @@ public class AnimationSystem extends IteratingSystem {
         if (!stateComponent.climbing) {
             float velocityX = playerBody.getLinearVelocity().x;
             if (velocityX != 0) {
-                textureComponent.texture_ = walkAnimation.getKeyFrame(animComponent.time);
+                animComponent.currentAnimation = animComponent.animationMap.get("walk");
             }
         }
 

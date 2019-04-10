@@ -221,7 +221,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                             if (result == options){
 
                             }
-                            
+
                         }
                     }).setPosition(Gdx.input.getX(),Gdx.input.getY());
 
