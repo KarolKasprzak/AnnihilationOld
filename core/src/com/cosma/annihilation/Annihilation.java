@@ -31,6 +31,7 @@ public class Annihilation extends Game {
 
     @Override
     public void create() {
+        System.out.println(Gdx.app.getVersion());
         isGameLoaded = false;
         loaderOLD.load();
         assetLoader.load();

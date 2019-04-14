@@ -47,7 +47,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
     private VisCheckBox setPointLight, setConeLight, setDirectionalLight;
     private Spinner distanceSpinner, softDistanceSpinner;
     private OrthographicCamera camera;
-    private LightsListWindow lightsListWindow;
     private RayHandler rayHandler;
     private ColorPicker picker;
     private final Drawable white = VisUI.getSkin().getDrawable("white");
@@ -134,17 +133,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                 canCreateLight = true;
             }
         });
-        openLightsListWindowButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!getStage().getActors().contains(lightsListWindow, true) && !mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).isEmpty() && mapEditor.isLightsLayerSelected()) {
-                    lightsListWindow = new LightsListWindow(mapEditor, camera);
-                    getStage().addActor(lightsListWindow);
-                    mapEditor.getInputMultiplexer().addProcessor(0, lightsListWindow);
-                    setLightListWindowOpen(true);
-                }
-            }
-        });
 
         image.addListener(new ClickListener() {
             @Override
@@ -205,7 +193,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         if (button == Input.Buttons.RIGHT && selectedLight != null) {
             final int delete = 1;
             final int options = 2;
-            final int cancel = 2;
+            final int cancel = 3;
             Dialogs.showConfirmDialog(getStage(), "Light:", "what do you want?",
                     new String[]{"delete", "options","cancel"}, new Integer[]{delete, options, cancel},
                     new ConfirmDialogListener<Integer>() {
@@ -219,8 +207,10 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                             }
 
                             if (result == options){
-
+                                LightsAdvWindow lightsAdvWindow = new LightsAdvWindow(selectedLight,selectedBox2dLight);
+                                getStage().addActor(lightsAdvWindow);
                             }
+
 
                         }
                     }).setPosition(Gdx.input.getX(),Gdx.input.getY());
@@ -241,9 +231,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                 mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }
             canCreateLight = false;
-            if (isLightListWindowOpen) {
-                lightsListWindow.rebuildView();
-            }
+
         }
         return false;
     }
@@ -264,7 +252,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         Vector3 vec = camera.unproject(worldCoordinates);
         Vector3 deltaWorldCoordinates = new Vector3(screenX - Gdx.input.getDeltaX(), screenY - Gdx.input.getDeltaY(), 0);
         Vector3 deltaVec = camera.unproject(deltaWorldCoordinates);
-        float amountX, amountY, startX, startY;
+        float amountX, amountY;
 
         if (canDragObject && selectedBox2dLight != null && isLeftButtonPressed) {
             amountX = vec.x - deltaVec.x;
@@ -295,7 +283,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
 
             }
 
-            System.out.println(lightFound);
             if(lightFound){
                 selectedLight = mapLightFound;
                 selectedBox2dLight = mapEditor.getMap().getLight(mapLightFound.getName());

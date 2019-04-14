@@ -80,6 +80,8 @@ public class WorldBuilder implements Disposable, EntityListener {
         gui.addSystemsReferences(engine);
         engine.addEntityListener(this);
 
+        rayHandler.render();
+
     }
 
     public void update(float delta) {

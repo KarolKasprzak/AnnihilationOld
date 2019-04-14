@@ -27,10 +27,7 @@ public class MapObjects implements Iterable<MapObject> {
     }
 
     public boolean isEmpty(){
-        if(objects.isEmpty()){
-            return true;
-        }else
-        return false;
+        return objects.size > 0;
     }
 
     public int getIndex (MapObject object) {
@@ -54,12 +51,12 @@ public class MapObjects implements Iterable<MapObject> {
     }
 
 //    public void remove (String name) {
-//        for (int i = 0, n = objects.size; i < n; i++) {
-//            MapLayer layer = objects.get(i);
-//            if (name.equals(layer.getName())) {
-//                objects.removeValue(layer)
-//            }
-//        }
+////        for (int i = 0, n = objects.size; i < n; i++) {
+////            MapLayer layer = objects.get(i);
+////            if (name.equals(layer.getName())) {
+////                objects.removeValue(layer);
+////            }
+////        }
 //    }
 
     public void remove (String name) {

@@ -53,7 +53,7 @@ class WorldLoader {
 //        pl2.setXray(true);
 //        pl2.setSoftnessLength(0.3f);
 //        pl2.setSoft(true);
-
+                    System.out.println(gameMap.getLayers().size());
                     MapLayers layers = gameMap.getLayers();
                     MapLayer layer = layers.get("object");
                     for(MapObject mo : layer.getObjects()){

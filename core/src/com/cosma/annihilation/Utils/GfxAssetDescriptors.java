@@ -29,11 +29,10 @@ public class GfxAssetDescriptors {
     public static final AssetDescriptor<Texture> gui_button_down = new AssetDescriptor<Texture>("gfx/gui/table_button_pressed.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_weapon_slot = new AssetDescriptor<Texture>("gfx/gui/gui_weapon_slot.png", Texture.class);
     public static final AssetDescriptor<Texture> gui_armour_slot = new AssetDescriptor<Texture>("gfx/gui/gui_armour_slot.png", Texture.class);
+    public static final AssetDescriptor<TextureAtlas> editor_icons = new AssetDescriptor<TextureAtlas>("editor/editor_icon.atlas", TextureAtlas.class);
     public static final AssetDescriptor<Texture> map_conc = new AssetDescriptor<Texture>("gfx/map/conc.png", Texture.class);
 
-
     public static final AssetDescriptor<TextureAtlas> gui_human_animation = new AssetDescriptor<TextureAtlas>("gfx/gui/human/gui_human.txt", TextureAtlas.class);
-    public static final AssetDescriptor<TextureAtlas> editor_icons = new AssetDescriptor<TextureAtlas>("editor/editor_icon.atlas", TextureAtlas.class);
     public static final AssetDescriptor<TextureAtlas> gui_buttons = new AssetDescriptor<TextureAtlas>("gfx/gui/buttons_gui.txt", TextureAtlas.class);
     public static final AssetDescriptor<TextureAtlas> player_attack_melee = new AssetDescriptor<TextureAtlas>("gfx/player/player_melee.atlas", TextureAtlas.class);
 
@@ -41,7 +40,7 @@ public class GfxAssetDescriptors {
 
     public static final AssetDescriptor<BitmapFont> font = new AssetDescriptor<BitmapFont>("gfx/fonts/font1.fnt", BitmapFont.class);
 
-    public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("map/map1.tmx", TiledMap.class);
+    public static final AssetDescriptor<TiledMap> tiledMap = new AssetDescriptor<TiledMap>("Map/map1.tmx", TiledMap.class);
 
     private GfxAssetDescriptors(){
 

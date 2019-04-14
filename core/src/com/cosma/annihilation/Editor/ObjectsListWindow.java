@@ -46,9 +46,9 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
         super.close();
         mapEditor.objectPanel.setObjectListWindowOpen(false);
         mapEditor.getInputMultiplexer().removeProcessor(this);
-        if (!adapter.getSelection().isEmpty()) {
-            adapter.getSelectionManager().deselectAll();
-        }
+//        if (!adapter.getSelection().isEmpty()) {
+//            adapter.getSelectionManager().deselectAll();
+//        }
     }
 
     public ObjectsListWindow(final MapEditor mapEditor, OrthographicCamera camera) {

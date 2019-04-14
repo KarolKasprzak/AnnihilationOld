@@ -105,7 +105,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         openObjectListWindowButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!getStage().getActors().contains(objectsListWindow, true) && !mapEditor.getMap().getLayers().getByType(ObjectMapLayer.class).isEmpty() && mapEditor.isObjectLayerSelected()) {
+                if (!getStage().getActors().contains(objectsListWindow, true) && mapEditor.isObjectLayerSelected()) {
                     objectsListWindow = new ObjectsListWindow(mapEditor, camera);
                     getStage().addActor(objectsListWindow);
                     mapEditor.getInputMultiplexer().addProcessor(0, objectsListWindow);

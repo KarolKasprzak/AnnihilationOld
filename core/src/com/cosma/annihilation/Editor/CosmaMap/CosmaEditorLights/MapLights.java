@@ -2,7 +2,6 @@ package com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
-import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
 
 import java.util.Iterator;
 
@@ -28,10 +27,7 @@ public class MapLights implements Iterable<MapLight> {
     }
 
     public boolean isEmpty(){
-        if(lights.isEmpty()){
-            return true;
-        }else
-        return false;
+        return lights.size <= 0;
     }
 
     public int getIndex (MapLight light) {

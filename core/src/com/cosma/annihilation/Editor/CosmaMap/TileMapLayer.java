@@ -55,10 +55,6 @@ public class TileMapLayer extends MapLayer implements Json.Serializable {
 
                 json.writeValue("position",x+","+y);
                 json.writeValue("texture",tile.getTextureDate());
-//                json.writeValue("x",x);
-//                json.writeValue("y",y);
-//                json.writeValue("atlasPath",tile.getAtlasPath());
-//                json.writeValue("atlasRegionName",tile.getAtlasRegionName());
                 json.writeObjectEnd();
             }
         }

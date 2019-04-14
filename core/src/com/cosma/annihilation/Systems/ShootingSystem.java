@@ -157,7 +157,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             animationComponent.time = 0;
             animationComponent.currentAnimation = meleeAnimation;
             stateComponent.canMoveOnSide = false;
-            com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                     stateComponent.canMoveOnSide = true;

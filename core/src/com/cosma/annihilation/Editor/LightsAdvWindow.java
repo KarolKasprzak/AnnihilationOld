@@ -22,14 +22,12 @@ public class LightsAdvWindow extends VisWindow{
     private MapLight selectedLight;
     private Light selectedBox2dLight;
     private VisTable layersTable;
-    private LightsListWindow lightsListWindow;
     private Color selectedColor;
     private final Drawable white = VisUI.getSkin().getDrawable("white");
     private ColorPicker picker;
 
-    public LightsAdvWindow(final MapLight selectedLight, final Light selectedBox2dLight, LightsListWindow lightsListWindow) {
+    public LightsAdvWindow(final MapLight selectedLight, final Light selectedBox2dLight) {
         super("Adv. light set.");
-        this.lightsListWindow = lightsListWindow;
         addCloseButton();
 
         final Image image = new Image(white);
@@ -144,8 +142,8 @@ public class LightsAdvWindow extends VisWindow{
         add(staticButton);
         add(softButton);
         row();
-        add(saveButton);
         add(cancelButton);
+        add(saveButton);
 
         image.addListener(new ClickListener() {
             @Override
@@ -159,6 +157,7 @@ public class LightsAdvWindow extends VisWindow{
             public void changed(ChangeEvent event, Actor actor) {
             selectedLight.setColor(selectedColor);
             selectedBox2dLight.setColor(selectedColor);
+            close();
             }
         });
         cancelButton.addListener(new ChangeListener() {
@@ -198,11 +197,6 @@ public class LightsAdvWindow extends VisWindow{
     protected void close() {
         super.close();
         this.remove();
-        lightsListWindow.isAdvWindowOpen =false;
-//        mapEditor.lightsPanel.setLightListWindowOpen(false);
-//        mapEditor.getInputMultiplexer().removeProcessor(this);
-//        if (!adapter.getSelection().isEmpty()) {
-//            adapter.getSelectionManager().deselectAll();
-//        }
+
     }
 }

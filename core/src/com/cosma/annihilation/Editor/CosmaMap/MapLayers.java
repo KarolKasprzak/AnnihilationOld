@@ -22,6 +22,8 @@ public class MapLayers implements Iterable<MapLayer> {
         return null;
     }
 
+
+
     public Array<MapLayer> getLayers() {
         return layers;
     }
@@ -29,11 +31,9 @@ public class MapLayers implements Iterable<MapLayer> {
     public void swapLayerOrder(int layerIndex, int layerIndex1){
         layers.swap(layerIndex,layerIndex1);
     }
+
     public boolean isEmpty(){
-        if(layers.isEmpty()){
-            return true;
-        }else
-        return false;
+        return layers.size <= 0;
     }
 
 

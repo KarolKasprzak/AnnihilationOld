@@ -76,7 +76,7 @@ public class LayersPanel extends VisWindow {
         layerMenu.addItem(new MenuItem("Light", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (mapEditor.getMap() != null && mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).isEmpty()) {
+                if (mapEditor.getMap() != null && mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).size == 0) {
                     mapEditor.getMap().createLightsLayer();
                     view.rebuildView();
                 }
@@ -116,7 +116,9 @@ public class LayersPanel extends VisWindow {
         removeLayerButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (selectedLayer != null && !mapEditor.getMap().getLayers().isEmpty()) {
+
+                if (selectedLayer != null) {
+                    System.out.println(mapEditor.getMap().getLayers().isEmpty());
                     mapEditor.getMap().getLayers().remove(selectedLayer.getName());
                     view.rebuildView();
                 }

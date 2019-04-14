@@ -1,7 +1,5 @@
 package com.cosma.annihilation.Editor.CosmaMap;
 
-import com.badlogic.gdx.graphics.Color;
-
 public abstract class MapLayer {
     private int width;
     private int height;
