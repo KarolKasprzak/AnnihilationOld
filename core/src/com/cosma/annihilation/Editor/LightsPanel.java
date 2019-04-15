@@ -193,9 +193,10 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         if (button == Input.Buttons.RIGHT && selectedLight != null) {
             final int delete = 1;
             final int options = 2;
-            final int cancel = 3;
+            final int filter = 3;
+            final int cancel = 4;
             Dialogs.showConfirmDialog(getStage(), "Light:", "what do you want?",
-                    new String[]{"delete", "options","cancel"}, new Integer[]{delete, options, cancel},
+                    new String[]{"delete", "options","filter","cancel"}, new Integer[]{delete, options, filter,cancel},
                     new ConfirmDialogListener<Integer>() {
                         @Override
                         public void result(Integer result) {
@@ -208,7 +209,14 @@ public class LightsPanel extends VisWindow implements InputProcessor {
 
                             if (result == options){
                                 LightsAdvWindow lightsAdvWindow = new LightsAdvWindow(selectedLight,selectedBox2dLight);
+                                lightsAdvWindow.setPosition(Gdx.input.getX(),Gdx.input.getY());
                                 getStage().addActor(lightsAdvWindow);
+                            }
+
+                            if (result == filter){
+                                LightFilterWindow lightFilterWindow = new LightFilterWindow(selectedBox2dLight);
+                                lightFilterWindow.setPosition(Gdx.input.getX(),Gdx.input.getY());
+                                getStage().addActor(lightFilterWindow);
                             }
 
 

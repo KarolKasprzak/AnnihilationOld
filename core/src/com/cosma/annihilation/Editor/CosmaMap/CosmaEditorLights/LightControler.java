@@ -27,6 +27,6 @@ public class LightControler {
             }
         }, 0.2f,0.2f);
 
-        
+
     }
 }

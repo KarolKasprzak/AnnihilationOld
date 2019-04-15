@@ -166,7 +166,8 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
                                             }
 
                                             if (result == options){
-
+                                                BodyFilterWindow bodyFilterWindow = new BodyFilterWindow(fixture.getBody());
+                                                getStage().addActor(bodyFilterWindow);
                                             }
 
 

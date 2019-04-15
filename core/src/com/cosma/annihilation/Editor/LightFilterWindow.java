@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Editor;
 
+import box2dLight.Light;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -13,12 +14,10 @@ import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
 
 
-class BodyFilterWindow extends VisWindow {
+class LightFilterWindow extends VisWindow {
 
-    private Fixture fixture;
-
-    BodyFilterWindow(final Body body) {
-        super("Entity:");
+    LightFilterWindow(final Light light) {
+        super("Light filter:");
         TableUtils.setSpacingDefaults(this);
         addCloseButton();
         VisTextButton acceptButton = new VisTextButton("accept");
@@ -27,33 +26,12 @@ class BodyFilterWindow extends VisWindow {
         final VisValidatableTextField category1 = new VisValidatableTextField();
         final VisValidatableTextField mask = new VisValidatableTextField();
         final VisValidatableTextField mask1 = new VisValidatableTextField();
+        final VisSelectBox<Test> visSelectBox = new VisSelectBox<>();
+        visSelectBox.setItems(new Test("asafs",2),new Test("asadfsfdsfs",4));
 
-        fixture = body.getFixtureList().get(0);
-        category.setText(Short.toString(fixture.getFilterData().categoryBits));
-        mask.setText(Short.toString(fixture.getFilterData().maskBits));
 
-        final Spinner fixtureSpinner = new Spinner("Fixture:", new IntSpinnerModel(1, 1, body.getFixtureList().size, 1));
-        fixtureSpinner.getTextField().setFocusBorderEnabled(false);
-        fixtureSpinner.getTextField().addListener(new FocusListener() {
-            @Override
-            public void scrollFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-                super.scrollFocusChanged(event, actor, focused);
-                if (focused) {
-                    getStage().setScrollFocus(null);
-                }
-            }
-        });
-        fixtureSpinner.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                fixture = body.getFixtureList().get(((IntSpinnerModel) fixtureSpinner.getModel()).getValue() - 1);
-                category.setText(Short.toString(fixture.getFilterData().categoryBits));
-                mask.setText(Short.toString(fixture.getFilterData().maskBits));
-            }
-        });
-
-        add(fixtureSpinner);
-        row();
+        add(new VisLabel("category 1:"));
+        add(visSelectBox);
         add(new VisLabel("category 1:"));
         add(category);
         add(new VisLabel("category 2:"));
@@ -68,15 +46,15 @@ class BodyFilterWindow extends VisWindow {
         acceptButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                fixture = body.getFixtureList().get(((IntSpinnerModel) fixtureSpinner.getModel()).getValue() - 1);
                 Filter filter = new Filter();
+                //only mask bit
+                if(category1.isEmpty() && mask1.isEmpty() && category.isEmpty() && !mask.isEmpty()){
+                    filter.maskBits = Short.valueOf(mask.getText());
+                }
                 //c&c1 && m&m1
-                if(category1.isEmpty() && mask1.isEmpty()){
+                if(category1.isEmpty() && mask1.isEmpty() && !category.isEmpty() && !mask.isEmpty()){
                     filter.maskBits = Short.valueOf(mask.getText());
                     filter.categoryBits = Short.valueOf(category.getText());
-                }else {
-//                    filter.maskBits = (short) (Short.valueOf(mask.getText())| Short.valueOf(mask1.getText()));
-//                    filter.categoryBits = (short)(Short.valueOf(category.getText()) | Short.valueOf(category1.getText()));
                 }
                 //m && c&c1
                 if(mask1.isEmpty() && !category1.isEmpty()){
@@ -84,18 +62,34 @@ class BodyFilterWindow extends VisWindow {
                     filter.categoryBits = (short)(Short.valueOf(category.getText()) | Short.valueOf(category1.getText()));
                 }
 
-                fixture.setFilterData(filter);
-                fixture.refilter();
-                close();
+                light.setContactFilter(filter);
                 System.out.println("category "+filter.categoryBits);
                 System.out.println("mask "+filter.maskBits);
+
+                close();
             }
         });
 
         pack();
         setPosition(400, 303);
-
     }
 
+    public class Test{
+        String string;
+        int number;
 
+        @Override
+        public String toString() {
+            
+            return string;
+        }
+
+        public Test(String string, int number){
+            this.string= string;
+            this.number = number;
+
+        }
+
+
+    }
 }
