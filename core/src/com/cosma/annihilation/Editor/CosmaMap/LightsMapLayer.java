@@ -28,6 +28,7 @@ public class LightsMapLayer extends MapLayer {
     public void createPointLight(float x, float y, Color color, int raysNumber, float maxDistance) {
         String name = "PointLight_" + (lights.getCount() + 1);
         MapPointLight light = new MapPointLight(x,y,color,raysNumber,maxDistance);
+        light.setMaskBit((short)1);
         light.setName(name);
         lights.add(light);
     }
@@ -35,6 +36,7 @@ public class LightsMapLayer extends MapLayer {
     public void createConeLight(float x, float y, Color color, int raysNumber, float maxDistance,float direction,float coneDegree) {
         String name = "ConeLight_" + (lights.getCount() + 1);
         MapConeLight light = new MapConeLight(x,y,color,raysNumber,maxDistance,direction,coneDegree);
+        light.setMaskBit((short)1);
         light.setName(name);
         lights.add(light);
     }

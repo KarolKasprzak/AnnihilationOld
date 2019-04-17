@@ -7,6 +7,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
+import com.cosma.annihilation.Utils.ContactFilterManager;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
@@ -16,80 +19,55 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner;
 
 class LightFilterWindow extends VisWindow {
 
-    LightFilterWindow(final Light light) {
+
+    LightFilterWindow(final Light light, MapLight mapLight) {
         super("Light filter:");
         TableUtils.setSpacingDefaults(this);
         addCloseButton();
         VisTextButton acceptButton = new VisTextButton("accept");
+        ContactFilterManager contactManager= new ContactFilterManager();
 
-        final VisValidatableTextField category = new VisValidatableTextField();
-        final VisValidatableTextField category1 = new VisValidatableTextField();
-        final VisValidatableTextField mask = new VisValidatableTextField();
-        final VisValidatableTextField mask1 = new VisValidatableTextField();
-        final VisSelectBox<Test> visSelectBox = new VisSelectBox<>();
-        visSelectBox.setItems(new Test("asafs",2),new Test("asadfsfdsfs",4));
+        final VisSelectBox<ContactFilterManager.ContactFilterValue> mask= new VisSelectBox<>();
+        mask.setItems((contactManager.getContactFilterArray()));
+        final VisSelectBox<ContactFilterManager.ContactFilterValue> mask1= new VisSelectBox<>();
+        mask1.setItems(contactManager.getContactFilterArray());
+        final VisSelectBox<ContactFilterManager.ContactFilterValue> category= new VisSelectBox<>();
+        category.setItems(contactManager.getContactFilterArray());
+        final VisSelectBox<ContactFilterManager.ContactFilterValue> category1= new VisSelectBox<>();
+        category1.setItems(contactManager.getContactFilterArray());
+        final VisSelectBox<ContactFilterManager.ContactFilterValue> category2= new VisSelectBox<>();
+        category2.setItems(contactManager.getContactFilterArray());
+        VisCheckBox onlyMaskCheck = new VisCheckBox("Only mask", false);
 
-
-        add(new VisLabel("category 1:"));
-        add(visSelectBox);
-        add(new VisLabel("category 1:"));
-        add(category);
-        add(new VisLabel("category 2:"));
-        add(category1);
-        row();
-        add(new VisLabel("mask 1:"));
+        add(new VisLabel("mask:"));
         add(mask);
-        add(new VisLabel("mask 2:"));
         add(mask1);
+        add(onlyMaskCheck);
+        row();
+        add(new VisLabel("category:"));
+        add(category);
+        add(category1);
+        add(category2);
         row();
         add(acceptButton);
         acceptButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Filter filter = new Filter();
-                //only mask bit
-                if(category1.isEmpty() && mask1.isEmpty() && category.isEmpty() && !mask.isEmpty()){
-                    filter.maskBits = Short.valueOf(mask.getText());
-                }
-                //c&c1 && m&m1
-                if(category1.isEmpty() && mask1.isEmpty() && !category.isEmpty() && !mask.isEmpty()){
-                    filter.maskBits = Short.valueOf(mask.getText());
-                    filter.categoryBits = Short.valueOf(category.getText());
-                }
-                //m && c&c1
-                if(mask1.isEmpty() && !category1.isEmpty()){
-                    filter.maskBits = Short.valueOf(mask.getText());
-                    filter.categoryBits = (short)(Short.valueOf(category.getText()) | Short.valueOf(category1.getText()));
-                }
 
-                light.setContactFilter(filter);
-                System.out.println("category "+filter.categoryBits);
-                System.out.println("mask "+filter.maskBits);
+                if(contactManager.getFilter(mask,mask1,category,category1,category2,onlyMaskCheck.isChecked()) != null){
 
+                    Filter filter = contactManager.getFilter(mask,mask1,category,category1,category2,onlyMaskCheck.isChecked());
+                    light.setContactFilter(filter);
+                    mapLight.setMaskBit(filter.maskBits);
+                    mapLight.setCategoryBit(filter.categoryBits);
+                    System.out.println("category "+filter.categoryBits);
+                    System.out.println("mask "+filter.maskBits);
+                }
                 close();
             }
         });
 
         pack();
         setPosition(400, 303);
-    }
-
-    public class Test{
-        String string;
-        int number;
-
-        @Override
-        public String toString() {
-            
-            return string;
-        }
-
-        public Test(String string, int number){
-            this.string= string;
-            this.number = number;
-
-        }
-
-
     }
 }

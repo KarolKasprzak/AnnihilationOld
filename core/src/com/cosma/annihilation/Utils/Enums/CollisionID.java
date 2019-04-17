@@ -11,6 +11,7 @@ public class CollisionID {
     public static final short OPONENTS = 0x0032;
     public static final short BACKGROUND = 0x0064;
 
+
     public static final short MASK_PLAYER = SCENERY | JUMPABLE_OBJECT | OPONENTS;
 
 

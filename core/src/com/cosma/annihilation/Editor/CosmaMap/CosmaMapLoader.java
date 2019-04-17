@@ -8,6 +8,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.LightControler;
@@ -44,7 +45,10 @@ public class CosmaMapLoader {
                 point.setStaticLight(light.isStaticLight());
                 point.setSoft(light.isSoftLight());
                 point.setSoftnessLength(light.getSoftLength());
-                LightControler lightControler = new LightControler(point);
+                Filter filter = new Filter();
+                filter.maskBits = light.getMaskBit();
+                filter.categoryBits = light.getCategoryBit();
+                point.setContactFilter(filter);
                 map.putLight(light.getName(), point);
             }
             for (MapConeLight light : layer.getLights().getByType(MapConeLight.class)) {
@@ -52,6 +56,10 @@ public class CosmaMapLoader {
                 cone.setStaticLight(light.isStaticLight());
                 cone.setSoft(light.isSoftLight());
                 cone.setSoftnessLength(light.getSoftLength());
+                Filter filter = new Filter();
+                filter.maskBits = light.getMaskBit();
+                filter.categoryBits = light.getCategoryBit();
+                cone.setContactFilter(filter);
                 map.putLight(light.getName(), cone);
             }
         }

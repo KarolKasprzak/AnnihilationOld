@@ -143,6 +143,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                     json.writeValue("friction", fixture.getFriction());
                     json.writeValue("restitution", fixture.getRestitution());
                     json.writeValue("categoryBits", fixture.getFilterData().categoryBits);
+                    json.writeValue("maskBits", fixture.getFilterData().maskBits);
                     if (fixture.getUserData() != null) {
                         json.writeValue("hasUserDate", true);
                         if (fixture.getUserData() instanceof BodyID) {
@@ -200,7 +201,8 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 fixtureDef.density = value.get("destiny").asFloat();
                 fixtureDef.friction = value.get("friction").asFloat();
                 fixtureDef.restitution = value.get("restitution").asFloat();
-                fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
+                if(value.has("categoryBits")){fixtureDef.filter.categoryBits = value.get("categoryBits").asShort();}
+                if(value.has("maskBits")){fixtureDef.filter.maskBits = value.get("maskBits").asShort();}
                 if (value.get("hasUserDate").asBoolean()) {
                     bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.valueOf(value.get("userDate").asString()));
                 } else bodyComponent.body.createFixture(fixtureDef);

@@ -14,8 +14,10 @@ public abstract class MapLight {
     private boolean staticLight = false;
     private boolean softLight = true;
     private float softLength = 2.5f;
+    private short maskBit;
+    private short categoryBit;
 
-    public MapLight() {
+    MapLight() {
     }
     public MapLight(float x, float y, Color color,int raysNumber) {
         this.x = x;
@@ -24,7 +26,7 @@ public abstract class MapLight {
         this.raysNumber = raysNumber;
     }
 
-    public MapLight(float x, float y, Color color, int raysNumber, float distance) {
+    MapLight(float x, float y, Color color, int raysNumber, float distance) {
         this.x = x;
         this.y = y;
         this.color = color;
@@ -100,6 +102,7 @@ public abstract class MapLight {
     public void setVisible (boolean visible) {
         this.visible = visible;
     }
+
     public boolean isSoftLight() {
         return softLight;
     }
@@ -115,5 +118,13 @@ public abstract class MapLight {
     public void setSoftLength(float softLength) {
         this.softLength = softLength;
     }
+
+    public short getMaskBit() {  return maskBit;    }
+
+    public void setMaskBit(short maskBit) { this.maskBit = maskBit; }
+
+    public short getCategoryBit() {return categoryBit; }
+
+    public void setCategoryBit(short categoryBit) { this.categoryBit = categoryBit;  }
 
 }

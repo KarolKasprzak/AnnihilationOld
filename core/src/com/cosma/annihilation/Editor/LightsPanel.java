@@ -214,7 +214,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                             }
 
                             if (result == filter){
-                                LightFilterWindow lightFilterWindow = new LightFilterWindow(selectedBox2dLight);
+                                LightFilterWindow lightFilterWindow = new LightFilterWindow(selectedBox2dLight,selectedLight);
                                 lightFilterWindow.setPosition(Gdx.input.getX(),Gdx.input.getY());
                                 getStage().addActor(lightFilterWindow);
                             }
