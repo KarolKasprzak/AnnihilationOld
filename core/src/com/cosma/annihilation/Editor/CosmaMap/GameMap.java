@@ -15,6 +15,10 @@ public class GameMap{
     private int tileSize;
     private MapLayers layers = new MapLayers();
     private ArrayList<Entity> entityList;
+    private String mapName;
+
+
+
     transient private OrderedMap<String, Light> lightMap;
 
     public Light getLight(String name) {
@@ -60,6 +64,10 @@ public class GameMap{
     public void removeEntity(Entity entity){
         entityList.remove(entity);
     }
+
+    public String getMapName() {return mapName;}
+
+    public void setMapName(String mapName) {this.mapName = mapName;}
 
     public ArrayList<Entity> getAllEntity(){
         return entityList;

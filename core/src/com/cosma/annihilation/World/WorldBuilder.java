@@ -57,7 +57,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         gui = new Gui(engine, world,assetLoader);
 
-        CosmaMapLoader loader = new CosmaMapLoader("map/map.json",world,rayHandler,engine);
+        CosmaMapLoader loader = new CosmaMapLoader("map/map.map",world,rayHandler,engine);
         if (isGameLoaded) {
             gui.loadGame();
 

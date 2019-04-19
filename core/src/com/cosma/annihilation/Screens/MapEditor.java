@@ -26,19 +26,17 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.HealthComponent;
-import com.cosma.annihilation.Components.TagComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.util.dialog.Dialogs;
+import com.kotcrab.vis.ui.util.dialog.InputDialogAdapter;
+import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter;
 import com.kotcrab.vis.ui.widget.*;
-import com.kotcrab.vis.ui.widget.file.FileChooser;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MapEditor implements Screen, InputProcessor {
     private RayHandler rayHandler;
@@ -52,7 +50,7 @@ public class MapEditor implements Screen, InputProcessor {
     private static float accumulator = 0f;
     private InputMultiplexer im;
     private boolean canCameraDrag = false;
-    float zoomLevel = 0.3f;
+    private float zoomLevel = 0.3f;
     private GameMap gameMap;
     private Engine engine;
     private MapCreatorWindow mapCreatorWindow;
@@ -65,10 +63,7 @@ public class MapEditor implements Screen, InputProcessor {
     private boolean isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
     private VisLabel editorModeLabel;
     private VisTable rightTable;
-    private MenuBar menuBar;
-    private FileChooser fileChooser;
     private Box2DDebugRenderer debugRenderer;
-    private CareTaker careTaker;
 
     public MapEditor(Annihilation game) {
         shapeRenderer = new ShapeRenderer();
@@ -109,16 +104,14 @@ public class MapEditor implements Screen, InputProcessor {
         rightTable = new VisTable();
         VisTable leftTable = new VisTable();
 
-        menuBar = new MenuBar();
+        MenuBar menuBar = new MenuBar();
         menuBar.getTable().add(editorModeLabel).center().expand();
 
         final VisCheckBox lightsButton = new VisCheckBox("Lights: ");
         lightsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (lightsButton.isChecked()) {
-                    isLightsRendered = true;
-                } else isLightsRendered = false;
+                isLightsRendered = lightsButton.isChecked();
             }
         });
 
@@ -127,11 +120,11 @@ public class MapEditor implements Screen, InputProcessor {
         gridButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (gridButton.isChecked()) {
-                    drawGrid = true;
-                } else drawGrid = false;
+                drawGrid = gridButton.isChecked();
             }
         });
+
+        MapFileChooser mapFileChooser = new MapFileChooser(this);
 
         final VisTextButton undoButton = new VisTextButton("<");
         undoButton.setChecked(true);
@@ -174,11 +167,16 @@ public class MapEditor implements Screen, InputProcessor {
                 saveMap();
             }
         }).setShortcut("ctrl + s"));
-        fileMenu.addItem(new MenuItem("Save as"));
+        fileMenu.addItem(new MenuItem("Save as", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                saveAs();
+            }
+        }));
         fileMenu.addItem(new MenuItem("Load map", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                loadMap();
+                stage.addActor(mapFileChooser);
             }
         }));
         fileMenu.addItem(new MenuItem("GameMap options"));
@@ -188,7 +186,7 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
 
-    public void createNewMap() {
+    private void createNewMap() {
         gameMap = new GameMap(50, 50, 32);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
@@ -216,14 +214,14 @@ public class MapEditor implements Screen, InputProcessor {
 
     }
 
-    private void loadMap() {
-        if(getMap() != null && !getMap().getAllEntity().isEmpty()){
-            for(Entity entity: getMap().getAllEntity()){
+    public void loadMap(String path) {
+        if (getMap() != null && !getMap().getAllEntity().isEmpty()) {
+            for (Entity entity : getMap().getAllEntity()) {
                 world.destroyBody(entity.getComponent(BodyComponent.class).body);
 //                getMap().removeEntity(entity);
             }
         }
-        CosmaMapLoader loader = new CosmaMapLoader("map/map.json", world, rayHandler,engine);
+        CosmaMapLoader loader = new CosmaMapLoader(path, world, rayHandler, engine);
         this.gameMap = loader.getMap();
         if (rightTable.hasChildren()) {
             rightTable.clear();
@@ -231,21 +229,44 @@ public class MapEditor implements Screen, InputProcessor {
         loadPanels();
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
 
+    }
 
-//        if(mapRender == null){
-//            mapRender = new MapRender(shapeRenderer, gameMap, batch);
-//            tilesPanel = new TilesPanel(this);
-//            rightTable.add(tilesPanel).fillX().top().minHeight(tilesPanel.getParent().getHeight() * 0.25f).maxHeight(tilesPanel.getParent().getHeight() * 0.35f);
-//        }
+    private void saveAs() {
+        Dialogs.showInputDialog(stage, "Enter file name", "name:", new InputDialogAdapter() {
+            @Override
+            public void finished(String input) {
+                FileHandle file = Gdx.files.local("map/" + input + ".map");
+                checkAndSaveFile(file);
+            }
+        });
     }
 
     private void saveMap() {
+
+//        FileHandle file = Gdx.files.local("map/"+gameMap.getMapName()+".map");
+        FileHandle file = Gdx.files.local("map/map.map");
+        checkAndSaveFile(file);
+    }
+
+    private void checkAndSaveFile(FileHandle file) {
         Json json = new Json();
         json.setIgnoreUnknownFields(false);
-        json.setSerializer(Entity.class, new EntitySerializer(world,engine));
-        FileHandle file = Gdx.files.local("map/map.json");
-        file.writeString(json.prettyPrint(gameMap), false);
+        json.setSerializer(Entity.class, new EntitySerializer(world, engine));
+        if (file.exists()) {
+            Dialogs.showOptionDialog(stage, "Save:", "file exist, overwrite?", Dialogs.OptionDialogType.YES_NO, new OptionDialogAdapter() {
+                @Override
+                public void yes() {
+                    file.writeString(json.prettyPrint(gameMap), false);
+                }
+
+                @Override
+                public void no() {
+                    super.no();
+                }
+            });
+        } else file.writeString(json.prettyPrint(gameMap), false);
     }
+
 
     private void setEditorModeLabel() {
         if (isTileLayerSelected) {
@@ -266,7 +287,7 @@ public class MapEditor implements Screen, InputProcessor {
         return gameMap;
     }
 
-    public void setCameraOnMapCenter() {
+    private void setCameraOnMapCenter() {
         camera.position.set(4, 4, 0);
     }
 
@@ -302,19 +323,19 @@ public class MapEditor implements Screen, InputProcessor {
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
-        if(gameMap != null && !gameMap.getAllEntity().isEmpty()){
+        if (gameMap != null && !gameMap.getAllEntity().isEmpty()) {
             batch.begin();
-            for(Entity entity: gameMap.getAllEntity()){
+            for (Entity entity : gameMap.getAllEntity()) {
                 TextureComponent textureComponent = entity.getComponent(TextureComponent.class);
-                if(textureComponent.texture == null){
+                if (textureComponent.texture == null) {
                     continue;
                 }
                 Body body = entity.getComponent(BodyComponent.class).body;
                 Vector2 position = body.getPosition();
-                position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
-                position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
-                batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
-                        textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
+                position.x = position.x - (float) textureComponent.texture.getWidth() / 32 / 2;
+                position.y = position.y - (float) textureComponent.texture.getHeight() / 32 / 2;
+                batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float) textureComponent.texture.getWidth() / 32 / 2, (float) textureComponent.texture.getHeight() / 32 / 2,
+                        textureComponent.texture.getWidth() / 32, textureComponent.texture.getHeight() / 32,
                         1, 1, body.getAngle() * MathUtils.radiansToDegrees);
             }
             batch.end();
@@ -358,9 +379,6 @@ public class MapEditor implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Buttons.MIDDLE) {
-        }
-
         return false;
     }
 
@@ -406,10 +424,9 @@ public class MapEditor implements Screen, InputProcessor {
         }
     }
 
-    public Vector3 getWorldCoordinates() {
+    private Vector3 getWorldCoordinates() {
         Vector3 worldCoordinates = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        Vector3 vec = camera.unproject(worldCoordinates);
-        return vec;
+        return camera.unproject(worldCoordinates);
     }
 
     @Override
@@ -467,7 +484,7 @@ public class MapEditor implements Screen, InputProcessor {
         return false;
     }
 
-    private void loadPanels(){
+    private void loadPanels() {
         layersPanel = new LayersPanel(this);
         rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.25f);
         rightTable.row();
@@ -531,50 +548,4 @@ public class MapEditor implements Screen, InputProcessor {
         return world;
     }
 
-    public void redoMap() {
-
-    }
-
-    public void undoMap() {
-        for(Memento memento: careTaker.mementoList){
-            System.out.println(memento.getMap().getLayers().size());
-        }
-    }
-
-//    public void saveMapState() {
-//        careTaker.add(new Memento(this.getMap()));
-////        careTaker.clearOldState();
-//    }
-
-    private class CareTaker {
-        private List<Memento> mementoList = new ArrayList<Memento>();
-
-        public void clearOldState() {
-            if (mementoList.size() >= 20) {
-                mementoList.remove(0);
-            }
-        }
-
-        public void add(Memento state) {
-            mementoList.add(state);
-
-        }
-
-        public Memento get(int index) {
-            return mementoList.get(index);
-        }
-    }
-
-    private class Memento {
-        GameMap map;
-
-        public Memento(GameMap map) {
-            this.map = map;
-            System.out.println(map.getLayers().size());
-        }
-
-        public GameMap getMap() {
-            return map;
-        }
-    }
 }
