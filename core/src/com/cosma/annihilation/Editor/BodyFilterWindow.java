@@ -14,11 +14,11 @@ import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;
 import com.kotcrab.vis.ui.widget.spinner.Spinner;
 
 
-class BodyFilterWindow extends VisWindow {
+public class BodyFilterWindow extends VisWindow {
 
     private Fixture fixture;
 
-    BodyFilterWindow(final Body body) {
+    public BodyFilterWindow(final Body body) {
         super("Entity:");
         TableUtils.setSpacingDefaults(this);
         addCloseButton();

@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Editor.CosmaMap.EntityEditOptionsWindow;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -166,8 +167,9 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
                                             }
 
                                             if (result == options){
-                                                BodyFilterWindow bodyFilterWindow = new BodyFilterWindow(fixture.getBody());
-                                                getStage().addActor(bodyFilterWindow);
+//                                                BodyFilterWindow bodyFilterWindow = new BodyFilterWindow(fixture.getBody());
+                                                EntityEditOptionsWindow window = new EntityEditOptionsWindow(entity);
+                                                getStage().addActor(window);
                                             }
 
 
