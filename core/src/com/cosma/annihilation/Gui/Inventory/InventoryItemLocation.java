@@ -37,4 +37,12 @@ public class InventoryItemLocation {
     public void setItemsAmount(int itemsAmount) {
         this.itemsAmount = itemsAmount;
     }
+
+    @Override
+    public String toString() {
+        if(itemID != null){
+            return itemID + " " + itemsAmount;
+        }
+        return super.toString();
+    }
 }

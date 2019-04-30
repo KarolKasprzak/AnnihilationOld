@@ -23,16 +23,10 @@ public class EntityFactory {
     private static EntityFactory instance = null;
     private Engine engine;
     private World world;
-    private AssetLoader assetLoader;
-
 
     private EntityFactory() {
     }
 
-
-    public void setAssetLoader(AssetLoader assetLoader) {
-        this.assetLoader = assetLoader;
-    }
 
     public void setEngine(Engine engine) {
 
@@ -62,7 +56,6 @@ public class EntityFactory {
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
         SerializationComponent serializationComponent = engine.createComponent(SerializationComponent.class);
 
-//        textureComponent.texture = assetLoader.manager.get(GfxAssetDescriptors.enemy1);
         textureComponent.texturePatch = GfxAssetDescriptors.enemy1.fileName;
         healthComponent.maxHP = 50;
         healthComponent.hp = 50;
@@ -94,10 +87,6 @@ public class EntityFactory {
 
     public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg,boolean accuracy){
         Entity entity = engine.createEntity();
-
-        Box2DSprite box2DSprite = new Box2DSprite(assetLoader.manager.get(GfxAssetDescriptors.bulletTrace));
-        box2DSprite.setScale(12,2);
-        box2DSprite.setFlip(flip,false);
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
 
@@ -119,8 +108,6 @@ public class EntityFactory {
         fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET);
-
-        bodyComponent.body.createFixture(fixtureDef).setUserData(box2DSprite);
 
         bodyComponent.body.setLinearVelocity(speed,0.5f);
         entity.add(bodyComponent);

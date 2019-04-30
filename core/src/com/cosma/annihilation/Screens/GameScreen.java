@@ -22,7 +22,6 @@ public class GameScreen implements Screen, InputProcessor {
         worldBuilder = new WorldBuilder(game.isGameLoaded(),assetLoader);
         im = new InputMultiplexer();
         im.addProcessor(worldBuilder.getPlayerHudStage());
-        im.addProcessor(worldBuilder.getEngine().getSystem(PlayerControlSystem.class));
         im.addProcessor(this);
     }
 

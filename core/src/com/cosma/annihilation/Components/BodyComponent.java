@@ -11,8 +11,6 @@ import com.badlogic.gdx.utils.Pool;
 public class BodyComponent implements Component, Pool.Poolable {
     public Body body;
 
-    public boolean hasHitSomething = false;
-
     @Override
     public void reset() {
         Body body;

@@ -12,10 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.HealthComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
@@ -52,11 +48,10 @@ public class WorldBuilder implements Disposable, EntityListener {
         rayHandler = new RayHandler(world);
         engine = new PooledEngine();
 
-        EntityFactory.getInstance().setAssetLoader(assetLoader);
-
+        EntityFactory.getInstance().setEngine(engine);
+        EntityFactory.getInstance().setWorld(world);
 
         gui = new Gui(engine, world,assetLoader);
-
         CosmaMapLoader loader = new CosmaMapLoader("map/map.map",world,rayHandler,engine);
         if (isGameLoaded) {
             gui.loadGame();
@@ -108,8 +103,8 @@ public class WorldBuilder implements Disposable, EntityListener {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.translate(0, -1);
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.translate(-1, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.translate(1, 0);
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) camera.zoom = camera.zoom + 0.2f;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.zoom = camera.zoom - 0.2f;
+        if (Gdx.input.isKeyPressed(Input.Keys.Z)) camera.zoom = camera.zoom + 0.2f;
+        if (Gdx.input.isKeyPressed(Input.Keys.X)) camera.zoom = camera.zoom - 0.2f;
         camera.update();
     }
 

@@ -14,7 +14,7 @@ import com.cosma.annihilation.Components.PlayerStateComponent;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.StateManager;
 
-public class PlayerControlSystem extends IteratingSystem implements InputProcessor {
+public class PlayerControlSystem extends IteratingSystem {
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -41,8 +41,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         // Jumping
         if (stateComponent.onGround && stateComponent.canJump) {
 
-                if (Gdx.input.isKeyPressed(Input.Keys.UP) || stateComponent.goUp) {
-                    System.out.println("jump");
+                if (Gdx.input.isKeyPressed(Input.Keys.W) || stateComponent.goUp) {
                     playerBody.body.applyLinearImpulse(new Vector2(0, 8f),
                             playerBody.body.getWorldCenter(), true);
                 }
@@ -56,7 +55,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
 
         if(stateComponent.canClimb  && playerBody.body.getLinearVelocity().x == 0) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)|| stateComponent.goUp) {
+            if (Gdx.input.isKeyPressed(Input.Keys.W)|| stateComponent.goUp) {
                 stateComponent.climbing = true;
                 if(playerBody.body.getLinearVelocity().x == 0f) {
                     playerBody.body.setLinearVelocity(new Vector2(0, 1));
@@ -64,16 +63,22 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
             }
         }
         if(stateComponent.canClimb || stateComponent.canClimbDown) {
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)|| stateComponent.goDown) {
+            if (Gdx.input.isKeyPressed(Input.Keys.S)|| stateComponent.goDown) {
                 stateComponent.climbing = true;
                 playerBody.body.setLinearVelocity(new Vector2(0, -1));
             }
         }
 
 
+        //Stealth mode
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
+            //TODO
+
+        }
+
         //Moving on side
         if(stateComponent.canMoveOnSide) {
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT ) || stateComponent.goRight) {
+            if (Gdx.input.isKeyPressed(Input.Keys.D ) || stateComponent.goRight) {
 
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;
@@ -84,7 +89,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || stateComponent.goLeft) {
+            if (Gdx.input.isKeyPressed(Input.Keys.A) || stateComponent.goLeft) {
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -player.velocity;
                 float speedX = desiredSpeed - vec.x;
@@ -95,46 +100,5 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                         playerBody.body.getWorldCenter(), true);
             }
         }
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 }
