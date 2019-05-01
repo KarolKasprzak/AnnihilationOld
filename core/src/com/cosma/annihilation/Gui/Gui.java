@@ -66,7 +66,7 @@ public class Gui implements Screen {
     private Label actionNameDisplayed;
     private ContainerWindow containerWindow;
     private AssetLoader assetLoader;
-    private MenuWindow menuWindow;
+    private GameMainMenuWindow menuWindow;
     private boolean rightUpButtonPressed = false;
 
     public Gui(final Engine engine, World world, AssetLoader assetLoader) {
@@ -214,12 +214,12 @@ public class Gui implements Screen {
     }
 
     private void createMenuWindow() {
-        menuWindow = new MenuWindow("", skin, world, engine, Utilities.setWindowWidth(0.95f), Utilities.setWindowHeight(0.95f), this);
-        menuWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Utilities.setWindowWidth(0.95f) / 2), Gdx.graphics.getHeight() / 2 - (Utilities.setWindowHeight(0.95f) / 2));
-        menuWindow.setMovable(true);
-        menuWindow.setVisible(false);
-        menuWindow.setFillParent(true);
-        stage.addActor(menuWindow);
+//        menuWindow = new GameMainMenuWindow("", skin, world, engine, Utilities.setWindowWidth(0.95f), Utilities.setWindowHeight(0.95f), this);
+//        menuWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Utilities.setWindowWidth(0.95f) / 2), Gdx.graphics.getHeight() / 2 - (Utilities.setWindowHeight(0.95f) / 2));
+//        menuWindow.setMovable(true);
+//        menuWindow.setVisible(false);
+//        menuWindow.setFillParent(true);
+//        stage.addActor(menuWindow);
     }
 
     /** do it after systems are added to engine */
@@ -234,7 +234,7 @@ public class Gui implements Screen {
 
     public void showLootWindow(Entity entity) {
         containerWindow.setVisible(true);
-        InventoryWindow.fillInventory(containerWindow.containerSlotsTable, entity.getComponent(ContainerComponent.class).itemLocations, containerWindow.dragAndDrop);
+        PlayerInventoryWindow.fillInventory(containerWindow.containerSlotsTable, entity.getComponent(ContainerComponent.class).itemLocations, containerWindow.dragAndDrop);
     }
 
     private void createHUD() {

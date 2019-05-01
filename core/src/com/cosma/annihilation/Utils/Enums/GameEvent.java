@@ -10,6 +10,7 @@ package com.cosma.annihilation.Utils.Enums;
         PERFORM_ACTION,
         JUMP,
         OBJECT_HIT,
-        CROUCH
+        CROUCH,
+        OPEN_MENU
     }
 

@@ -67,7 +67,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         playerState = player.getComponent(PlayerStateComponent.class);
     }
 
-    public void SetSignal(){
+    public void addListenerSystems(){
         signal.add(this.getEngine().getSystem(HealthSystem.class));
     }
 

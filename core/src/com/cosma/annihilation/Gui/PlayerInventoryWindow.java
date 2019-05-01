@@ -22,7 +22,7 @@ import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.*;
 
 
-public class InventoryWindow extends Window implements InventorySlotObserver {
+public class PlayerInventoryWindow extends Window implements InventorySlotObserver {
     private Engine engine;
     private DragAndDrop dragAndDrop;
     private Table leftTable;
@@ -41,7 +41,7 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private int inventorySize = 16;
     private float slotSize = Utilities.setWindowHeight(0.09f);
     private ActorGestureListener listener;
-    private InventoryWindow inventoryWindow;
+    private PlayerInventoryWindow playerInventoryWindow;
 
     private Label weaponName;
     private Label weaponDescription;
@@ -54,13 +54,13 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
     private AnimatedActor animatedActor;
 
 
-    InventoryWindow(String title, Skin skin, final Engine engine) {
+    PlayerInventoryWindow(String title, Skin skin, final Engine engine) {
         super(title, skin);
         this.engine = engine;
         this.skin = skin;
 
 //        this.debugAll();
-        inventoryWindow = this;
+        playerInventoryWindow = this;
         dragAndDrop = new DragAndDrop();
         leftTable = new Table(skin);
         rightTable = new Table(skin);
@@ -104,8 +104,6 @@ public class InventoryWindow extends Window implements InventorySlotObserver {
         medicalTable.add(animatedActor).size(250,250).expandY();
 
     }
-
-
 
     private void addItemLabels(){
         weaponName = new Label("", skin);

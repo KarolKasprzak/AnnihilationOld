@@ -13,17 +13,17 @@ import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 class OptionsMenuWindow extends Window {
-    private MenuWindow menuWindow;
+    private GameMainMenuWindow gameMainMenuWindow;
     private TextButton saveButton;
     private TextButton loadButton;
     private TextButton exitButton;
     private TextButton pauseButton;
     private Skin skin;
 
-    OptionsMenuWindow(String title, Skin skin, MenuWindow menuWindow) {
+    OptionsMenuWindow(String title, Skin skin, GameMainMenuWindow gameMainMenuWindow) {
         super(title, skin);
         this.skin = skin;
-        this.menuWindow = menuWindow;
+        this.gameMainMenuWindow = gameMainMenuWindow;
 
 //        this.debugAll();
 
@@ -55,7 +55,7 @@ class OptionsMenuWindow extends Window {
         saveButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                menuWindow.saveGame();
+                gameMainMenuWindow.saveGame();
                 return true;
             }
         });
@@ -63,7 +63,7 @@ class OptionsMenuWindow extends Window {
         loadButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                menuWindow.loadGame();
+                gameMainMenuWindow.loadGame();
                 return true;
             }
         });

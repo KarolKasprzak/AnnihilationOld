@@ -21,9 +21,9 @@ import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 
-class ContainerWindow extends Window {
-    DragAndDrop dragAndDrop;
-    Table containerSlotsTable;
+public class ContainerWindow extends Window {
+    public DragAndDrop dragAndDrop;
+    public Table containerSlotsTable;
     private int itemSlotNumber;
     private TextButton takeAllButton;
     private TextButton closeButton;
@@ -32,7 +32,7 @@ class ContainerWindow extends Window {
     private Engine engine;
     private float guiScale;
 
-    ContainerWindow(String title, Skin skin, int itemSlotNumber, final Engine engine) {
+    public ContainerWindow(String title, Skin skin, int itemSlotNumber, final Engine engine) {
         super(title, skin);
         this.itemSlotNumber = itemSlotNumber;
         this.engine = engine;
@@ -53,7 +53,9 @@ class ContainerWindow extends Window {
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 super.tap(event, x, y, count, button);
                 if(count >= 2){
-                    moveItemToPlayerEquipment(( InventorySlot) event.getListenerActor());
+                    if(((InventorySlot) event.getListenerActor()).hasItem()){
+                        moveItemToPlayerEquipment(( InventorySlot) event.getListenerActor());
+                    }
                 }
             }
         };

@@ -8,12 +8,10 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 
 public class ActionSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -25,14 +23,12 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     private PlayerComponent playerComponent;
     private PlayerStateComponent playerState;
 
-    private final Gui gui;
     Filter filter;
     Filter filter1;
 
-    public ActionSystem(World world,Gui gui) {
+    public ActionSystem(World world) {
         super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
         this.world = world;
-        this.gui = gui;
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
@@ -93,9 +89,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     private void openBoxAction() {
         if (playerComponent.processedEntity.getComponent(ContainerComponent.class).itemLocations.size > -1) {
-            if(gui != null){
-                gui.showLootWindow(playerComponent.processedEntity);
-            }
+                  getEngine().getSystem(UserInterfaceSystem.class).showLootWindow(playerComponent.processedEntity);
         }
     }
 

@@ -3,7 +3,6 @@ package com.cosma.annihilation.Gui;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -12,10 +11,10 @@ import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
-public class MenuWindow extends Window {
+public class GameMainMenuWindow extends Window {
 
     private Skin skin;
-    private InventoryWindow inventoryWindow;
+    private PlayerInventoryWindow playerInventoryWindow;
     private OptionsMenuWindow optionsMenuWindow;
     private Table leftTable;
     private Table rightTable;
@@ -24,14 +23,12 @@ public class MenuWindow extends Window {
     private Button inventoryButton;
     private Button menuButton;
     private Button characterButton;
-    private Gui gui;
     private Engine engine;
 
 
-    MenuWindow(String title, Skin skin, World world, Engine engine, float x, float y, Gui gui) {
+    public GameMainMenuWindow(String title, Skin skin, Engine engine, float x, float y) {
         super(title, skin);
 
-        this.gui = gui;
         this.skin = skin;
         this.setVisible(false);
         this.engine = engine;
@@ -41,15 +38,12 @@ public class MenuWindow extends Window {
         this.setFillParent(true);
         this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.tabletGui))));
 
-//        this.debugAll();
-
         leftTable = new Table();
         rightTable = new Table();
         screenTable = new Table();
 
-        inventoryWindow = new InventoryWindow("", skin, engine);
-        inventoryWindow.setVisible(false);
-
+        playerInventoryWindow = new PlayerInventoryWindow("", skin, engine);
+        playerInventoryWindow.setVisible(false);
 
         optionsMenuWindow = new OptionsMenuWindow("", skin, this);
         optionsMenuWindow.setVisible(false);
@@ -72,7 +66,7 @@ public class MenuWindow extends Window {
 
     }
 
-    private void createButtons(final MenuWindow menu) {
+    private void createButtons(final GameMainMenuWindow menu) {
         exitButton = new Button(skin);
         exitButton.getStyle().up = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_button)));
         exitButton.getStyle().down = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_button_down)));
@@ -94,7 +88,7 @@ public class MenuWindow extends Window {
     }
 
     void saveGame() {
-        inventoryWindow.saveInventory(engine);
+        playerInventoryWindow.saveInventory(engine);
     }
 
 
@@ -103,13 +97,13 @@ public class MenuWindow extends Window {
     }
 
     void loadGame() {
-        inventoryWindow.loadInventory(engine);
-        gui.setPlayerEntity();
+        playerInventoryWindow.loadInventory(engine);
+
     }
 
 
     private void buttonsController() {
-        final MenuWindow menu = this;
+        final GameMainMenuWindow menu = this;
 
         menuButton.addListener(new InputListener() {
             @Override
@@ -122,8 +116,8 @@ public class MenuWindow extends Window {
         exitButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (screenTable.getChildren().contains(inventoryWindow, true)) {
-                    inventoryWindow.saveInventory(engine);
+                if (screenTable.getChildren().contains(playerInventoryWindow, true)) {
+                    playerInventoryWindow.saveInventory(engine);
                 }
                screenTable.clearChildren();
                 menu.setVisible(false);
@@ -134,16 +128,16 @@ public class MenuWindow extends Window {
         inventoryButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                clearAndAddWindow(inventoryWindow);
-                inventoryWindow.loadInventory(engine);
+                clearAndAddWindow(playerInventoryWindow);
+                playerInventoryWindow.loadInventory(engine);
                 return true;
             }
         });
     }
 
     private void clearAndAddWindow(Window window) {
-        if (leftTable.getChildren().contains(inventoryWindow, true)) {
-            inventoryWindow.saveInventory(engine);
+        if (leftTable.getChildren().contains(playerInventoryWindow, true)) {
+            playerInventoryWindow.saveInventory(engine);
         }
         screenTable.clearChildren();
         screenTable.add(window).size(this.getWidth() * 0.7f, this.getHeight() * 0.7f);

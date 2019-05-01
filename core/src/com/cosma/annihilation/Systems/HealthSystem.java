@@ -8,7 +8,6 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Gui.Gui;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
 
@@ -16,12 +15,10 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
 
 
     private ComponentMapper<HealthComponent> healthMapper;
-    private Gui gui;
     private  OrthographicCamera camera;
 
-    public HealthSystem(Gui gui, OrthographicCamera camera) {
+    public HealthSystem(OrthographicCamera camera) {
         super(Family.all(HealthComponent.class).get(), Constants.HEALTH_SYSTEM);
-        this.gui = gui;
         this.camera = camera;
 
         healthMapper = ComponentMapper.getFor(HealthComponent.class);

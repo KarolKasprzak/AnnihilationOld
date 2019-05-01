@@ -16,27 +16,16 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
 		config.title = "Annihilation";
-        Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		config.height = (int) dimension.getHeight();
-		config.width = (int) dimension.getWidth();
         config.resizable = false;
-			config.width = 1024;
-	        config.height = 768;
-		LwjglFrame frame = new LwjglFrame(new Annihilation(),config);
-//		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        config.fullscreen = false;
+        config.width = screenSize.width /2;
+        config.height = screenSize.height /2;
+
+		new LwjglApplication (new Annihilation(),config);
 
 	}
 }
 
-//public class DesktopLauncher {
-//	public static void main (String[] arg) {
-//		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-//
-////		config.setMaximized(true);
-//		config.setWindowIcon("icon/editor.png");
-//		config.setTitle("Annihilation");
-//		config.setWindowedMode(1024,768);
-//		Lwjgl3Application frame =  new Lwjgl3Application(new Annihilation(),config);
-//	}
-//}

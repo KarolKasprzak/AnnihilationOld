@@ -105,7 +105,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             direction = -1;
         }else direction = 1;
 
-        weaponLight.attachToBody(body,1*direction,0.3f);
+        weaponLight.attachToBody(body,direction,0.3f);
 
 
     }

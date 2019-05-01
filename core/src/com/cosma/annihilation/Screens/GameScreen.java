@@ -19,10 +19,9 @@ public class GameScreen implements Screen, InputProcessor {
 
     public GameScreen(Annihilation game, AssetLoader assetLoader) {
         this.assetLoader = assetLoader;
-        worldBuilder = new WorldBuilder(game.isGameLoaded(),assetLoader);
         im = new InputMultiplexer();
-        im.addProcessor(worldBuilder.getPlayerHudStage());
         im.addProcessor(this);
+        worldBuilder = new WorldBuilder(game.isGameLoaded(),assetLoader,im);
     }
 
     @Override

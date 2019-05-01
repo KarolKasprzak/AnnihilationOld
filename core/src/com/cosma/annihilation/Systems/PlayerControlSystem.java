@@ -3,6 +3,7 @@ package com.cosma.annihilation.Systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,19 +13,21 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.PlayerStateComponent;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.StateManager;
 
-public class PlayerControlSystem extends IteratingSystem {
+public class PlayerControlSystem extends IteratingSystem implements InputProcessor {
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerStateComponent> stateMapper;
-
+    private Signal<GameEvent> signal;
     public PlayerControlSystem() {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
+        signal = new Signal<GameEvent>();
     }
 
     @Override
@@ -41,7 +44,7 @@ public class PlayerControlSystem extends IteratingSystem {
         // Jumping
         if (stateComponent.onGround && stateComponent.canJump) {
 
-                if (Gdx.input.isKeyPressed(Input.Keys.W) || stateComponent.goUp) {
+                if (Gdx.input.isKeyPressed(Input.Keys.SPACE) || stateComponent.goUp) {
                     playerBody.body.applyLinearImpulse(new Vector2(0, 8f),
                             playerBody.body.getWorldCenter(), true);
                 }
@@ -76,18 +79,6 @@ public class PlayerControlSystem extends IteratingSystem {
 
         }
 
-        //Weapon pick up
-        if (Gdx.input.isKeyPressed(Input.Buttons.RIGHT) ) {
-            //TODO
-
-        }
-
-        //Action/Shoot
-        if (Gdx.input.isKeyPressed(Input.Buttons.LEFT) ) {
-            //TODO
-
-        }
-
         //Moving on side
         if(stateComponent.canMoveOnSide) {
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || stateComponent.goRight) {
@@ -112,5 +103,71 @@ public class PlayerControlSystem extends IteratingSystem {
                         playerBody.body.getWorldCenter(), true);
             }
         }
+    }
+
+    public void addListenerSystems(){
+        signal.add(getEngine().getSystem(ActionSystem.class));
+        signal.add(getEngine().getSystem(ShootingSystem.class));
+        signal.add(getEngine().getSystem(UserInterfaceSystem.class));
+    }
+
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE){
+            signal.dispatch(GameEvent.OPEN_MENU);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        //Action/Shoot
+        if(button == Input.Buttons.LEFT){
+            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
+            signal.dispatch(GameEvent.PERFORM_ACTION);
+        }
+
+        //Weapon take out/hide
+        if(button == Input.Buttons.RIGHT){
+            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        //Action/Shoot
+        if(button == Input.Buttons.LEFT){
+            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

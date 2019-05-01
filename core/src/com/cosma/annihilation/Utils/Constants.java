@@ -24,6 +24,7 @@ public class Constants {
     public static final   short  NOT_COLIDED= 0x2;
 
     //--------ENGINE-----------
+    public static final int USER_INTERFACE                 = 14;
     public static final int PHYSIC_SYSTEM                  = 13;
     public static final int DEBUG_RENDER                   = 12;
     public static final int RENDER                         = 11;
@@ -35,6 +36,7 @@ public class Constants {
     public static final int CAMERA_SYSTEM                  = 5;
     public static final int ACTION_SYSTEM                  = 4;
     public static final int PLAYER_CONTROL_SYSTEM          = 3;
+
 
 
 
