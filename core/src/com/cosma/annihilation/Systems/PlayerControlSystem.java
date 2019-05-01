@@ -76,6 +76,18 @@ public class PlayerControlSystem extends IteratingSystem {
 
         }
 
+        //Weapon pick up
+        if (Gdx.input.isKeyPressed(Input.Buttons.RIGHT) ) {
+            //TODO
+
+        }
+
+        //Action/Shoot
+        if (Gdx.input.isKeyPressed(Input.Buttons.LEFT) ) {
+            //TODO
+
+        }
+
         //Moving on side
         if(stateComponent.canMoveOnSide) {
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || stateComponent.goRight) {
