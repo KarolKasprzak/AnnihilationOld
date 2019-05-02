@@ -61,31 +61,26 @@ public class AnimationSystem extends IteratingSystem {
 
         animComponent.time += deltaTime;
 
-//        if(textureComponent.texture_ != null){
-//            if (stateComponent.playerDirection) {
-//                if (textureComponent.texture_.isFlipX()) {
-//                    textureComponent.texture_.flip(true, false);
-//                }
-//            } else {
-//                if (!textureComponent.texture_.isFlipX()) {
-//                    textureComponent.texture_.flip(true, false);
-//                }
-//            }
-//        }
-
-
-
+        animComponent.currentAnimation = animComponent.animationMap.get(animComponent.status.toString());
+        System.out.println(animComponent.status.toString());
 
         if (animationMapper.get(entity).currentAnimation != null) {
             textureComponent.texture_ = animComponent.currentAnimation.getKeyFrame(animComponent.time);
         }
 
-        if (!stateComponent.climbing) {
-            float velocityX = playerBody.getLinearVelocity().x;
-            if (velocityX != 0) {
-                animComponent.currentAnimation = animComponent.animationMap.get("walk");
-            }
-        }
+
+
+
+
+
+
+
+//        if (!stateComponent.climbing) {
+//            float velocityX = playerBody.getLinearVelocity().x;
+//            if (velocityX != 0) {
+//                animComponent.currentAnimation = animComponent.animationMap.get("walk");
+//            }
+//        }
 
 //            }
 //        }

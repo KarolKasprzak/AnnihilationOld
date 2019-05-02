@@ -9,10 +9,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
+import com.cosma.annihilation.Components.AnimationComponent;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.PlayerStateComponent;
+import com.cosma.annihilation.Utils.AnimationFactory;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.StateManager;
 
@@ -21,12 +24,14 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerStateComponent> stateMapper;
+    private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
     public PlayerControlSystem() {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
+        animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         signal = new Signal<GameEvent>();
     }
 
@@ -36,10 +41,12 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         BodyComponent playerBody = bodyMapper.get(entity);
         PlayerComponent player = playerMapper.get(entity);
         PlayerStateComponent stateComponent = stateMapper.get(entity);
+        AnimationComponent animationComponent = animationMapper.get(entity);
 
         // prevent slip
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                  playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
+                 animationComponent.status = AnimationStates.IDLE;
         }
         // Jumping
         if (stateComponent.onGround && stateComponent.canJump) {
@@ -82,7 +89,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         //Moving on side
         if(stateComponent.canMoveOnSide) {
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || stateComponent.goRight) {
-
+                animationComponent.status = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;
                 stateComponent.climbing = false;
@@ -93,6 +100,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                         playerBody.body.getWorldCenter(), true);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.A) || stateComponent.goLeft) {
+                animationComponent.status = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -player.velocity;
                 float speedX = desiredSpeed - vec.x;

@@ -6,8 +6,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -41,6 +43,7 @@ public class AssetLoader {
             manager.load(local.pathWithoutExtension(),I18NBundle.class);
         }
         manager.load("gfx/player_move.atlas",TextureAtlas.class);
+        manager.load("gfx/player/player_noweapon_stand.png",Texture.class);
         manager.load(GfxAssetDescriptors.box);
         manager.load(SfxAssetDescriptors.pistolSound);
         manager.load(GfxAssetDescriptors.bulletShell);
