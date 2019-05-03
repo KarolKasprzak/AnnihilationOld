@@ -15,13 +15,11 @@ import com.cosma.annihilation.Utils.Enums.GameEvent;
 
 public class ActionSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
-    private ComponentMapper<PlayerComponent> playerMapper;
-    private ComponentMapper<PlayerStateComponent> stateMapper;
+    private ComponentMapper<PlayerComponent> stateMapper;
+    private PlayerComponent playerComponent;
 
     private Body playerBody;
     private World world;
-    private PlayerComponent playerComponent;
-    private PlayerStateComponent playerState;
 
     Filter filter;
     Filter filter1;
@@ -30,8 +28,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
         super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
         this.world = world;
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-        playerMapper = ComponentMapper.getFor(PlayerComponent.class);
-        stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
+
+        stateMapper = ComponentMapper.getFor(PlayerComponent.class);
         filter = new Filter();
         filter.categoryBits = CollisionID.NO_SHADOW;
 
@@ -41,9 +39,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        playerComponent = playerMapper.get(entity);
         playerBody = bodyMapper.get(entity).body;
-        playerState = stateMapper.get(entity);
+        playerComponent = stateMapper.get(entity);
 
         if (!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();

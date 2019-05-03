@@ -24,13 +24,16 @@ public class AnimationFactory {
         playerAnimationMap.put("WALK",playerWalkAnimation);
 
         TextureRegion standNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_noweapon_stand.png",Texture.class));
-
         Animation<TextureRegion> playerIdleAnimation = new Animation(0.1f,standNoWeapon);
         playerAnimationMap.put("IDLE",playerIdleAnimation);
 
-        Animation<TextureRegion> playerMeleeAnimation = new Animation(0.1f,Annihilation.getAssets().get("gfx/player/player_melee.atlas",TextureAtlas.class).getRegions()
-                ,Animation.PlayMode.LOOP);
-        playerAnimationMap.put("melee",playerMeleeAnimation);
+        TextureRegion jumpNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_jump.png",Texture.class));
+        Animation<TextureRegion> playerJumpAnimation = new Animation(0.1f,jumpNoWeapon);
+        playerAnimationMap.put("JUMP",playerJumpAnimation);
+
+        Animation<TextureRegion> playerMeleeAnimation = new Animation(1/6f,Annihilation.getAssets().get(GfxAssetDescriptors.player_attack_melee).getRegions(), Animation.PlayMode.NORMAL);
+        playerAnimationMap.put("MELEE",playerMeleeAnimation);
+
         animationMap.put(AnimationId.PLAYER,playerAnimationMap);
 
 

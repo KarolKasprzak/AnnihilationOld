@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.PlayerStateComponent;
 import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
@@ -59,7 +58,7 @@ public class Gui implements Screen {
     private Engine engine;
 
     private Entity player;
-    private PlayerStateComponent playerState;
+    private PlayerComponent playerState;
 
     private World world;
     private Signal<GameEvent> signal;
@@ -151,7 +150,7 @@ public class Gui implements Screen {
                     playerState.goUp = true;
                     System.out.println("work");
                     System.out.println(playerState.goUp);
-                    System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerStateComponent.class).goUp);
+                    System.out.println(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first().getComponent(PlayerComponent.class).goUp);
                 }
                 return true;
             }
@@ -228,7 +227,7 @@ public class Gui implements Screen {
         signal.add(engine.getSystem(ActionSystem.class));
         signal.add(engine.getSystem(ShootingSystem.class));
         player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        playerState = player.getComponent(PlayerStateComponent.class);
+        playerState = player.getComponent(PlayerComponent.class);
     }
 
 
@@ -315,7 +314,7 @@ public class Gui implements Screen {
 
     void setPlayerEntity(){
         this.player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        playerState = player.getComponent(PlayerStateComponent.class);
+        playerState = player.getComponent(PlayerComponent.class);
     }
 
     public Stage getStage() {

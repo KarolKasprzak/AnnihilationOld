@@ -14,7 +14,6 @@ import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.AnimationFactory;
 import com.cosma.annihilation.Utils.Enums.BodyID;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
 
@@ -80,7 +79,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 //TODO
             }
 
-            if (component instanceof PlayerStateComponent) {
+            if (component instanceof PlayerComponent) {
                 json.writeObjectEnd();
                 continue;
             }
@@ -264,9 +263,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(animationComponent);
         }
 
-        if (jsonData.has("PlayerStateComponent")) {
-            PlayerStateComponent playerStateComponent = new PlayerStateComponent();
-            entity.add(playerStateComponent);
+        if (jsonData.has("PlayerComponent")) {
+            PlayerComponent playerComponent = new PlayerComponent();
+            entity.add(playerComponent);
 
         }
 

@@ -5,8 +5,6 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.cosma.annihilation.Components.*;
 
-import java.util.ArrayList;
-
 public class EntityWrapper {
     private OrderedMap<String,Component> map;
     public EntityWrapper(){
@@ -15,7 +13,7 @@ public class EntityWrapper {
 
     public void fillMap(ImmutableArray<Component> immutableArray){
         for(Component component: immutableArray){
-            if(component instanceof PlayerStateComponent || component instanceof PlayerComponent){
+            if(component instanceof PlayerComponent || component instanceof PlayerComponent){
                 continue;
             }
             map.put(component.getClass().getSimpleName(),component);

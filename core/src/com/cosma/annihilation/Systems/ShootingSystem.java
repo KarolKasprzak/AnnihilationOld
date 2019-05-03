@@ -8,6 +8,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -20,6 +21,7 @@ import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.GfxAssetDescriptors;
@@ -38,12 +40,11 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PlayerComponent playerComponent;
     private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent statsComponent;
-    private ComponentMapper<PlayerStateComponent> stateMapper;
+    private ComponentMapper<PlayerComponent> stateMapper;
     private Body body;
     private WeaponMagazine weaponMagazine;
     private RayCastCallback callback;
     private boolean isWeaponShooting;
-    private PlayerStateComponent stateComponent;
     private Entity targetEntity;
     private RayHandler rayHandler;
     private PointLight weaponLight;
@@ -57,7 +58,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         this.rayHandler = rayHandler;
 
         weaponMagazine = new WeaponMagazine();
-        stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
+        stateMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         playerDateMapper = ComponentMapper.getFor(PlayerInventoryComponent.class);
@@ -95,13 +96,13 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
         playerInventoryComponent = playerDateMapper.get(entity);
-        stateComponent = stateMapper.get(entity);
+        playerComponent = stateMapper.get(entity);
         statsComponent = playerStatsMapper.get(entity);
         animationComponent = playerAnimMapper.get(entity);
 
         body = bodyMapper.get(entity).body;
 
-        if (!stateComponent.playerDirection) {
+        if (!playerComponent.playerDirection) {
             direction = -1;
         }else direction = 1;
 
@@ -151,19 +152,29 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private void meleeAttack() {
         if (!playerComponent.isWeaponHidden & isMeleeAttackFinish) {
+            System.out.println("attacksfddfsdfssfdsdffds");
             isMeleeAttackFinish = false;
+            playerComponent.isAnimationPlayed = true;
             world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
-            System.out.println("attack");
+
             animationComponent.time = 0;
-            animationComponent.currentAnimation = meleeAnimation;
-            stateComponent.canMoveOnSide = false;
+//            animationComponent.currentAnimation = meleeAnimation;
+            playerComponent.animationState = AnimationStates.MELEE;
+            playerComponent.canMoveOnSide = false;
+          
+            float timer = animationComponent.currentAnimation.getAnimationDuration();
+            System.out.println(timer);
+
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    stateComponent.canMoveOnSide = true;
+                    playerComponent.canMoveOnSide = true;
                     isMeleeAttackFinish = true;
+                    playerComponent.isAnimationPlayed = false;
+                    System.out.println("end attack");
                 }
-            }, animationComponent.currentAnimation.getAnimationDuration());
+            }, timer);
+
         }
     }
 
@@ -196,7 +207,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 //    private void weaponShoot() {
 //        if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
 //            if (weaponMagazine.hasAmmo()) {
-//                if (stateComponent.playerDirection) {
+//                if (playerComponent.playerDirection) {
 //                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage(),calculateAttackAccuracy());
 //                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f, body.getPosition().y + 0.63f);
 //                } else {

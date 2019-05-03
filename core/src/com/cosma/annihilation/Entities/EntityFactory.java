@@ -13,7 +13,6 @@ import com.cosma.annihilation.Utils.Enums.EntityAction;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityID;
-import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 import java.util.ArrayList;
@@ -323,7 +322,7 @@ public class EntityFactory {
         SerializationComponent typeComponent = new SerializationComponent();
         PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
         TextureComponent textureComponent = new TextureComponent();
-        PlayerStateComponent stateComponent = new PlayerStateComponent();
+        PlayerComponent stateComponent = new PlayerComponent();
         PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
         AnimationComponent animationComponent = new AnimationComponent();
 //        textureComponent.texturePatch = GfxPlayerAssetDescriptors.player_stand_melee.fileName;

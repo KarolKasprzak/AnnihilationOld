@@ -11,7 +11,8 @@ import java.util.HashMap;
 public class AnimationComponent implements Component {
     public float time = 0f;
     public AnimationFactory.AnimationId animationId;
-    public AnimationStates status = AnimationStates.IDLE;
     public Animation<TextureRegion> currentAnimation;
     public HashMap<String,Animation<TextureRegion>> animationMap = new HashMap<>();
+    public boolean isAnimationPlayed = false;
+    public boolean isAnimationFinish = false;
 }

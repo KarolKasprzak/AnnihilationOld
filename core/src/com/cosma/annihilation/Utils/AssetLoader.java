@@ -44,6 +44,7 @@ public class AssetLoader {
         }
         manager.load("gfx/player_move.atlas",TextureAtlas.class);
         manager.load("gfx/player/player_noweapon_stand.png",Texture.class);
+        manager.load("gfx/player/player_jump.png",Texture.class);
         manager.load(GfxAssetDescriptors.box);
         manager.load(SfxAssetDescriptors.pistolSound);
         manager.load(GfxAssetDescriptors.bulletShell);

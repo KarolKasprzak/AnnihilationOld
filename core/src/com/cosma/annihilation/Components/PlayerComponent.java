@@ -2,30 +2,42 @@ package com.cosma.annihilation.Components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Items.WeaponItem;
+import com.cosma.annihilation.Utils.Enums.AnimationStates;
 
 import java.util.ArrayList;
 
+public class PlayerComponent implements Component {
 
-public class PlayerComponent implements Component,Json.Serializable {
     public float velocity = 2;
     public int numFootContacts = 0;
     public boolean hidde = false;
-    public boolean isWeaponHidden = true;
+
     public ArrayList<Entity> collisionEntityList = new ArrayList<Entity>();
     public WeaponItem activeWeapon;
     public int activeWeaponAmmo;
     public Entity processedEntity;
 
-    @Override
-    public void write(Json json) {
 
-    }
+    public AnimationStates animationState = AnimationStates.IDLE;
+    public boolean isAnimationPlayed = false;
+    public boolean isWeaponHidden = true;
 
-    @Override
-    public void read(Json json, JsonValue jsonData) {
+    public boolean canJump = true;
+    public boolean onGround = false;
+    public boolean climbing = false;
+    public boolean canClimb = false;
+    //------Control-----
+    public boolean goLeft = false;
+    public boolean goRight = false;
+    public boolean goUp = false;
+    public boolean goDown = false;
 
-    }
+    public boolean canMoveOnSide = true;
+    public boolean canClimbDown = false;
+    public boolean crouch = false;
+
+    /** right = true, left = false  */
+    public boolean playerDirection = true;
 }

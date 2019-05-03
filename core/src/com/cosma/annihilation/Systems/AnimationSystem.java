@@ -14,10 +14,9 @@ import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
 public class AnimationSystem extends IteratingSystem {
 
-    private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<TextureComponent> textureMapper;
-    private ComponentMapper<PlayerStateComponent> stateMapper;
+    private ComponentMapper<PlayerComponent> stateMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
 
     private Body playerBody;
@@ -28,16 +27,12 @@ public class AnimationSystem extends IteratingSystem {
     Animation startwalkanimation;
     AnimatedSprite animatedSprite;
 
-
-    private PlayerComponent playerComponent;
-
     public AnimationSystem(AssetLoader assetLoader) {
-        super(Family.all(PlayerComponent.class, TextureComponent.class, PlayerStateComponent.class).get(), Constants.ANIMATION);
+        super(Family.all(PlayerComponent.class, TextureComponent.class, PlayerComponent.class).get(), Constants.ANIMATION);
         this.assetLoader = assetLoader;
-        playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
-        stateMapper = ComponentMapper.getFor(PlayerStateComponent.class);
+        stateMapper = ComponentMapper.getFor(PlayerComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
          TextureAtlas textureAtlasWalk = (TextureAtlas) LoaderOLD.getResource("player_move");
 //        textureAtlas2 = (TextureAtlas) LoaderOLD.getResource("player_move_start");
@@ -51,23 +46,28 @@ public class AnimationSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        playerComponent = playerMapper.get(entity);
-        PlayerStateComponent stateComponent = stateMapper.get(entity);
+        PlayerComponent playerComponent = stateMapper.get(entity);
         TextureComponent textureComponent = textureMapper.get(entity);
         AnimationComponent animComponent = animationMapper.get(entity);
         playerBody = bodyMapper.get(entity).body;
 
-        textureComponent.flipTexture = !stateComponent.playerDirection;
+        textureComponent.flipTexture = !playerComponent.playerDirection;
+        System.out.println(playerComponent.isAnimationPlayed);
+       System.out.println(playerComponent.animationState);
 
         animComponent.time += deltaTime;
 
-        animComponent.currentAnimation = animComponent.animationMap.get(animComponent.status.toString());
-        System.out.println(animComponent.status.toString());
+        animComponent.currentAnimation = animComponent.animationMap.get(playerComponent.animationState.toString());
+//        System.out.println(playerComponent.animationState.toString());
 
         if (animationMapper.get(entity).currentAnimation != null) {
             textureComponent.texture_ = animComponent.currentAnimation.getKeyFrame(animComponent.time);
         }
-
+        if(animComponent.currentAnimation != null){
+            if(animComponent.currentAnimation.isAnimationFinished(animComponent.time)){
+                animComponent.isAnimationFinish = true;
+            }else animComponent.isAnimationFinish = false;
+        }
 
 
 
