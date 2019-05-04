@@ -74,6 +74,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         engine.getSystem(PlayerControlSystem.class).addListenerSystems();
         engine.getSystem(CollisionSystem.class).addListenerSystems();
+        engine.getSystem(ShootingSystem.class).addListenerSystems();
     }
 
     public void update(float delta) {

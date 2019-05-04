@@ -9,6 +9,7 @@ import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -50,7 +51,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PointLight weaponLight;
     private int direction = 1;
     private boolean isMeleeAttackFinish = true;
-    Animation<TextureRegion> meleeAnimation;
+    private Signal<GameEvent> signal;
     private Vector2 raycastEnd;
     public ShootingSystem(World world, RayHandler rayHandler) {
         super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
@@ -76,10 +77,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         weaponLight.setSoft(true);
         weaponLight.setActive(false);
 
-
-        meleeAnimation = new Animation(0.1f,Annihilation.getAssets().get(GfxAssetDescriptors.player_attack_melee).getRegions(), Animation.PlayMode.NORMAL);
-
-
+        signal = new Signal<GameEvent>();
 
         callback = new RayCastCallback() {
             @Override
@@ -108,6 +106,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         weaponLight.attachToBody(body,direction,0.3f);
 
+        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+            meleeAttack();
+        }
 
     }
 
@@ -132,6 +133,10 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         }
     }
 
+    public void addListenerSystems(){
+        signal.add(getEngine().getSystem(PlayerControlSystem.class));
+    }
+
     private void weaponSelect() {
         if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
             int weaponType = playerComponent.activeWeapon.getItemUseType();
@@ -152,19 +157,20 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private void meleeAttack() {
         if (!playerComponent.isWeaponHidden & isMeleeAttackFinish) {
-            System.out.println("attacksfddfsdfssfdsdffds");
+            System.out.println("_______________________________________________________________");
+            signal.dispatch(GameEvent.START_ATTACK_ANIMATION);
             isMeleeAttackFinish = false;
             playerComponent.isAnimationPlayed = true;
+
             world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
 
             animationComponent.time = 0;
-//            animationComponent.currentAnimation = meleeAnimation;
             playerComponent.animationState = AnimationStates.MELEE;
             playerComponent.canMoveOnSide = false;
-          
+
             float timer = animationComponent.currentAnimation.getAnimationDuration();
             System.out.println(timer);
-
+            System.out.println("_______________________________________________________________");
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {

@@ -3,6 +3,7 @@ package com.cosma.annihilation.Systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
@@ -16,13 +17,14 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 
-public class PlayerControlSystem extends IteratingSystem implements InputProcessor {
+public class PlayerControlSystem extends IteratingSystem implements InputProcessor, Listener<GameEvent> {
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerComponent> stateMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
+    private PlayerComponent playerComponent;
     public PlayerControlSystem() {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
@@ -37,13 +39,17 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
         BodyComponent playerBody = bodyMapper.get(entity);
         PlayerComponent player = playerMapper.get(entity);
-        PlayerComponent playerComponent = stateMapper.get(entity);
+        playerComponent = stateMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
 
-        // prevent slip/idle mode
-        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && playerComponent.isWeaponHidden) {
+
+
+
+
+//         prevent slip/idle mode
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && !playerComponent.isAnimationPlayed) {
                  playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
-            playerComponent.animationState = AnimationStates.IDLE;
+                 playerComponent.animationState = AnimationStates.IDLE;
         }
 
 
@@ -134,6 +140,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
             signal.dispatch(GameEvent.OPEN_MENU);
         }
 
+
         return false;
     }
 
@@ -185,5 +192,14 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    @Override
+    public void receive(Signal<GameEvent> signal, GameEvent gameEvent) {
+        switch (gameEvent) {
+            case START_ATTACK_ANIMATION:
+                playerComponent.isAnimationPlayed = false;
+                break;
+        }
     }
 }

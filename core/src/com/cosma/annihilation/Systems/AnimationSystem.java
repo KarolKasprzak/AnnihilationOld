@@ -4,12 +4,16 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.*;
+import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
 public class AnimationSystem extends IteratingSystem {
@@ -28,7 +32,7 @@ public class AnimationSystem extends IteratingSystem {
     AnimatedSprite animatedSprite;
 
     public AnimationSystem(AssetLoader assetLoader) {
-        super(Family.all(PlayerComponent.class, TextureComponent.class, PlayerComponent.class).get(), Constants.ANIMATION);
+        super(Family.all(PlayerComponent.class, TextureComponent.class).get(), Constants.ANIMATION);
         this.assetLoader = assetLoader;
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
@@ -53,7 +57,7 @@ public class AnimationSystem extends IteratingSystem {
 
         textureComponent.flipTexture = !playerComponent.playerDirection;
         System.out.println(playerComponent.isAnimationPlayed);
-       System.out.println(playerComponent.animationState);
+//       System.out.println(playerComponent.animationState);
 
         animComponent.time += deltaTime;
 
@@ -63,11 +67,12 @@ public class AnimationSystem extends IteratingSystem {
         if (animationMapper.get(entity).currentAnimation != null) {
             textureComponent.texture_ = animComponent.currentAnimation.getKeyFrame(animComponent.time);
         }
-        if(animComponent.currentAnimation != null){
-            if(animComponent.currentAnimation.isAnimationFinished(animComponent.time)){
-                animComponent.isAnimationFinish = true;
-            }else animComponent.isAnimationFinish = false;
-        }
+
+//        if(animComponent.currentAnimation != null){
+//            if(animComponent.currentAnimation.isAnimationFinished(animComponent.time)){
+//                animComponent.isAnimationFinish = true;
+//            }else animComponent.isAnimationFinish = false;
+//        }
 
 
 

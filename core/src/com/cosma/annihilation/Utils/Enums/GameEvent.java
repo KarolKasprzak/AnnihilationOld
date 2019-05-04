@@ -11,6 +11,7 @@ package com.cosma.annihilation.Utils.Enums;
         JUMP,
         OBJECT_HIT,
         CROUCH,
-        OPEN_MENU
+        OPEN_MENU,
+        START_ATTACK_ANIMATION
     }
 
