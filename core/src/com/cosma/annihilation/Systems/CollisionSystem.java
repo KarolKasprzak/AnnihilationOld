@@ -28,9 +28,10 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     private float ladderHeight;
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
-    private ComponentMapper<PlayerComponent> stateMapper;
+    private ComponentMapper<AnimationComponent> animationMapper;
     private Body playerBody;
     private PlayerComponent playerComponent;
+    private AnimationComponent animationComponent;
     private Filter goTroughFilter;
     private Filter normalFilter;
     public Array<Body> bodiesToRemove;
@@ -41,7 +42,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         super(Family.all(PlayerComponent.class).get(),Constants.PHYSIC_SYSTEM);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
-        stateMapper = ComponentMapper.getFor(PlayerComponent.class);
+        animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         this.world = world;
 
         world.setContactListener(this);
@@ -65,6 +66,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         playerBody = player.getComponent(BodyComponent.class).body;
         playerComponent = player.getComponent(PlayerComponent.class);
+        animationComponent = player.getComponent(AnimationComponent.class);
     }
 
     public void addListenerSystems(){
@@ -83,7 +85,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 //               playerComponent.canMoveOnSide = true;
            } else {
                playerComponent.onGround = false;
-               playerComponent.animationState = AnimationStates.JUMP;
+               animationComponent.animationState = AnimationStates.JUMP;
 
 //
 
@@ -126,6 +128,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
+
     }
 
     @Override

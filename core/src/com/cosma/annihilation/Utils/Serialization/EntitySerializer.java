@@ -66,6 +66,11 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 continue;
             }
 
+            if (component instanceof StateComponent) {
+                json.writeObjectEnd();
+                continue;
+            }
+
             if (component instanceof AnimationComponent) {
                 json.writeValue("id",((AnimationComponent) component).animationId.name());
                 json.writeObjectEnd();
@@ -229,6 +234,11 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             TagComponent tagComponent = new TagComponent();
             tagComponent.tag = jsonData.get("TagComponent").get("tag").asString();
             entity.add(tagComponent);
+        }
+
+        if (jsonData.has("StateComponent")) {
+            StateComponent stateComponent = new StateComponent();
+            entity.add(stateComponent);
         }
 
         if (jsonData.has("ContainerComponent")) {

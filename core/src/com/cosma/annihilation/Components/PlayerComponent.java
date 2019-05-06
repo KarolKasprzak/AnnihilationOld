@@ -20,8 +20,7 @@ public class PlayerComponent implements Component {
     public Entity processedEntity;
 
 
-    public AnimationStates animationState = AnimationStates.IDLE;
-    public boolean isAnimationPlayed = false;
+
     public boolean isWeaponHidden = true;
 
     public boolean canJump = true;
@@ -38,6 +37,5 @@ public class PlayerComponent implements Component {
     public boolean canClimbDown = false;
     public boolean crouch = false;
 
-    /** right = true, left = false  */
-    public boolean playerDirection = true;
+
 }

@@ -13,7 +13,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.physics.box2d.*;
@@ -25,7 +24,6 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
 import com.cosma.annihilation.Utils.SfxAssetDescriptors;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -35,19 +33,20 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private ComponentMapper<PlayerInventoryComponent> playerDateMapper;
     private ComponentMapper<PlayerStatsComponent> playerStatsMapper;
     private ComponentMapper<AnimationComponent> playerAnimMapper;
+    private ComponentMapper<StateComponent> stateMapper;
 
     private World world;
     private AnimationComponent animationComponent;
     private PlayerComponent playerComponent;
     private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent statsComponent;
-    private ComponentMapper<PlayerComponent> stateMapper;
+    private StateComponent stateComponent;
+
     private Body body;
     private WeaponMagazine weaponMagazine;
     private RayCastCallback callback;
     private boolean isWeaponShooting;
     private Entity targetEntity;
-    private RayHandler rayHandler;
     private PointLight weaponLight;
     private int direction = 1;
     private boolean isMeleeAttackFinish = true;
@@ -56,10 +55,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     public ShootingSystem(World world, RayHandler rayHandler) {
         super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
         this.world = world;
-        this.rayHandler = rayHandler;
 
         weaponMagazine = new WeaponMagazine();
-        stateMapper = ComponentMapper.getFor(PlayerComponent.class);
+        stateMapper = ComponentMapper.getFor(StateComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         playerDateMapper = ComponentMapper.getFor(PlayerInventoryComponent.class);
@@ -94,13 +92,13 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     protected void processEntity(Entity entity, float deltaTime) {
         playerComponent = playerMapper.get(entity);
         playerInventoryComponent = playerDateMapper.get(entity);
-        playerComponent = stateMapper.get(entity);
         statsComponent = playerStatsMapper.get(entity);
         animationComponent = playerAnimMapper.get(entity);
+        stateComponent = stateMapper.get(entity);
 
         body = bodyMapper.get(entity).body;
 
-        if (!playerComponent.playerDirection) {
+        if (!stateComponent.spriteDirection) {
             direction = -1;
         }else direction = 1;
 
@@ -160,23 +158,36 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             System.out.println("_______________________________________________________________");
             signal.dispatch(GameEvent.START_ATTACK_ANIMATION);
             isMeleeAttackFinish = false;
-            playerComponent.isAnimationPlayed = true;
+//            playerComponent.isAnimationPlayed = true;
 
             world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
 
             animationComponent.time = 0;
-            playerComponent.animationState = AnimationStates.MELEE;
-            playerComponent.canMoveOnSide = false;
 
+            animationComponent.animationState = AnimationStates.MELEE;
             float timer = animationComponent.currentAnimation.getAnimationDuration();
             System.out.println(timer);
+            playerComponent.canMoveOnSide = false;
+
+
+
             System.out.println("_______________________________________________________________");
+//            Timer.schedule(new Timer.Task() {
+//                @Override
+//                public void run() {
+//                    playerComponent.canMoveOnSide = true;
+//                    isMeleeAttackFinish = true;
+//                    playerComponent.isAnimationPlayed = false;
+//                    System.out.println("end attack");
+//                }
+//            }, animationComponent.animationMap.get(AnimationStates.MELEE.toString()).getAnimationDuration());
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                     playerComponent.canMoveOnSide = true;
                     isMeleeAttackFinish = true;
-                    playerComponent.isAnimationPlayed = false;
+//                    playerComponent.isAnimationPlayed = false;
+                    world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
                     System.out.println("end attack");
                 }
             }, timer);

@@ -29,7 +29,6 @@ public class AssetLoader {
 
     public void load() {
 
-        loadMap();
         loadFonts();
 
         FileHandle mapTextures = Gdx.files.local("map/map_textures");
@@ -85,11 +84,6 @@ public class AssetLoader {
     private void loadFonts(){
         manager.setLoader(BitmapFont.class, new BitmapFontLoader(new InternalFileHandleResolver()));
         manager.load(GfxAssetDescriptors.font);
-    }
-
-    private void loadMap(){
-        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        manager.load(GfxAssetDescriptors.tiledMap);
     }
 
     public void dispose() {

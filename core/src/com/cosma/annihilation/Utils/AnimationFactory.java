@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.cosma.annihilation.Annihilation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AnimationFactory {
@@ -33,14 +32,23 @@ public class AnimationFactory {
 
         Animation<TextureRegion> playerMeleeAnimation = new Animation(1/6f,Annihilation.getAssets().get(GfxAssetDescriptors.player_attack_melee).getRegions(), Animation.PlayMode.NORMAL);
         playerAnimationMap.put("MELEE",playerMeleeAnimation);
+        //Test enemy animation
+        HashMap<String,Animation> zombieAnimationMap = new HashMap<>();
+        TextureRegion zombieIdleTexture = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_noweapon_stand.png",Texture.class));
+        Animation<TextureRegion> zombieIdle = new Animation(0.1f,zombieIdleTexture);
+        zombieAnimationMap.put("IDLE",zombieIdle);
+
+
+
+
 
         animationMap.put(AnimationId.PLAYER,playerAnimationMap);
-
+        animationMap.put(AnimationId.TEST_ZOMBIE,zombieAnimationMap);
 
 
 
     }
-    public HashMap<String,Animation<TextureRegion>> createAnimationMap(AnimationId animationId){
+    public HashMap createAnimationMap(AnimationId animationId){
         if(animationMap.keySet().contains(animationId)){
             return  animationMap.get(animationId);
         }
@@ -48,6 +56,6 @@ public class AnimationFactory {
         return null;
     }
     public enum AnimationId{
-        PLAYER
+        PLAYER,TEST_ZOMBIE
     }
 }

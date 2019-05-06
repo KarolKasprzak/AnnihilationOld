@@ -64,7 +64,7 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera, loader.getMap()));
-        engine.addSystem(new AnimationSystem(assetLoader));
+        engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera, world));
 
         engine.addEntityListener(this);
@@ -79,7 +79,6 @@ public class WorldBuilder implements Disposable, EntityListener {
 
     public void update(float delta) {
         debugInput();
-
         engine.update(delta);
         camera.update();
     }
