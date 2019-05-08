@@ -10,7 +10,7 @@ import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 
 public class MapRender {
 
@@ -25,7 +25,7 @@ public class MapRender {
         this.gameMap = gameMap;
         this.scale = gameMap.getTileSize();
         this.renderer = renderer;
-        iconPack = Annihilation.getAssets().get(GfxAssetDescriptors.editor_icons);
+        iconPack = Annihilation.getAssets().get("gfx/atlas/editor_icon.atlas", TextureAtlas.class);
     }
 
     public void renderGrid() {

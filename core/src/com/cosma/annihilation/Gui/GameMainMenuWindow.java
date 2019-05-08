@@ -2,13 +2,14 @@ package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 public class GameMainMenuWindow extends Window {
@@ -36,7 +37,7 @@ public class GameMainMenuWindow extends Window {
         this.setSize(x, y);
         this.setMovable(false);
         this.setFillParent(true);
-        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.tabletGui))));
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/interface/tablet.png",Texture.class))));
 
         leftTable = new Table();
         rightTable = new Table();
@@ -68,13 +69,13 @@ public class GameMainMenuWindow extends Window {
 
     private void createButtons(final GameMainMenuWindow menu) {
         exitButton = new Button(skin);
-        exitButton.getStyle().up = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_button)));
-        exitButton.getStyle().down = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_button_down)));
+        exitButton.getStyle().up = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/interface/table_button.png",Texture.class)));
+        exitButton.getStyle().down = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/interface/table_button_pressed.png",Texture.class)));
 
         menuButton = new Button(skin);
 
         inventoryButton = new Button(skin);
-        inventoryButton.getStyle().up = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_button1)));
+        inventoryButton.getStyle().up = new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/interface/table_button1.png",Texture.class)));
 //        inventoryButton.getStyle().up = new TextureRegionDrawable(new TextureRegion (Annihilation.getAssets().get(GfxAssetDescriptors.gui_button)));
 //        inventoryButton.getStyle().down = new TextureRegionDrawable(new TextureRegion (Annihilation.getAssets().get(GfxAssetDescriptors.gui_button_down)));
 

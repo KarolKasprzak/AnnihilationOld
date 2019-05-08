@@ -23,7 +23,7 @@ import com.cosma.annihilation.Gui.PlayerInventoryWindow;
 import com.cosma.annihilation.Gui.GameMainMenuWindow;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 public class UserInterfaceSystem extends IteratingSystem implements Listener<GameEvent> {
@@ -37,7 +37,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     public UserInterfaceSystem(Engine engine) {
         super(Family.all(PlayerComponent.class).get(), Constants.USER_INTERFACE);
 
-        Skin skin = Annihilation.getAssets().get((GfxAssetDescriptors.skin));
+        Skin skin = Annihilation.getAssets().get("gfx/interface/uiskin.json", Skin.class);
         Camera camera = new OrthographicCamera();
         camera.update();
         Viewport viewport = new ScreenViewport();

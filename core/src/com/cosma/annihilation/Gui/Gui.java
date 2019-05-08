@@ -26,7 +26,7 @@ import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
 import com.cosma.annihilation.Utils.Utilities;
 
@@ -68,11 +68,11 @@ public class Gui implements Screen {
     private GameMainMenuWindow menuWindow;
     private boolean rightUpButtonPressed = false;
 
-    public Gui(final Engine engine, World world, AssetLoader assetLoader) {
+    public Gui(final Engine engine, World world) {
         this.world = world;
         this.engine = engine;
-        this.assetLoader = assetLoader;
-        skin = assetLoader.manager.get(GfxAssetDescriptors.skin);
+        this.assetLoader = Annihilation.getAssetsLoader();
+        skin = assetLoader.manager.get("gfx/interface/uiskin.json", Skin.class);
         signal = new Signal<GameEvent>();
         Camera camera = new OrthographicCamera();
         camera.update();
@@ -97,13 +97,13 @@ public class Gui implements Screen {
         weaponHidden = new Label("", skin);
 
         actionNameDisplayed = new Label("", skin);
-        actionButtonRightUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_b"))));
-        actionButtonRightDown = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_a"))));
-        actionButtonRightCenter = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_x"))));
-        actionButtonUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_up"))));
-        actionButtonDown = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_down"))));
-        actionButtonLeft = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_left"))));
-        actionButtonRight = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.gui_buttons).findRegion("button_right"))));
+//        actionButtonRightUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_b"))));
+//        actionButtonRightDown = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_a"))));
+//        actionButtonRightCenter = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_x"))));
+//        actionButtonUp = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_up"))));
+//        actionButtonDown = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_down"))));
+//        actionButtonLeft = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_left"))));
+//        actionButtonRight = new ImageButton(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(OLDAssetDescriptors.gui_buttons).findRegion("button_right"))));
 
         actionButtonRightUp.addListener(new InputListener() {
             @Override

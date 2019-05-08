@@ -2,6 +2,7 @@ package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -17,7 +18,7 @@ import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Gui.Inventory.InventorySlot;
 import com.cosma.annihilation.Gui.Inventory.InventorySlotTarget;
 import com.badlogic.gdx.utils.Array;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 
 
@@ -39,7 +40,7 @@ public class ContainerWindow extends Window {
 
         containerWindow = this;
 
-        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.guiframe))));
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/interface/gui_frame.png",Texture.class))));
 
         guiScale = 1.3f;
 

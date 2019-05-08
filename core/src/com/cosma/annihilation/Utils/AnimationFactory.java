@@ -18,11 +18,12 @@ public class AnimationFactory {
 
         //Player animations
         HashMap<String,Animation> playerAnimationMap = new HashMap<>();
-        Animation<TextureRegion> playerWalkAnimation = new Animation(0.1f,Annihilation.getAssets().get("gfx/player_move.atlas",TextureAtlas.class).getRegions()
+        Animation<TextureRegion> playerWalkAnimation = new Animation(0.1f,
+                Annihilation.getAssets().get("gfx/player/player_move.atlas",TextureAtlas.class).getRegions()
                 ,Animation.PlayMode.LOOP);
         playerAnimationMap.put("WALK",playerWalkAnimation);
 
-        TextureRegion standNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_noweapon_stand.png",Texture.class));
+        TextureRegion standNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_stand.png",Texture.class));
         Animation<TextureRegion> playerIdleAnimation = new Animation(0.1f,standNoWeapon);
         playerAnimationMap.put("IDLE",playerIdleAnimation);
 
@@ -30,11 +31,14 @@ public class AnimationFactory {
         Animation<TextureRegion> playerJumpAnimation = new Animation(0.1f,jumpNoWeapon);
         playerAnimationMap.put("JUMP",playerJumpAnimation);
 
-        Animation<TextureRegion> playerMeleeAnimation = new Animation(1/6f,Annihilation.getAssets().get(GfxAssetDescriptors.player_attack_melee).getRegions(), Animation.PlayMode.NORMAL);
+        Animation<TextureRegion> playerMeleeAnimation = new Animation(1/6f,Annihilation.getAssets().get("gfx/player/player_melee.atlas",
+                TextureAtlas.class).getRegions(),
+                Animation.PlayMode.NORMAL);
         playerAnimationMap.put("MELEE",playerMeleeAnimation);
+
         //Test enemy animation
         HashMap<String,Animation> zombieAnimationMap = new HashMap<>();
-        TextureRegion zombieIdleTexture = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_noweapon_stand.png",Texture.class));
+        TextureRegion zombieIdleTexture = new TextureRegion(Annihilation.getAssets().get("gfx/textures/enemy.png",Texture.class));
         Animation<TextureRegion> zombieIdle = new Animation(0.1f,zombieIdleTexture);
         zombieAnimationMap.put("IDLE",zombieIdle);
 

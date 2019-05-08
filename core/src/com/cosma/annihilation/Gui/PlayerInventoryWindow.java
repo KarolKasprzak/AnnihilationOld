@@ -3,6 +3,7 @@ package com.cosma.annihilation.Gui;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -65,11 +66,11 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
         leftTable = new Table(skin);
         rightTable = new Table(skin);
 
-        TextureAtlas atlas = Annihilation.getAssets().get(GfxAssetDescriptors.gui_human_animation);
+        TextureAtlas atlas = Annihilation.getAssets().get("gui/atlas/gui_human.atlas",TextureAtlas.class);
         Animation animation = new Animation(0.1f,atlas.getRegions(), Animation.PlayMode.LOOP);
         animatedActor = new AnimatedActor(animation);
 
-        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get(GfxAssetDescriptors.clearColor))));
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gui/interface/clear.png",Texture.class))));
 
         listener = new ActorGestureListener() {
             @Override
@@ -91,7 +92,6 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
         createMedicalTable();
         createEquipmentTable();
         createInventoryTable();
-        createPlayerViewTable();
 
         leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX().padLeft(Utilities.setWindowHeight(0.06f));
         rightTable.add(medicalTable);
@@ -152,12 +152,6 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
         weaponAmmoInMagazine.setText("Magazine capacity: " + item.getMaxAmmoInMagazine());
     }
 
-    private void createPlayerViewTable(){
-        playerViewTable = new Table();
-        Image playerImage = new Image(Annihilation.getAssets().get(GfxPlayerAssetDescriptors.player_stand));
-        playerImage.setSize(200,200);
-        playerViewTable.add(playerImage);
-    }
 
     private void createStatsTable() {
         statsTable = new Table();
@@ -173,10 +167,11 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
     private void createEquipmentTable() {
         equipmentSlotsTable = new Table();
 
-        armourInventorySlot = new InventorySlot(InventoryItem.ItemType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_armour_slot)));
+        armourInventorySlot = new InventorySlot(InventoryItem.ItemType.ARMOUR.getValue(), new Image(Annihilation.getAssets().get("gfx/interface/gui_armour_slot.png",Texture.class)));
 
         weaponInventorySlot = new InventorySlot(InventoryItem.ItemType.WEAPON_DISTANCE.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_ENERGETIC.getValue()
-                | InventoryItem.ItemType.WEAPON_MELEE.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_LONG.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_ENERGETIC_LONG.getValue(), new Image(Annihilation.getAssets().get(GfxAssetDescriptors.gui_weapon_slot)));
+                | InventoryItem.ItemType.WEAPON_MELEE.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_LONG.getValue() | InventoryItem.ItemType.WEAPON_DISTANCE_ENERGETIC_LONG.getValue(),
+                new Image(Annihilation.getAssets().get("gfx/interface/gui_weapon_slot.png",Texture.class)));
         weaponInventorySlot.register(this);
 
         dragAndDrop.addTarget(new InventorySlotTarget(armourInventorySlot));

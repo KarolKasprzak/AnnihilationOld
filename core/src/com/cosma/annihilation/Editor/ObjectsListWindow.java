@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -20,7 +21,7 @@ import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
 import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 import com.cosma.annihilation.Utils.Utilities;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -280,7 +281,7 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
         @Override
         protected VisTable createView(final MapObject item) {
             VisLabel label = new VisLabel(item.getName());
-            final VisImageButton bodySetting = new VisImageButton(new TextureRegionDrawable(Annihilation.getAssets().get(GfxAssetDescriptors.editor_icons).findRegion("settings_")));
+            final VisImageButton bodySetting = new VisImageButton(new TextureRegionDrawable(Annihilation.getAssets().get("gfx/atlas/editor_icon.atlas", TextureAtlas.class).findRegion("settings_")));
             bodySetting.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {

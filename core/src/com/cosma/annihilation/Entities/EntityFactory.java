@@ -2,7 +2,6 @@ package com.cosma.annihilation.Entities;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -13,7 +12,6 @@ import com.cosma.annihilation.Utils.Enums.EntityAction;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.EntityID;
-import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 import java.util.ArrayList;
 
@@ -55,7 +53,7 @@ public class EntityFactory {
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
         SerializationComponent serializationComponent = engine.createComponent(SerializationComponent.class);
 
-        textureComponent.texturePatch = GfxAssetDescriptors.enemy1.fileName;
+
         healthComponent.maxHP = 50;
         healthComponent.hp = 50;
         serializationComponent.type = EntityID.ENEMY_TEST;
@@ -121,7 +119,7 @@ public class EntityFactory {
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
 
-        textureComponent.texturePatch = GfxAssetDescriptors.bulletShell.fileName;
+
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -163,7 +161,7 @@ public class EntityFactory {
         healthComponent.hp = 100;
         healthComponent.maxHP = 100;
 
-        textureComponent.texturePatch = GfxAssetDescriptors.door.fileName;
+
 
 
         actionComponent.action = EntityAction.OPEN_DOOR;
@@ -214,7 +212,7 @@ public class EntityFactory {
         healthComponent.hp = 50;
         healthComponent.maxHP = 50;
 
-        textureComponent.texturePatch = GfxAssetDescriptors.box.fileName;
+
 
         serializationComponent.type = EntityID.BOX;
         actionComponent.action = EntityAction.OPEN;
@@ -257,9 +255,8 @@ public class EntityFactory {
 
     public Entity createBoxEntityTest() {
         Entity entity = new Entity();
-        Texture mainTexture = (Texture) LoaderOLD.getResource("box");
-        Box2DSprite box2DSprite = new Box2DSprite(mainTexture);
-        //Component
+
+
         BodyComponent bodyComponent = new BodyComponent();
         ContainerComponent containerComponent = new ContainerComponent();
         ActionComponent actionComponent = new ActionComponent();
@@ -289,7 +286,7 @@ public class EntityFactory {
         renderFixture.shape = shape;
         renderFixture.isSensor = true;
         renderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-        bodyComponent.body.createFixture(renderFixture).setUserData(box2DSprite);
+
         //Sensor fixture
         CircleShape sensorShape = new CircleShape();
         sensorShape.setRadius(1);

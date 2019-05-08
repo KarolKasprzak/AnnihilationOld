@@ -1,16 +1,18 @@
 package com.cosma.annihilation.Gui.Inventory;
 
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Items.InventoryItem;
-import com.cosma.annihilation.Utils.GfxAssetDescriptors;
+import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 
 public class InventorySlot extends Stack implements InventorySlotObservable{
     private int itemsAmount = 0;
@@ -25,12 +27,12 @@ public class InventorySlot extends Stack implements InventorySlotObservable{
 
         stack = new Stack();
         backgroundImage = new Image();
-        Image backgroundImageStandard = new Image( Annihilation.getAssets().get(GfxAssetDescriptors.guiframe64x64));
+        Image backgroundImageStandard = new Image( Annihilation.getAssets().get("gfx/interface/gui_frame_64x64.png",Texture.class));
 //        Image backgroundImageStandard = new Image( Annihilation.getAssets().get(GfxAssetDescriptors.defaultStack));
         stack.add(backgroundImageStandard);
         stack.setName("background");
         this.add(stack);
-        itemsAmountLabel = new Label(String.valueOf(itemsAmount),Annihilation.getAssets().get(GfxAssetDescriptors.skin));
+        itemsAmountLabel = new Label(String.valueOf(itemsAmount),Annihilation.getAssets().get("gfx/interface/uiskin.json", Skin.class));
         itemsAmountLabel.setFontScale(0.5f);
         itemsAmountLabel.setAlignment(Align.bottomRight);
         itemsAmountLabel.setVisible(false);
