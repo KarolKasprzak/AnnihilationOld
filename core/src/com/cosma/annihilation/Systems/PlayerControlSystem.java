@@ -18,7 +18,7 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 
-public class PlayerControlSystem extends IteratingSystem implements InputProcessor, Listener<GameEvent> {
+public class PlayerControlSystem extends IteratingSystem{
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -48,7 +48,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
 
 //         prevent slip/idle mode
-        if (!isLeftButtonClicked && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround) {
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && !animationComponent.isAnimationPlayed) {
                  playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
                  animationComponent.animationState = AnimationStates.IDLE;
         }
@@ -133,72 +133,5 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
     }
-
-
-    @Override
-    public boolean keyDown(int keycode) {
-        if(keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE){
-            signal.dispatch(GameEvent.OPEN_MENU);
-        }
-
-
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //Action/Shoot
-        if(button == Input.Buttons.LEFT){
-            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
-            signal.dispatch(GameEvent.PERFORM_ACTION);
-            isLeftButtonClicked = true;
-        }
-
-        //Weapon take out/hide
-        if(button == Input.Buttons.RIGHT){
-            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        //Action/Shoot
-        if(button == Input.Buttons.LEFT){
-            isLeftButtonClicked = false;
-            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
-
-    @Override
-    public void receive(Signal<GameEvent> signal, GameEvent gameEvent) {
-
-    }
+    
 }

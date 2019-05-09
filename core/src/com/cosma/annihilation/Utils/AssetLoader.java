@@ -46,6 +46,7 @@ public class AssetLoader {
         //Load atlas
         FileHandle gfxAtlas = Gdx.files.local("gfx/atlas/");
         for(FileHandle texture: gfxAtlas.list(".atlas")){
+            System.out.println(texture.path());
             manager.load(texture.path(),TextureAtlas.class);
         }
         //Load player textures

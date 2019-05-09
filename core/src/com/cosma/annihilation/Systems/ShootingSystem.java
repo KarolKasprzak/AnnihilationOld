@@ -82,6 +82,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                 if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class ) != null){
                     targetEntity =(Entity)fixture.getBody().getUserData();
+                    System.out.println(targetEntity.getComponent(HealthComponent.class).hp);
                 }else targetEntity = null;
                 return 0;
             }
@@ -158,7 +159,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             System.out.println("_______________________________________________________________");
             signal.dispatch(GameEvent.START_ATTACK_ANIMATION);
             isMeleeAttackFinish = false;
-//            playerComponent.isAnimationPlayed = true;
+            animationComponent.isAnimationPlayed = true;
 
             world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
 
@@ -172,15 +173,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
 
             System.out.println("_______________________________________________________________");
-//            Timer.schedule(new Timer.Task() {
-//                @Override
-//                public void run() {
-//                    playerComponent.canMoveOnSide = true;
-//                    isMeleeAttackFinish = true;
-//                    playerComponent.isAnimationPlayed = false;
-//                    System.out.println("end attack");
-//                }
-//            }, animationComponent.animationMap.get(AnimationStates.MELEE.toString()).getAnimationDuration());
+
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {

@@ -2,9 +2,11 @@ package com.cosma.annihilation.World;
 
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
@@ -19,9 +22,10 @@ import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.Enums.GameEvent;
 
 
-public class WorldBuilder implements Disposable, EntityListener {
+public class WorldBuilder implements Disposable, EntityListener, InputProcessor {
 
 
     private Engine engine;
@@ -29,11 +33,10 @@ public class WorldBuilder implements Disposable, EntityListener {
     private OrthographicCamera camera;
     private Viewport viewport;
     private GameMap gameMap;
-    private AssetLoader assetLoader;
+    private Signal<GameEvent> signal;
 
-    public WorldBuilder(Boolean isGameLoaded, AssetLoader assetLoader, InputMultiplexer inputMultiplexer) {
-        this.assetLoader = assetLoader;
-        ItemFactory.getInstance().setAssetLoader(assetLoader);
+    public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
+        ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
 
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(9,5,camera);
@@ -46,6 +49,7 @@ public class WorldBuilder implements Disposable, EntityListener {
 
         EntityFactory.getInstance().setEngine(engine);
         EntityFactory.getInstance().setWorld(world);
+        signal = new Signal<GameEvent>();
 
         CosmaMapLoader loader = new CosmaMapLoader("map/map.map", world, rayHandler, engine);
 //        if (isGameLoaded) {
@@ -70,11 +74,16 @@ public class WorldBuilder implements Disposable, EntityListener {
         engine.addEntityListener(this);
 
         inputMultiplexer.addProcessor(engine.getSystem(UserInterfaceSystem.class).getStage());
-        inputMultiplexer.addProcessor(engine.getSystem(PlayerControlSystem.class));
+        inputMultiplexer.addProcessor(this);
 
         engine.getSystem(PlayerControlSystem.class).addListenerSystems();
         engine.getSystem(CollisionSystem.class).addListenerSystems();
         engine.getSystem(ShootingSystem.class).addListenerSystems();
+
+        signal.add(getEngine().getSystem(ActionSystem.class));
+        signal.add(getEngine().getSystem(ShootingSystem.class));
+        signal.add(getEngine().getSystem(UserInterfaceSystem.class));
+
     }
 
     public void update(float delta) {
@@ -127,5 +136,61 @@ public class WorldBuilder implements Disposable, EntityListener {
                 ((Disposable) entitySystem).dispose();
             }
         }
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE){
+            signal.dispatch(GameEvent.OPEN_MENU);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if(button == Input.Buttons.LEFT){
+            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
+            signal.dispatch(GameEvent.PERFORM_ACTION);
+        }
+
+        //Weapon take out/hide
+        if(button == Input.Buttons.RIGHT){
+            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if(button == Input.Buttons.LEFT){
+            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

@@ -21,7 +21,7 @@ public class GameScreen implements Screen, InputProcessor {
         this.assetLoader = assetLoader;
         im = new InputMultiplexer();
         im.addProcessor(this);
-        worldBuilder = new WorldBuilder(game.isGameLoaded(),assetLoader,im);
+        worldBuilder = new WorldBuilder(game.isGameLoaded(),im);
     }
 
     @Override

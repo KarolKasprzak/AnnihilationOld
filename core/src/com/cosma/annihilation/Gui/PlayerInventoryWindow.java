@@ -66,11 +66,11 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
         leftTable = new Table(skin);
         rightTable = new Table(skin);
 
-        TextureAtlas atlas = Annihilation.getAssets().get("gui/atlas/gui_human.atlas",TextureAtlas.class);
+        TextureAtlas atlas = Annihilation.getAssets().get("gfx/atlas/gui_human.atlas",TextureAtlas.class);
         Animation animation = new Animation(0.1f,atlas.getRegions(), Animation.PlayMode.LOOP);
         animatedActor = new AnimatedActor(animation);
 
-        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gui/interface/clear.png",Texture.class))));
+        this.background(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/interface/clear.png",Texture.class))));
 
         listener = new ActorGestureListener() {
             @Override
