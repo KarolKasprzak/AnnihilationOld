@@ -41,6 +41,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent statsComponent;
     private StateComponent stateComponent;
+    private Thread thread;
 
     private Body body;
     private WeaponMagazine weaponMagazine;
@@ -77,6 +78,28 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         signal = new Signal<GameEvent>();
 
+        //TODO
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        playerComponent.canMoveOnSide = true;
+                        isMeleeAttackFinish = true;
+                        world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+                        if(calculateAttackAccuracy() && targetEntity != null){
+                            targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
+                        }
+
+                    }
+                }, animationComponent.currentAnimation.getAnimationDuration());
+                thread.interrupt();
+            }
+        });
+
+
+
         callback = new RayCastCallback() {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
@@ -87,6 +110,19 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 return 0;
             }
         };
+    }
+
+    @Override
+    public void update(float deltaTime) {
+
+        super.update(deltaTime);
+
+        if(isMeleeAttackFinish){
+            animationComponent.isAnimationPlayed = false;
+        }else{
+            animationComponent.isAnimationPlayed = true;
+        }
+
     }
 
     @Override
@@ -132,9 +168,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         }
     }
 
-    public void addListenerSystems(){
-        signal.add(getEngine().getSystem(PlayerControlSystem.class));
-    }
 
     private void weaponSelect() {
         if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
@@ -156,7 +189,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
     private void meleeAttack() {
         if (!playerComponent.isWeaponHidden & isMeleeAttackFinish) {
-            System.out.println("_______________________________________________________________");
             signal.dispatch(GameEvent.START_ATTACK_ANIMATION);
             isMeleeAttackFinish = false;
             animationComponent.isAnimationPlayed = true;
@@ -167,23 +199,26 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
             animationComponent.animationState = AnimationStates.MELEE;
             float timer = animationComponent.currentAnimation.getAnimationDuration();
-            System.out.println(timer);
             playerComponent.canMoveOnSide = false;
 
 
 
-            System.out.println("_______________________________________________________________");
+            thread.start();
 
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    playerComponent.canMoveOnSide = true;
-                    isMeleeAttackFinish = true;
-//                    playerComponent.isAnimationPlayed = false;
-                    world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
-                    System.out.println("end attack");
-                }
-            }, timer);
+
+//            Timer.schedule(new Timer.Task() {
+//                @Override
+//                public void run() {
+//                    playerComponent.canMoveOnSide = true;
+//                    isMeleeAttackFinish = true;
+//                    System.out.println("end attack");
+//                    world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+//                    if(calculateAttackAccuracy() && targetEntity != null){
+//                        targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
+//                    }
+//
+//                }
+//            }, animationComponent.currentAnimation.getAnimationDuration());
 
         }
     }

@@ -1,15 +1,19 @@
 package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Utils.OLDAssetDescriptors;
+import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.cosma.annihilation.Utils.Utilities;
 
 public class GameMainMenuWindow extends Window {
@@ -27,7 +31,7 @@ public class GameMainMenuWindow extends Window {
     private Engine engine;
 
 
-    public GameMainMenuWindow(String title, Skin skin, Engine engine, float x, float y) {
+    public GameMainMenuWindow(String title, Skin skin, Engine engine, float x, float y,World world) {
         super(title, skin);
 
         this.skin = skin;
@@ -89,7 +93,11 @@ public class GameMainMenuWindow extends Window {
     }
 
     void saveGame() {
+
         playerInventoryWindow.saveInventory(engine);
+
+
+
     }
 
 

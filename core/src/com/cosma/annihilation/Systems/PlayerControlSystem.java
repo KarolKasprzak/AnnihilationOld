@@ -133,5 +133,5 @@ public class PlayerControlSystem extends IteratingSystem{
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
     }
-    
+
 }

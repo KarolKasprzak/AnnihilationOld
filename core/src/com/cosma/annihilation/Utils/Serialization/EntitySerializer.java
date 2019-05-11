@@ -55,6 +55,16 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 json.writeValue("patch", Annihilation.getAssets().getAssetFileName(((TextureComponent) component).texture));
             }
 
+            if (component instanceof AiComponent) {
+                json.writeObjectEnd();
+                continue;
+            }
+
+            if (component instanceof EnemyComponent) {
+                json.writeObjectEnd();
+                continue;
+            }
+
             if (component instanceof ActionComponent) {
                 json.writeValue("action", ((ActionComponent) component).action.name());
                 json.writeObjectEnd();
@@ -82,11 +92,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 json.writeObjectEnd();
                 continue;
                 //TODO
-            }
-
-            if (component instanceof PlayerComponent) {
-                json.writeObjectEnd();
-                continue;
             }
 
             if (component instanceof PlayerStatsComponent) {

@@ -7,11 +7,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
@@ -23,6 +25,7 @@ import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 
 
 public class WorldBuilder implements Disposable, EntityListener, InputProcessor {
@@ -32,7 +35,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     public World world;
     private OrthographicCamera camera;
     private Viewport viewport;
-    private GameMap gameMap;
+    private CosmaMapLoader loader;
     private Signal<GameEvent> signal;
 
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
@@ -46,12 +49,15 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
         RayHandler rayHandler = new RayHandler(world);
         engine = new PooledEngine();
+        engine.addEntityListener(this);
+
 
         EntityFactory.getInstance().setEngine(engine);
         EntityFactory.getInstance().setWorld(world);
         signal = new Signal<GameEvent>();
 
-        CosmaMapLoader loader = new CosmaMapLoader("map/map.map", world, rayHandler, engine);
+        loader = new CosmaMapLoader("map/map.map", world, rayHandler, engine);
+
 //        if (isGameLoaded) {
 //            gui.loadGame();
 //
@@ -59,7 +65,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
         engine.addSystem(new ActionSystem(world));
         engine.addSystem(new ShootingSystem(world, rayHandler));
-        engine.addSystem(new UserInterfaceSystem(engine));
+        engine.addSystem(new UserInterfaceSystem(engine,world));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
         engine.addSystem(new HealthSystem(camera));
@@ -78,7 +84,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
         engine.getSystem(PlayerControlSystem.class).addListenerSystems();
         engine.getSystem(CollisionSystem.class).addListenerSystems();
-        engine.getSystem(ShootingSystem.class).addListenerSystems();
 
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
@@ -107,10 +112,22 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.translate(0, -1);
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.translate(-1, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.translate(1, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) this.saveMap();
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) camera.zoom = camera.zoom + 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.X)) camera.zoom = camera.zoom - 0.2f;
         camera.update();
     }
+
+
+    private void saveMap(){
+        Json json = new Json();
+        FileHandle file = Gdx.files.local("save/save.json");
+        json.setIgnoreUnknownFields(false);
+        json.setSerializer(Entity.class, new EntitySerializer(world, engine));
+        file.writeString(json.prettyPrint(loader.getMap()), false);
+
+    }
+
 
     public Engine getEngine() {
         return engine;
@@ -118,7 +135,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     @Override
     public void entityAdded(Entity entity) {
-        System.out.println(entity.flags);
+        System.out.println("+++++");
     }
 
     @Override
