@@ -33,7 +33,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private ComponentMapper<PlayerInventoryComponent> playerDateMapper;
     private ComponentMapper<PlayerStatsComponent> playerStatsMapper;
     private ComponentMapper<AnimationComponent> playerAnimMapper;
-    private ComponentMapper<StateComponent> stateMapper;
 
     private World world;
     private AnimationComponent animationComponent;
@@ -58,7 +57,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         this.world = world;
 
         weaponMagazine = new WeaponMagazine();
-        stateMapper = ComponentMapper.getFor(StateComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         playerDateMapper = ComponentMapper.getFor(PlayerInventoryComponent.class);
@@ -131,11 +129,10 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         playerInventoryComponent = playerDateMapper.get(entity);
         statsComponent = playerStatsMapper.get(entity);
         animationComponent = playerAnimMapper.get(entity);
-        stateComponent = stateMapper.get(entity);
 
         body = bodyMapper.get(entity).body;
 
-        if (!stateComponent.spriteDirection) {
+        if (!animationComponent.spriteDirection) {
             direction = -1;
         }else direction = 1;
 

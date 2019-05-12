@@ -17,7 +17,7 @@ public class AiSystem extends IteratingSystem {
 
 
     public AiSystem(World world) {
-        super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
+        super(Family.all(AiComponent.class).get(), Constants.ACTION_SYSTEM);
         this.world = world;
         aiMapper = ComponentMapper.getFor(AiComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
@@ -29,6 +29,8 @@ public class AiSystem extends IteratingSystem {
         AiComponent aiComponent = aiMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
         BodyComponent bodyComponent = bodyMapper.get(entity);
+
+        aiComponent.ai.update(entity);
 
 
     }

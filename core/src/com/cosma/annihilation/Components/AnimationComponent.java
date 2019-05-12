@@ -17,4 +17,6 @@ public class AnimationComponent implements Component {
     public HashMap<String,Animation<TextureRegion>> animationMap = new HashMap<>();
     public boolean isAnimationPlayed = false;
     public boolean isAnimationFinish = false;
+    /** right = true, left = false  */
+    public boolean spriteDirection = true;
 }

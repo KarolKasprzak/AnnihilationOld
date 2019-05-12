@@ -76,6 +76,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         engine.addSystem(new TileMapRender(camera, loader.getMap()));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera, world));
+        engine.addSystem(new AiSystem(world));
 
         engine.addEntityListener(this);
 

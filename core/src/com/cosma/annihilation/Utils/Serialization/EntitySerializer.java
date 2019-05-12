@@ -297,6 +297,12 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(playerStatsComponent);
 
         }
+
+        if (jsonData.has("AiComponent")) {
+            AiComponent aiComponent = new AiComponent();
+            entity.add(aiComponent);
+        }
+
         if (engine != null) {
             engine.addEntity(entity);
         }

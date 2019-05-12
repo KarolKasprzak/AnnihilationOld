@@ -1,8 +1,8 @@
 package com.cosma.annihilation.Ai;
 
-import com.badlogic.gdx.physics.box2d.Body;
-import com.cosma.annihilation.Components.AnimationComponent;
+
+import com.badlogic.ashley.core.Entity;
 
 public interface ArtificialIntelligence {
-    public void update(Body body, AnimationComponent animationComponent);
+    void update(Entity entity);
 }

@@ -24,7 +24,7 @@ public class AnimationSystem extends IteratingSystem {
 
 
     public AnimationSystem() {
-        super(Family.all(StateComponent.class, TextureComponent.class, AnimationComponent.class).get(), Constants.ANIMATION);
+        super(Family.all(TextureComponent.class, AnimationComponent.class).get(), Constants.ANIMATION);
         stateMapper = ComponentMapper.getFor(StateComponent.class);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
@@ -36,7 +36,7 @@ public class AnimationSystem extends IteratingSystem {
         AnimationComponent animationComponent = animationMapper.get(entity);
         StateComponent stateComponent = stateMapper.get(entity);
 
-        textureComponent.flipTexture = !stateComponent.spriteDirection;
+        textureComponent.flipTexture = !animationComponent.spriteDirection;
 
         animationComponent.time += deltaTime;
 
