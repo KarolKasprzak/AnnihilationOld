@@ -24,8 +24,7 @@ import com.cosma.annihilation.Gui.PlayerInventoryWindow;
 import com.cosma.annihilation.Gui.GameMainMenuWindow;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 
 public class UserInterfaceSystem extends IteratingSystem implements Listener<GameEvent> {
 
@@ -53,13 +52,13 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         Signal<GameEvent> signal = new Signal<GameEvent>();
 
         containerWindow = new ContainerWindow("", skin, 4, engine);
-        containerWindow.setSize(Utilities.setWindowWidth(0.4f), Utilities.setWindowHeight(0.5f));
+        containerWindow.setSize(Util.setWindowWidth(0.4f), Util.setWindowHeight(0.5f));
         containerWindow.setVisible(false);
-        containerWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Utilities.setWindowWidth(0.4f) / 2), Gdx.graphics.getHeight() / 2 - (Utilities.setWindowHeight(0.5f) / 2));
+        containerWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.4f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.5f) / 2));
         stage.addActor(containerWindow);
 
-        gameMainMenuWindow = new GameMainMenuWindow("", skin, engine, Utilities.setWindowWidth(0.95f), Utilities.setWindowHeight(0.95f),world);
-        gameMainMenuWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Utilities.setWindowWidth(0.95f) / 2), Gdx.graphics.getHeight() / 2 - (Utilities.setWindowHeight(0.95f) / 2));
+        gameMainMenuWindow = new GameMainMenuWindow("", skin, engine, Util.setWindowWidth(0.95f), Util.setWindowHeight(0.95f),world);
+        gameMainMenuWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.95f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.95f) / 2));
         gameMainMenuWindow.setVisible(false);
         gameMainMenuWindow.setFillParent(true);
         stage.addActor(gameMainMenuWindow);

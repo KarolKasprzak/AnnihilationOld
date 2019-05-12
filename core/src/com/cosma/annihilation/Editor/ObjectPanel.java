@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane;
@@ -143,7 +143,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private void createBoxObject(float x, float y, float w, float h) {
         if (mapEditor.isObjectLayerSelected()) {
-            Utilities.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType),0);
+            Util.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType),0);
             canCreateBox = false;
             if (isObjectListWindowOpen) {
                 objectsListWindow.rebuildView();

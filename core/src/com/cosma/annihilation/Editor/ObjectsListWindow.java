@@ -21,8 +21,7 @@ import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
 import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.util.adapter.AbstractListAdapter;
@@ -202,32 +201,32 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
             float y = selectedObject.getY();
             float width = selectedObject.getWidth();
             float height = selectedObject.getHeight();
-            if (Utilities.roundFloat(x + width, 1) == Utilities.roundFloat(vec.x, 1) && Utilities.isFloatInRange(vec.y, y, y + height)) {
+            if (Util.roundFloat(x + width, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.HorizontalResize);
                 canDragRight = true;
             } else {
                 canDragRight = false;
             }
-            if (Utilities.roundFloat(x, 1) == Utilities.roundFloat(vec.x, 1) && Utilities.isFloatInRange(vec.y, y, y + height)) {
+            if (Util.roundFloat(x, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.HorizontalResize);
                 canDragLeft = true;
             } else {
                 canDragLeft = false;
             }
-            if (Utilities.roundFloat(y, 1) == Utilities.roundFloat(vec.y, 1) && Utilities.isFloatInRange(vec.x, x, x + width)) {
+            if (Util.roundFloat(y, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize);
                 canDragUp = true;
             } else {
                 canDragUp = false;
             }
-            if (Utilities.roundFloat(y + height, 1) == Utilities.roundFloat(vec.y, 1) && Utilities.isFloatInRange(vec.x, x, x + width)) {
+            if (Util.roundFloat(y + height, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.VerticalResize);
                 canDragDown = true;
             } else {
                 canDragDown = false;
             }
-            if (Utilities.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
-                    && (Utilities.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
+            if (Util.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
+                    && (Util.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
                 canDragObject = true;
                 canRotateObject = true;

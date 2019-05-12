@@ -15,8 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 
 
 public class MenuScreen implements Screen {
@@ -43,29 +42,29 @@ public class MenuScreen implements Screen {
         stage.addActor(table);
 
         TextButton continueGameButton = new TextButton("Continue", skin);
-        Utilities.setButtonColor(continueGameButton);
+        Util.setButtonColor(continueGameButton);
         checkSaveFileExist(continueGameButton);
-        table.add(continueGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
+        table.add(continueGameButton).size(Util.setButtonWidth(2.2f),Util.setButtonHeight(2.2f));
         table.row();
 
         TextButton newGameButton = new TextButton(Annihilation.getLocal("newGame"), skin);
-        Utilities.setButtonColor(newGameButton);
-        table.add(newGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
+        Util.setButtonColor(newGameButton);
+        table.add(newGameButton).size(Util.setButtonWidth(2.2f),Util.setButtonHeight(2.2f));
         table.row();
 
         TextButton optionsButton = new TextButton("Options", skin);
-        Utilities.setButtonColor(optionsButton);
-        table.add(optionsButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
+        Util.setButtonColor(optionsButton);
+        table.add(optionsButton).size(Util.setButtonWidth(2.2f),Util.setButtonHeight(2.2f));
         table.row();
 
         TextButton exitGameButton = new TextButton("Exit", skin);
-        Utilities.setButtonColor(exitGameButton);
-        table.add(exitGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
+        Util.setButtonColor(exitGameButton);
+        table.add(exitGameButton).size(Util.setButtonWidth(2.2f),Util.setButtonHeight(2.2f));
         table.row();
 
         TextButton editorGameButton = new TextButton("Editor", skin);
-        Utilities.setButtonColor(editorGameButton);
-        table.add(editorGameButton).size(Utilities.setButtonWidth(2.2f),Utilities.setButtonHeight(2.2f));
+        Util.setButtonColor(editorGameButton);
+        table.add(editorGameButton).size(Util.setButtonWidth(2.2f),Util.setButtonHeight(2.2f));
 
         exitGameButton.addListener(new InputListener(){
 

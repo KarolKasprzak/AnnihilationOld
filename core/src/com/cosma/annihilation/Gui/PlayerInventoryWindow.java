@@ -40,7 +40,7 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
     private Label dmgLabel;
     private Label defLabel;
     private int inventorySize = 16;
-    private float slotSize = Utilities.setWindowHeight(0.09f);
+    private float slotSize = Util.setWindowHeight(0.09f);
     private ActorGestureListener listener;
     private PlayerInventoryWindow playerInventoryWindow;
 
@@ -93,7 +93,7 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
         createEquipmentTable();
         createInventoryTable();
 
-        leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX().padLeft(Utilities.setWindowHeight(0.06f));
+        leftTable.add(inventorySlotsTable.bottom()).colspan(2).bottom().expandX().padLeft(Util.setWindowHeight(0.06f));
         rightTable.add(medicalTable);
         rightTable.row();
         rightTable.add(equipmentSlotsTable).expandY().expandX();
@@ -177,9 +177,9 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
         dragAndDrop.addTarget(new InventorySlotTarget(armourInventorySlot));
         dragAndDrop.addTarget(new InventorySlotTarget(weaponInventorySlot));
 
-        equipmentSlotsTable.add(weaponInventorySlot).size(slotSize*1.33f, slotSize).pad(Utilities.setWindowHeight(0.006f)).colspan(2);
+        equipmentSlotsTable.add(weaponInventorySlot).size(slotSize*1.33f, slotSize).pad(Util.setWindowHeight(0.006f)).colspan(2);
 
-        equipmentSlotsTable.add(armourInventorySlot).size(slotSize*1.33f, slotSize).pad(Utilities.setWindowHeight(0.006f));
+        equipmentSlotsTable.add(armourInventorySlot).size(slotSize*1.33f, slotSize).pad(Util.setWindowHeight(0.006f));
 
         equipmentSlotsTable.center();
         equipmentSlotsTable.pad(20);
@@ -200,7 +200,7 @@ public class PlayerInventoryWindow extends Window implements InventorySlotObserv
             InventorySlot inventorySlot = new InventorySlot();
 //            inventorySlot.addListener(listener);
             dragAndDrop.addTarget(new InventorySlotTarget(inventorySlot));
-            inventorySlotsTable.add(inventorySlot).size(slotSize, slotSize).pad(Utilities.setWindowHeight(0.005f));
+            inventorySlotsTable.add(inventorySlot).size(slotSize, slotSize).pad(Util.setWindowHeight(0.005f));
             if (i == 3||i == 6||i == 9||i == 12|| i == 15||i == 18) inventorySlotsTable.row();
         }
     }

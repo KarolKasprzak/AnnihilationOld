@@ -1,7 +1,6 @@
 package com.cosma.annihilation.Gui;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,11 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Annihilation;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
-import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 
 public class GameMainMenuWindow extends Window {
 
@@ -56,13 +52,13 @@ public class GameMainMenuWindow extends Window {
         createButtons(this);
 
         System.out.println(Gdx.graphics.getDensity());
-        rightTable.add(inventoryButton).size(Utilities.setButtonWidth(1.3f), Utilities.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
+        rightTable.add(inventoryButton).size(Util.setButtonWidth(1.3f), Util.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
         rightTable.row();
-        rightTable.add(characterButton).size(Utilities.setButtonWidth(1.3f), Utilities.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
+        rightTable.add(characterButton).size(Util.setButtonWidth(1.3f), Util.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
         rightTable.row();
-        rightTable.add(menuButton).size(Utilities.setButtonWidth(1.3f), Utilities.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
+        rightTable.add(menuButton).size(Util.setButtonWidth(1.3f), Util.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
         rightTable.row();
-        rightTable.add(exitButton).size(Utilities.setButtonWidth(1.3f), Utilities.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
+        rightTable.add(exitButton).size(Util.setButtonWidth(1.3f), Util.setButtonHeight(1.8f)).pad( Math.round(Gdx.graphics.getDensity() * 12) );
 
         leftTable.add(screenTable).center().size(this.getWidth() * 0.7f, this.getHeight() * 0.8f);
 

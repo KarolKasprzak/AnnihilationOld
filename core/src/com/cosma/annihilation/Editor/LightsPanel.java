@@ -4,12 +4,10 @@ import box2dLight.ConeLight;
 import box2dLight.Light;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -22,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
@@ -284,7 +282,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                 float x = mapLight.getX();
                 float y = mapLight.getY();
 
-                if (Utilities.isFloatInRange(vec.x, x - 1, x + 1) && Utilities.isFloatInRange(vec.y, y - 1, y + 1)) {
+                if (Util.isFloatInRange(vec.x, x - 1, x + 1) && Util.isFloatInRange(vec.y, y - 1, y + 1)) {
                     lightFound = true;
                     mapLightFound = mapLight;
                 }

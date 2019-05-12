@@ -14,7 +14,7 @@ import com.cosma.annihilation.Utils.Enums.CollisionID;
 
 import java.math.BigDecimal;
 
-public class Utilities {
+public class Util {
 
 
     public static float setWindowWidth(float scale) {

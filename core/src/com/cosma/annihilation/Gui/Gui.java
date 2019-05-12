@@ -8,7 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
@@ -26,9 +24,8 @@ import com.cosma.annihilation.Systems.ActionSystem;
 import com.cosma.annihilation.Systems.ShootingSystem;
 import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 import com.cosma.annihilation.Utils.StateManager;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 
 public class Gui implements Screen {
     private Stage stage;
@@ -81,9 +78,9 @@ public class Gui implements Screen {
         viewport.apply(true);
 
         containerWindow = new ContainerWindow("", skin, 4, engine);
-        containerWindow.setSize(Utilities.setWindowWidth(0.4f), Utilities.setWindowHeight(0.5f));
+        containerWindow.setSize(Util.setWindowWidth(0.4f), Util.setWindowHeight(0.5f));
         containerWindow.setVisible(false);
-        containerWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Utilities.setWindowWidth(0.4f) / 2), Gdx.graphics.getHeight() / 2 - (Utilities.setWindowHeight(0.5f) / 2));
+        containerWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.4f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.5f) / 2));
         stage.addActor(containerWindow);
 
         fpsLabel = new Label(fpsNumber, skin);
@@ -248,7 +245,7 @@ public class Gui implements Screen {
         stage.addActor(bTable);
 
         menuButton = new TextButton("Menu", skin);
-        Utilities.setButtonColor(menuButton);
+        Util.setButtonColor(menuButton);
         menuButton.addListener(new InputListener() {
 
             @Override
@@ -260,7 +257,7 @@ public class Gui implements Screen {
             }
         });
         debugButton = new TextButton("Debug mode ", skin);
-        Utilities.setButtonColor(debugButton);
+        Util.setButtonColor(debugButton);
 
         debugButton.addListener(new ChangeListener() {
             @Override
@@ -298,16 +295,16 @@ public class Gui implements Screen {
         table.row();
 
         //-------------------Gui button table------------------------------------------------
-        bTable.add().width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).center().pad(10);
-        bTable.add(actionButtonUp).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).center().pad(10);
-        bTable.add().width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).center().pad(10);
-        bTable.add(actionButtonRightUp).expandX().right().padBottom(15).padLeft(15).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).padRight(25).colspan(2);
+        bTable.add().width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).center().pad(10);
+        bTable.add(actionButtonUp).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).center().pad(10);
+        bTable.add().width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).center().pad(10);
+        bTable.add(actionButtonRightUp).expandX().right().padBottom(15).padLeft(15).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).padRight(25).colspan(2);
         bTable.row();
-        bTable.add(actionButtonLeft).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).left().pad(10);
-        bTable.add(actionButtonDown).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).left().pad(10);
-        bTable.add(actionButtonRight).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).left().pad(10).expandX();
-        bTable.add(actionButtonRightDown).right().padBottom(15).padLeft(15).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).padRight(25).expandX();
-        bTable.add(actionButtonRightCenter).right().padBottom(15).padLeft(15).width(Utilities.setButtonWidth(1f)).height(Utilities.setButtonWidth(1f)).padRight(25);
+        bTable.add(actionButtonLeft).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).left().pad(10);
+        bTable.add(actionButtonDown).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).left().pad(10);
+        bTable.add(actionButtonRight).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).left().pad(10).expandX();
+        bTable.add(actionButtonRightDown).right().padBottom(15).padLeft(15).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).padRight(25).expandX();
+        bTable.add(actionButtonRightCenter).right().padBottom(15).padLeft(15).width(Util.setButtonWidth(1f)).height(Util.setButtonWidth(1f)).padRight(25);
         table.row();
         table.add(bTable).left().bottom().expandY().padBottom(15).padLeft(15);
     }

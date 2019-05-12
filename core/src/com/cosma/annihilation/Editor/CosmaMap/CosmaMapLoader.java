@@ -11,12 +11,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
-import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.LightControler;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
-import com.cosma.annihilation.Utils.Utilities;
+import com.cosma.annihilation.Utils.Util;
 
 
 public class CosmaMapLoader {
@@ -35,7 +34,7 @@ public class CosmaMapLoader {
         loadMap(mapPath);
         for (ObjectMapLayer layer : map.getLayers().getByType(ObjectMapLayer.class)) {
             for (RectangleObject object : layer.getObjects().getByType(RectangleObject.class)) {
-                Utilities.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation() * MathUtils.degreesToRadians);
+                Util.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation() * MathUtils.degreesToRadians);
             }
         }
 
