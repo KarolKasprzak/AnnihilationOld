@@ -13,7 +13,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Annihilation;
@@ -24,7 +27,6 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.SfxAssetDescriptors;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
@@ -42,6 +44,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private StateComponent stateComponent;
     private Thread thread;
 
+    private Batch batch;
+
     private Body body;
     private WeaponMagazine weaponMagazine;
     private RayCastCallback callback;
@@ -52,9 +56,23 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private boolean isMeleeAttackFinish = true;
     private Signal<GameEvent> signal;
     private Vector2 raycastEnd;
-    public ShootingSystem(World world, RayHandler rayHandler) {
+    ParticleEffect pe;
+
+    public ShootingSystem(World world, RayHandler rayHandler, Batch batch) {
         super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
         this.world = world;
+        this.batch = batch;
+
+//        pe = new ParticleEffect();
+//
+//
+//        pe.load(Gdx.files.internal("particle/gun.p"),Gdx.files.internal(""));
+//        pe.getEmitters().first().setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+//        pe.getEmitters().add(new ParticleEmitterBox2D(world,pe.getEmitters().first()));
+//        pe.getEmitters().removeIndex(0);
+
+
+
 
         weaponMagazine = new WeaponMagazine();
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
@@ -136,7 +154,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             direction = -1;
         }else direction = 1;
 
-        weaponLight.attachToBody(body,direction,0.3f);
+
 
         if (Gdx.input.isKeyPressed(Input.Keys.R)) {
             meleeAttack();
@@ -236,10 +254,12 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
             }
             shootLight();
-            EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f);
-            Sound sound = Annihilation.getAssets().get(SfxAssetDescriptors.pistolSound);
+            System.out.println(this.getEngine().getEntities().size());
+            this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f));
+            Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
             sound.play();
             weaponMagazine.removeAmmoFromMagazine();
+            System.out.println(this.getEngine().getEntities().size());
         } else {
             weaponMagazine.reload();
         }
@@ -351,6 +371,16 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
 
     private void shootLight(){
+        switch (playerComponent.activeWeapon.getItemID()){
+            case P38:
+                weaponLight.attachToBody(body,direction-0.1f,0.5f);
+
+                break;
+
+        }
+
+
+
         weaponLight.setActive(true);
         Timer.schedule(new Timer.Task() {
             @Override

@@ -2,9 +2,12 @@ package com.cosma.annihilation.Entities;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.*;
@@ -119,6 +122,7 @@ public class EntityFactory {
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
 
+        textureComponent.texture = Annihilation.getAssets().get("gfx/textures/bullet_shell.png");
 
 
         BodyDef bodyDef = new BodyDef();

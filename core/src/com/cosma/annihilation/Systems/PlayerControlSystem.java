@@ -102,7 +102,7 @@ public class PlayerControlSystem extends IteratingSystem{
         }
 
         //Moving on side
-        if(playerComponent.canMoveOnSide && playerComponent.onGround) {
+        if(playerComponent.canMoveOnSide && playerComponent.onGround && playerComponent.isWeaponHidden) {
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
                 animationComponent.animationState = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
@@ -118,6 +118,31 @@ public class PlayerControlSystem extends IteratingSystem{
                 animationComponent.animationState = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -player.velocity;
+                float speedX = desiredSpeed - vec.x;
+                playerComponent.climbing = false;
+                animationComponent.spriteDirection = false;
+                float impulse = playerBody.body.getMass() * speedX;
+                playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
+                        playerBody.body.getWorldCenter(), true);
+            }
+        }
+        //Moving on side with weapon
+        if(playerComponent.canMoveOnSide && playerComponent.onGround && !playerComponent.isWeaponHidden) {
+            if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
+                animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
+                Vector2 vec = playerBody.body.getLinearVelocity();
+                float desiredSpeed = player.velocity*0.8f;
+                playerComponent.climbing = false;
+                animationComponent.spriteDirection = true;
+                float speedX = desiredSpeed - vec.x;
+                float impulse = playerBody.body.getMass() * speedX;
+                playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
+                        playerBody.body.getWorldCenter(), true);
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.A) || playerComponent.goLeft) {
+                animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
+                Vector2 vec = playerBody.body.getLinearVelocity();
+                float desiredSpeed = -player.velocity*0.8f;
                 float speedX = desiredSpeed - vec.x;
                 playerComponent.climbing = false;
                 animationComponent.spriteDirection = false;

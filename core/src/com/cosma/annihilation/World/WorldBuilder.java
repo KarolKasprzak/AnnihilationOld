@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
@@ -26,6 +27,7 @@ import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
+import com.cosma.annihilation.Utils.StateManager;
 
 
 public class WorldBuilder implements Disposable, EntityListener, InputProcessor {
@@ -64,7 +66,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 //        }
 
         engine.addSystem(new ActionSystem(world));
-        engine.addSystem(new ShootingSystem(world, rayHandler));
+        engine.addSystem(new ShootingSystem(world, rayHandler,batch));
         engine.addSystem(new UserInterfaceSystem(engine,world));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
@@ -116,6 +118,12 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) this.saveMap();
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) camera.zoom = camera.zoom + 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.X)) camera.zoom = camera.zoom - 0.2f;
+
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)){
+            if (Gdx.input.isKeyPressed(Input.Keys.D)){
+                StateManager.debugMode = true;
+            }
+        }
         camera.update();
     }
 
@@ -141,19 +149,25 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     @Override
     public void entityRemoved(Entity entity) {
+       for(Component component: entity.getComponents()){
+           if(component instanceof BodyComponent){
+               System.out.println("remove body");
+               world.destroyBody(((BodyComponent) component).body);
+           }
+       }
 
     }
 
     @Override
     public void dispose() {
-        world.dispose();
-        for (EntitySystem entitySystem : engine.getSystems()) {
-            engine.removeSystem(entitySystem);
 
-            if (entitySystem instanceof Disposable) {
-                ((Disposable) entitySystem).dispose();
-            }
-        }
+//        for (EntitySystem entitySystem : engine.getSystems()) {
+//            engine.removeSystem(entitySystem);
+//
+//            if (entitySystem instanceof Disposable) {
+//                ((Disposable) entitySystem).dispose();
+//            }
+//        }
     }
 
     @Override
@@ -161,6 +175,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         if(keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE){
             signal.dispatch(GameEvent.OPEN_MENU);
         }
+
         return false;
     }
 

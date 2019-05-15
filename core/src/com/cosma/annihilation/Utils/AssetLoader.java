@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -54,6 +55,13 @@ public class AssetLoader {
         for(FileHandle texture: playerAtlas.list(".atlas")){
             manager.load(texture.path(),TextureAtlas.class);
         }
+
+        //Load sfx
+        FileHandle sounds = Gdx.files.local("sfx/");
+        for(FileHandle sound: sounds.list(".wav")){
+            manager.load(sound.path(),Sound.class);
+        }
+
         for(FileHandle texture: playerAtlas.list(".png")){
             manager.load(texture.path(),Texture.class);
         }

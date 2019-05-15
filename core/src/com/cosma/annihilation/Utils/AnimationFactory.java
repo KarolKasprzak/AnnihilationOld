@@ -18,10 +18,16 @@ public class AnimationFactory {
 
         //Player animations
         HashMap<String,Animation> playerAnimationMap = new HashMap<>();
+
         Animation<TextureRegion> playerWalkAnimation = new Animation(0.1f,
                 Annihilation.getAssets().get("gfx/player/player_move.atlas",TextureAtlas.class).getRegions()
                 ,Animation.PlayMode.LOOP);
         playerAnimationMap.put("WALK",playerWalkAnimation);
+
+        Animation<TextureRegion> playerWalkSmallWeaponAnimation = new Animation(0.1f,
+                Annihilation.getAssets().get("gfx/player/walk_weapon_small.atlas",TextureAtlas.class).getRegions()
+                ,Animation.PlayMode.LOOP);
+        playerAnimationMap.put("WALK_WEAPON_SMALL",playerWalkSmallWeaponAnimation);
 
         TextureRegion standNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_stand.png",Texture.class));
         Animation<TextureRegion> playerIdleAnimation = new Animation(0.1f,standNoWeapon);

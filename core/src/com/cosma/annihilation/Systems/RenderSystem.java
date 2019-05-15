@@ -1,26 +1,24 @@
 package com.cosma.annihilation.Systems;
 
 import box2dLight.RayHandler;
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.BulletComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Utils.Constants;
-import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 
 public class RenderSystem extends IteratingSystem implements Disposable {
@@ -38,6 +36,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
 
     public RenderSystem(OrthographicCamera camera, World world, RayHandler rayHandler,SpriteBatch batch) {
+//        super(Family.all(BodyComponent.class, TextureComponent.class).get(), Constants.RENDER);
         super(Family.all(BodyComponent.class, TextureComponent.class).get(), Constants.RENDER);
         this.batch = batch;
         this.camera = camera;
@@ -72,7 +71,9 @@ public class RenderSystem extends IteratingSystem implements Disposable {
         TextureComponent textureComponent = textureMapper.get(entity);
         Body body = bodyMapper.get(entity).body;
 
-        Fixture fixture = body.getFixtureList().first();
+
+
+//        Fixture fixture = body.getFixtureList().first();
         Vector2 position = body.getPosition();
 
 
@@ -89,16 +90,16 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
         }
 
-        if (textureComponent.texture_ != null ) {
-            position.x = position.x - textureComponent.texture_.getRegionWidth()/32/2;
-            position.y = position.y - textureComponent.texture_.getRegionHeight()/32/2;
+        if (textureComponent.textureRegion != null ) {
+            position.x = position.x - textureComponent.textureRegion.getRegionWidth()/32/2;
+            position.y = position.y - textureComponent.textureRegion.getRegionHeight()/32/2;
 
 
-            batch.draw(textureComponent.texture_, position.x+(textureComponent.flipTexture ? textureComponent.texture_.getRegionWidth()/32 : 0), position.y,(float)textureComponent.texture_.getRegionWidth()/2,(float)textureComponent.texture_.getRegionHeight()/2,
-                    textureComponent.texture_.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.texture_.getRegionHeight()/32,
+            batch.draw(textureComponent.textureRegion, position.x+(textureComponent.flipTexture ? textureComponent.textureRegion.getRegionWidth()/32 : 0), position.y,(float)textureComponent.textureRegion.getRegionWidth()/2,(float)textureComponent.textureRegion.getRegionHeight()/2,
+                    textureComponent.textureRegion.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.textureRegion.getRegionHeight()/32,
                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
-//            batch.draw(textureComponent.texture_, position.x, position.y,(float)textureComponent.texture_.getRegionWidth()/2,(float)textureComponent.texture_.getRegionHeight()/2,
-//                     textureComponent.texture_.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.texture_.getRegionHeight()/32,
+//            batch.draw(textureComponent.textureRegion, position.x, position.y,(float)textureComponent.textureRegion.getRegionWidth()/2,(float)textureComponent.textureRegion.getRegionHeight()/2,
+//                     textureComponent.textureRegion.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.textureRegion.getRegionHeight()/32,
 //                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
         }
         batch.end();

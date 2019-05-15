@@ -143,13 +143,13 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         //Bullet shell contact
         if(fa.getUserData() == BodyID.BULLET_SHELL ){
-            getEngine().removeEntity((Entity) fa.getBody().getUserData());
-            removeShellAfterTime(fa,2);
+
+            removeShellAfterTime(fa,3);
         }
 
         if(fb.getUserData() == BodyID.BULLET_SHELL){
-            getEngine().removeEntity((Entity) fb.getBody().getUserData());
-            removeShellAfterTime(fb,2);
+
+            removeShellAfterTime(fb,3);
         }
 
         //Player ground contact
@@ -246,15 +246,18 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     }
 
     private void removeShellAfterTime(final Fixture fixture, float delay){
-        if(!fixture.getBody().isBullet()){
-            fixture.getBody().setBullet(true);
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    world.destroyBody(fixture.getBody());
+                        if(fixture.getBody().getUserData() != null){
+                            getEngine().removeEntity((Entity) fixture.getBody().getUserData());
+                        }
+
+
+
                 }
             }, delay);
-        }
+
     }
 
     private void delayJump(float delay){

@@ -69,7 +69,6 @@ public class SecondRenderSystem extends IteratingSystem implements Disposable {
         TextureComponent textureComponent = textureMapper.get(entity);
         Body body = bodyMapper.get(entity).body;
 
-        Fixture fixture = body.getFixtureList().first();
         Vector2 position = body.getPosition();
 
 

@@ -10,7 +10,7 @@ import com.cosma.annihilation.Annihilation;
 public class TextureComponent implements Component {
     public String texturePatch;
     public Texture texture;
-    public TextureRegion texture_;
+    public TextureRegion textureRegion;
     public boolean flipTexture = false;
     public boolean renderWithShader = false;
 }

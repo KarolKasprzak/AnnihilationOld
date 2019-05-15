@@ -77,6 +77,7 @@ public class Annihilation extends Game {
         return ((Annihilation) Gdx.app.getApplicationListener()).assetLoader.manager.get(patch);
     }
 
+
     public static String getLocal(String key) {
         return ((Annihilation) Gdx.app.getApplicationListener()).myBundle.get(key);
     }
