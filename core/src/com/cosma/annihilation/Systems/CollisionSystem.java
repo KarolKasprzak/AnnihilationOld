@@ -82,13 +82,9 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
            if(player.getComponent(PlayerComponent.class).numFootContacts >= 1) {
                playerComponent.onGround = true;
 
-//               playerComponent.canMoveOnSide = true;
            } else {
                playerComponent.onGround = false;
                animationComponent.animationState = AnimationStates.JUMP;
-
-//
-
            }
 
            //Setting player on ladder center
@@ -136,20 +132,17 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
-        bulletCollision(fa,fb);
-        bulletCollision(fb,fa);
+//        bulletCollision(fa,fb);
+//        bulletCollision(fb,fa);
 
         addEntityToActionList(fa, fb);
 
         //Bullet shell contact
         if(fa.getUserData() == BodyID.BULLET_SHELL ){
-
-            removeShellAfterTime(fa,3);
+            removeShellAfterTime(fa);
         }
-
         if(fb.getUserData() == BodyID.BULLET_SHELL){
-
-            removeShellAfterTime(fb,3);
+            removeShellAfterTime(fb);
         }
 
         //Player ground contact
@@ -245,18 +238,17 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     }
 
-    private void removeShellAfterTime(final Fixture fixture, float delay){
+    private void removeShellAfterTime(final Fixture fixture){
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                         if(fixture.getBody().getUserData() != null){
+                            bodiesToRemove.add(fixture.getBody());
                             getEngine().removeEntity((Entity) fixture.getBody().getUserData());
+                            fixture.getBody().setUserData(null);
                         }
-
-
-
                 }
-            }, delay);
+            }, 3);
 
     }
 

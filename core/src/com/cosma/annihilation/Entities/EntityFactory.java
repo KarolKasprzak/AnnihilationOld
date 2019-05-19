@@ -85,14 +85,13 @@ public class EntityFactory {
     }
 
 
-    public Entity createBulletEntity(float x, float y,float speed,boolean flip, int dmg,boolean accuracy){
+    public Entity createBulletEntity(float x, float y,float speed,boolean flip){
         Entity entity = engine.createEntity();
         BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
         BulletComponent bulletComponent = engine.createComponent(BulletComponent.class);
+        TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
 
-        bulletComponent.dmg = dmg;
-        bulletComponent.isBulletHit = accuracy;
-
+        textureComponent.texture = Annihilation.getAssets().get("gfx/textures/bullet_trace.png");
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
@@ -103,6 +102,7 @@ public class EntityFactory {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(0.02f, 0.01f);
         FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.isSensor = true;
         fixtureDef.shape = shape;
         fixtureDef.density = 8f;
         fixtureDef.friction = 1f;
@@ -110,6 +110,7 @@ public class EntityFactory {
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET);
 
         bodyComponent.body.setLinearVelocity(speed,0.5f);
+        entity.add(textureComponent);
         entity.add(bodyComponent);
         entity.add(bulletComponent);
 

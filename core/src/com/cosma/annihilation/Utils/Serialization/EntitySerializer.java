@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -174,6 +175,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         Entity entity = new Entity();
 
         if (jsonData.has("BodyComponent")) {
+
             BodyComponent bodyComponent = new BodyComponent();
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.valueOf(jsonData.get("BodyComponent").get("bodyType").asString());
@@ -216,6 +218,37 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                     bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.valueOf(value.get("userDate").asString()));
                 } else bodyComponent.body.createFixture(fixtureDef);
                 fixtureDef.shape.dispose();
+//----------------------------------------------------------------
+//                BodyDef bodyDef1 = new BodyDef();
+//                bodyDef1 .type = BodyDef.BodyType.DynamicBody;
+//                bodyDef1 .position.set(bodyComponent.body.getPosition());
+//                Body body = world.createBody(bodyDef);
+//                PolygonShape poly =new PolygonShape();
+//                poly.setAsBox(0.2f,0.4f); //
+//
+//                FixtureDef fixtureDef_ = new FixtureDef();
+//                fixtureDef.isSensor = true;
+//                fixtureDef_.shape = poly;
+//                fixtureDef_.density = 0.5f;
+//                fixtureDef_.friction = 0.4f;
+//                fixtureDef_.restitution = 0.6f; // Make it bounce a little bit
+//
+//                Fixture fixture_ = body.createFixture(fixtureDef_);
+//
+//                poly.dispose();
+//
+//
+//                RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+//                revoluteJointDef.bodyA=bodyComponent.body;
+//                revoluteJointDef.bodyB= body;
+//                revoluteJointDef.collideConnected=false;
+//                revoluteJointDef.localAnchorA.set(0,0);
+//                revoluteJointDef.localAnchorB.set(-2.0f,0);
+//                revoluteJointDef.enableLimit = true;
+//                revoluteJointDef.lowerAngle = 1;
+//                revoluteJointDef.upperAngle = 2;
+//                world.createJoint(revoluteJointDef);
+//----------------------------------------------------------------
             }
         }
 

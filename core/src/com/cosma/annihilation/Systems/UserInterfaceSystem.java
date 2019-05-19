@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -8,16 +9,22 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.ContainerComponent;
+import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Gui.ContainerWindow;
 import com.cosma.annihilation.Gui.PlayerInventoryWindow;
@@ -32,10 +39,15 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     private Label fpsLabel;
     private GameMainMenuWindow gameMainMenuWindow;
     private ContainerWindow containerWindow;
+    private Image playerHealthStatusIcon;
+    private PlayerComponent playerComponent;
+    private ComponentMapper<PlayerComponent> playerMapper;
 
 
     public UserInterfaceSystem(Engine engine,World world) {
         super(Family.all(PlayerComponent.class).get(), Constants.USER_INTERFACE);
+
+        playerMapper = ComponentMapper.getFor(PlayerComponent.class);
 
         Skin skin = Annihilation.getAssets().get("gfx/interface/uiskin.json", Skin.class);
         Camera camera = new OrthographicCamera();
@@ -64,7 +76,11 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         stage.addActor(gameMainMenuWindow);
 
         fpsLabel = new Label("", skin);
+        playerHealthStatusIcon = new Image(Annihilation.getAssets().get("gfx/textures/player_health.png",Texture.class));
+
+
         coreTable.add(fpsLabel).left().top().expandX().expandY();
+        coreTable.add(playerHealthStatusIcon).top();
     }
 
     @Override
@@ -77,6 +93,11 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
+        playerMapper.get(entity);
+
+        if(entity.getComponent(HealthComponent.class).hp < entity.getComponent(HealthComponent.class).maxHP/2){
+            playerHealthStatusIcon.setDrawable(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/textures/player_health_bad.png",Texture.class))));
+        }
 
     }
 
@@ -84,6 +105,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     void showLootWindow(Entity entity) {
         containerWindow.setVisible(true);
         PlayerInventoryWindow.fillInventory(containerWindow.containerSlotsTable, entity.getComponent(ContainerComponent.class).itemLocations, containerWindow.dragAndDrop);
+
     }
 
     public void resizeHUD(int width, int height) {

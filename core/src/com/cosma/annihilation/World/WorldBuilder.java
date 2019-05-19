@@ -12,12 +12,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
@@ -66,7 +68,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 //        }
 
         engine.addSystem(new ActionSystem(world));
-        engine.addSystem(new ShootingSystem(world, rayHandler,batch));
+        engine.addSystem(new ShootingSystem(world, rayHandler,batch,camera));
         engine.addSystem(new UserInterfaceSystem(engine,world));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
@@ -144,30 +146,62 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     @Override
     public void entityAdded(Entity entity) {
-        System.out.println("+++++");
+
+        if(entity.getComponent(PlayerComponent.class) != null){
+            BodyComponent bodyComponent = entity.getComponent(BodyComponent.class);
+
+
+//            BodyDef bodyDef1 = new BodyDef();
+//            bodyDef1 .type = BodyDef.BodyType.DynamicBody;
+//            bodyDef1 .position.set(bodyComponent.body.getPosition());
+//            Body body = world.createBody(bodyDef1);
+//            PolygonShape poly =new PolygonShape();
+//            poly.setAsBox(0.2f,1f); //
+//
+//            FixtureDef fixtureDef_ = new FixtureDef();
+//            fixtureDef_.isSensor = true;
+//            fixtureDef_.shape = poly;
+//            fixtureDef_.density = 0.5f;
+//            fixtureDef_.friction = 0.4f;
+//            fixtureDef_.restitution = 0.6f; // Make it bounce a little bit
+//
+//            Fixture fixture_ = body.createFixture(fixtureDef_);
+//
+//            poly.dispose();
+//
+//
+//            RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+////            revoluteJointDef.bodyA=bodyComponent.body;
+////            revoluteJointDef.bodyB= body;
+//            revoluteJointDef.collideConnected=false;
+//            revoluteJointDef.initialize(bodyComponent.body,body,bodyComponent.body.getPosition());
+//
+////            revoluteJointDef.localAnchorA.set(0,0);
+////            revoluteJointDef.localAnchorB.set(0,0);
+//            revoluteJointDef.enableLimit = false;
+//            revoluteJointDef.lowerAngle = -0.5f * 3.14f;
+//            revoluteJointDef.upperAngle = 0.25f * 3.14f;
+//            revoluteJointDef.maxMotorTorque  = 10;
+//            revoluteJointDef.referenceAngle =25;
+//            world.createJoint(revoluteJointDef);
+        }
     }
 
     @Override
     public void entityRemoved(Entity entity) {
-       for(Component component: entity.getComponents()){
-           if(component instanceof BodyComponent){
-               System.out.println("remove body");
-               world.destroyBody(((BodyComponent) component).body);
-           }
-       }
+
 
     }
 
     @Override
     public void dispose() {
+        for (EntitySystem entitySystem : engine.getSystems()) {
+            engine.removeSystem(entitySystem);
 
-//        for (EntitySystem entitySystem : engine.getSystems()) {
-//            engine.removeSystem(entitySystem);
-//
-//            if (entitySystem instanceof Disposable) {
-//                ((Disposable) entitySystem).dispose();
-//            }
-//        }
+            if (entitySystem instanceof Disposable) {
+                ((Disposable) entitySystem).dispose();
+            }
+        }
     }
 
     @Override

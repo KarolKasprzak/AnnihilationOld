@@ -11,6 +11,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -57,19 +58,22 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private Signal<GameEvent> signal;
     private Vector2 raycastEnd;
     ParticleEffect pe;
-
-    public ShootingSystem(World world, RayHandler rayHandler, Batch batch) {
+    Camera camera;
+    public ShootingSystem(World world, RayHandler rayHandler, Batch batch, Camera camera) {
         super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
         this.world = world;
         this.batch = batch;
+        this.camera = camera;
 
-//        pe = new ParticleEffect();
-//
-//
-//        pe.load(Gdx.files.internal("particle/gun.p"),Gdx.files.internal(""));
-//        pe.getEmitters().first().setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
-//        pe.getEmitters().add(new ParticleEmitterBox2D(world,pe.getEmitters().first()));
-//        pe.getEmitters().removeIndex(0);
+        pe = new ParticleEffect();
+
+
+        pe.load(Gdx.files.internal("particle/gun.p"),Gdx.files.internal("particle/"));
+        pe.getEmitters().first().setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+        pe.getEmitters().add(new ParticleEmitterBox2D(world,pe.getEmitters().first()));
+        pe.getEmitters().removeIndex(0);
+        pe.scaleEffect(0.1f);
+
 
 
 
@@ -114,8 +118,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             }
         });
 
-
-
         callback = new RayCastCallback() {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
@@ -132,6 +134,14 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     public void update(float deltaTime) {
 
         super.update(deltaTime);
+
+        pe.setPosition(body.getPosition().x,body.getPosition().y);
+
+        batch.begin();
+
+        pe.update(deltaTime);
+        pe.draw(batch);
+        batch.end();
 
         if(isMeleeAttackFinish){
             animationComponent.isAnimationPlayed = false;
@@ -254,12 +264,11 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
             }
             shootLight();
-            System.out.println(this.getEngine().getEntities().size());
             this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f));
+            this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f,12, false));
             Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
             sound.play();
             weaponMagazine.removeAmmoFromMagazine();
-            System.out.println(this.getEngine().getEntities().size());
         } else {
             weaponMagazine.reload();
         }
