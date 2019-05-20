@@ -80,7 +80,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         engine.addSystem(new TileMapRender(camera, loader.getMap()));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera, world));
-        engine.addSystem(new AiSystem(world));
+        engine.addSystem(new AiSystem(world,batch,camera));
 
         engine.addEntityListener(this);
 
@@ -146,45 +146,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     @Override
     public void entityAdded(Entity entity) {
-
-        if(entity.getComponent(PlayerComponent.class) != null){
-            BodyComponent bodyComponent = entity.getComponent(BodyComponent.class);
-
-
-//            BodyDef bodyDef1 = new BodyDef();
-//            bodyDef1 .type = BodyDef.BodyType.DynamicBody;
-//            bodyDef1 .position.set(bodyComponent.body.getPosition());
-//            Body body = world.createBody(bodyDef1);
-//            PolygonShape poly =new PolygonShape();
-//            poly.setAsBox(0.2f,1f); //
-//
-//            FixtureDef fixtureDef_ = new FixtureDef();
-//            fixtureDef_.isSensor = true;
-//            fixtureDef_.shape = poly;
-//            fixtureDef_.density = 0.5f;
-//            fixtureDef_.friction = 0.4f;
-//            fixtureDef_.restitution = 0.6f; // Make it bounce a little bit
-//
-//            Fixture fixture_ = body.createFixture(fixtureDef_);
-//
-//            poly.dispose();
-//
-//
-//            RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
-////            revoluteJointDef.bodyA=bodyComponent.body;
-////            revoluteJointDef.bodyB= body;
-//            revoluteJointDef.collideConnected=false;
-//            revoluteJointDef.initialize(bodyComponent.body,body,bodyComponent.body.getPosition());
-//
-////            revoluteJointDef.localAnchorA.set(0,0);
-////            revoluteJointDef.localAnchorB.set(0,0);
-//            revoluteJointDef.enableLimit = false;
-//            revoluteJointDef.lowerAngle = -0.5f * 3.14f;
-//            revoluteJointDef.upperAngle = 0.25f * 3.14f;
-//            revoluteJointDef.maxMotorTorque  = 10;
-//            revoluteJointDef.referenceAngle =25;
-//            world.createJoint(revoluteJointDef);
-        }
     }
 
     @Override

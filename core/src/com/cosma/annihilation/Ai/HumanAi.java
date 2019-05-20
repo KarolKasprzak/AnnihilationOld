@@ -12,38 +12,22 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Util;
 
+
 public class HumanAi implements ArtificialIntelligence {
     private Vector2 startPosition;
-    private RayCastCallback callback;
-    private boolean findTarget = false;
-    private Body targetBody;
+
     private PatrolBehaviour patrolBehaviour;
-    private boolean isEnemy, isOnPatrol, canEscape;
-    Body body;
-//    public HumanAi() {
-//        isOnPatrol = true;
-//    }
+
 
     public HumanAi() {
         this.startPosition = startPosition;
-        isOnPatrol = true;
         patrolBehaviour = new PatrolBehaviour(5,1);
-        callback = new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(PlayerComponent.class ) != null){
-                   findTarget = true;
-                   targetBody = fixture.getBody();
-                }
-                return 0;
-            }
-        };
+
     }
 
     @Override
     public void update(Entity entity) {
-        body = entity.getComponent(BodyComponent.class).body;
-        World world = body.getWorld();
+        Body body = entity.getComponent(BodyComponent.class).body;
 
         AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
 
@@ -59,20 +43,41 @@ public class HumanAi implements ArtificialIntelligence {
 
     }
 
+    @Override
+    public String getStatus() {
+        return "dsadsasdasdadsa";
+    }
+
 
     private class PatrolBehaviour {
         float time;
         float patrolRange;
         float timeToTurn;
+        boolean isEnemySpoted = false;
         Vector2 startPosition;
         Vector2 targetPosition = new Vector2();
         Body aiBody;
         AnimationComponent animationComponent;
         boolean onPosition = false;
+        RayCastCallback callback;
+        Body targetBody;
 
         private PatrolBehaviour(float patrolRange, float timeToTurn){
                 this.patrolRange = patrolRange;
                 this.timeToTurn = timeToTurn;
+                callback = new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                    if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(PlayerComponent.class ) != null){
+                        isEnemySpoted = true;
+                        targetBody = fixture.getBody();
+                    }else
+                        isEnemySpoted = false;
+                    return 0;
+                }
+            };
+
+
         }
 
         void setStartPosition(Vector2 vector2){
@@ -88,15 +93,28 @@ public class HumanAi implements ArtificialIntelligence {
             animationComponent = aiEntity.getComponent(AnimationComponent.class);
             aiBody = aiEntity.getComponent(BodyComponent.class).body;
             time += Gdx.graphics.getDeltaTime();
-            goToPosition(targetPosition,animationComponent,aiBody);
-            if((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition){
+            World world = aiBody.getWorld();
 
-                if(animationComponent.spriteDirection){
-                    targetPosition.x = targetPosition.x - patrolRange;
-                }else targetPosition.x = targetPosition.x + patrolRange;
 
-                onPosition = true;
-            }else onPosition = false;
+        if(animationComponent.spriteDirection){
+            world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x +3, aiBody.getPosition().y));
+        }else world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x -3, aiBody.getPosition().y));
+
+
+            if(!isEnemySpoted){
+                goToPosition(targetPosition,animationComponent,aiBody);
+                if((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition){
+
+                    if(animationComponent.spriteDirection){
+                        targetPosition.x = targetPosition.x - patrolRange;
+                    }else targetPosition.x = targetPosition.x + patrolRange;
+
+                    onPosition = true;
+                }else onPosition = false;
+            }else{
+                goToPosition(targetBody.getPosition(),animationComponent,aiBody);
+            }
+
 
         }
 
@@ -136,25 +154,25 @@ public class HumanAi implements ArtificialIntelligence {
 //    }
 
 
-    private void onPatrol(AnimationComponent animationComponent, Body aiBody){
-
-
-            if(findTarget && targetBody != null){
-                Vector2 targetPosition = targetBody.getPosition();
-                Vector2 aiPosition = aiBody.getPosition();
-                System.out.println(targetPosition);
-
-                if(targetPosition.x+ 1.5f < aiPosition.x){
-                    aiBody.setLinearVelocity(new Vector2(-1, 0));
-                    animationComponent.spriteDirection = false;
-                }
-                if(targetPosition.x - 1.5f > aiPosition.x){
-                    aiBody.setLinearVelocity(new Vector2(1, 0));
-                    animationComponent.spriteDirection = true;
-                }
-
-            }
-    }
+//    private void onPatrol(AnimationComponent animationComponent, Body aiBody){
+//
+//
+//            if(findTarget && targetBody != null){
+//                Vector2 targetPosition = targetBody.getPosition();
+//                Vector2 aiPosition = aiBody.getPosition();
+//                System.out.println(targetPosition);
+//
+//                if(targetPosition.x+ 1.5f < aiPosition.x){
+//                    aiBody.setLinearVelocity(new Vector2(-1, 0));
+//                    animationComponent.spriteDirection = false;
+//                }
+//                if(targetPosition.x - 1.5f > aiPosition.x){
+//                    aiBody.setLinearVelocity(new Vector2(1, 0));
+//                    animationComponent.spriteDirection = true;
+//                }
+//
+//            }
+//    }
 
 }
 

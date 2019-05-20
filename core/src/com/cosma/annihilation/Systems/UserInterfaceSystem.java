@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -42,6 +43,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     private Image playerHealthStatusIcon;
     private PlayerComponent playerComponent;
     private ComponentMapper<PlayerComponent> playerMapper;
+    private BitmapFont font;
 
 
     public UserInterfaceSystem(Engine engine,World world) {
@@ -81,6 +83,9 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
 
         coreTable.add(fpsLabel).left().top().expandX().expandY();
         coreTable.add(playerHealthStatusIcon).top();
+
+        font = new BitmapFont();
+        font.setColor(Color.RED);
     }
 
     @Override
@@ -89,6 +94,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         fpsLabel.setText(Float.toString(Gdx.graphics.getFramesPerSecond()));
         stage.act(deltaTime);
         stage.draw();
+
     }
 
     @Override
