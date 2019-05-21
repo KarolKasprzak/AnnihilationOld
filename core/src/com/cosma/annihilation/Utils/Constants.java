@@ -27,8 +27,8 @@ public class Constants {
     public static final int USER_INTERFACE                 = 15;
     public static final int PHYSIC_SYSTEM                  = 14;
     public static final int DEBUG_RENDER                   = 13;
-    public static final int AI_SYSTEM                      = 17;
-    public static final int RENDER                         = 11;
+    public static final int AI_SYSTEM                      = 11;
+    public static final int RENDER                         = 12;
     public static final int TILE_MAP_RENDER                = 10;
     public static final int ANIMATION                      = 6;
     public static final int COLLISION_SYSTEM               = 8;

@@ -2,8 +2,6 @@ package com.cosma.annihilation.Ai;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -15,6 +13,7 @@ import com.cosma.annihilation.Utils.Util;
 
 public class HumanAi implements ArtificialIntelligence {
     private Vector2 startPosition;
+    private String aiStatus = "";
 
     private PatrolBehaviour patrolBehaviour;
 
@@ -45,7 +44,7 @@ public class HumanAi implements ArtificialIntelligence {
 
     @Override
     public String getStatus() {
-        return "dsadsasdasdadsa";
+        return aiStatus;
     }
 
 
@@ -53,7 +52,7 @@ public class HumanAi implements ArtificialIntelligence {
         float time;
         float patrolRange;
         float timeToTurn;
-        boolean isEnemySpoted = false;
+        boolean isEnemySpotted = false;
         Vector2 startPosition;
         Vector2 targetPosition = new Vector2();
         Body aiBody;
@@ -69,10 +68,11 @@ public class HumanAi implements ArtificialIntelligence {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                     if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(PlayerComponent.class ) != null){
-                        isEnemySpoted = true;
+                        isEnemySpotted = true;
                         targetBody = fixture.getBody();
+                        aiStatus = "enemy find";
                     }else
-                        isEnemySpoted = false;
+                        isEnemySpotted = false;
                     return 0;
                 }
             };
@@ -101,8 +101,9 @@ public class HumanAi implements ArtificialIntelligence {
         }else world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x -3, aiBody.getPosition().y));
 
 
-            if(!isEnemySpoted){
+            if(!isEnemySpotted){
                 goToPosition(targetPosition,animationComponent,aiBody);
+                aiStatus = "on patrol";
                 if((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition){
 
                     if(animationComponent.spriteDirection){
@@ -112,6 +113,7 @@ public class HumanAi implements ArtificialIntelligence {
                     onPosition = true;
                 }else onPosition = false;
             }else{
+                aiStatus = "go to enemy";
                 goToPosition(targetBody.getPosition(),animationComponent,aiBody);
             }
 
