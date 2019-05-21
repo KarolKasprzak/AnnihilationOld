@@ -38,14 +38,17 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
     private String selectedEntity;
     private Body selectedBody;
     private boolean canMove = false;
-
+    private  Json json;
     public EntityTreeWindow(World world, MapEditor mapEditor) {
         super("Entity:");
         this.world = world;
         this.mapEditor = mapEditor;
+
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
         jsonList = new HashMap<>();
+        json = new Json();
+        json.setSerializer(Entity.class, new EntitySerializer(world));
 
         final VisTree tree = new VisTree();
         Node treeRoot = new Node(new VisLabel("Entity"));
@@ -90,8 +93,7 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
     }
 
     private void createEntity(String key, float x, float y) {
-        Json json = new Json();
-        json.setSerializer(Entity.class, new EntitySerializer(world));
+
         Entity entity = json.fromJson(Entity.class, jsonList.get(key));
         entity.getComponent(BodyComponent.class).body.setTransform(new Vector2(x, y), 0);
         mapEditor.getMap().addEntity(entity);
@@ -200,20 +202,6 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
     public boolean mouseMoved(int screenX, int screenY) {
 
 
-//        if (selectedLight != null) {
-//            float x = selectedLight.getX();
-//            float y = selectedLight.getY();
-//
-//            if (Utilities.isFloatInRange(vec.x, x -1, x +1) && Utilities.isFloatInRange(vec.y, y -1, y +1)) {
-//                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
-//                canDragObject = true;
-//            } else {
-//                canDragObject = false;
-//            }
-//            if (!canDragObject) {
-//                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
-//            }
-//        }
         return false;
     }
 

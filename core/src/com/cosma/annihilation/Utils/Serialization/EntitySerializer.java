@@ -3,6 +3,7 @@ package com.cosma.annihilation.Utils.Serialization;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -17,11 +18,14 @@ import com.cosma.annihilation.Utils.AnimationFactory;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
+import java.util.HashMap;
+
 
 public class EntitySerializer implements Json.Serializer<Entity> {
     private World world;
     private Engine engine;
     private AnimationFactory animationFactory;
+
 
     public EntitySerializer(World world, Engine engine) {
         this.world = world;
@@ -101,7 +105,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             }
 
             if (component instanceof TagComponent) {
-                json.writeValue("tag", ((TagComponent) component).tag);
+                json.writeValue("tag", ((TagComponent) component).entityName);
                 json.writeObjectEnd();
                 continue;
             }
@@ -239,7 +243,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
         if (jsonData.has("TagComponent")) {
             TagComponent tagComponent = new TagComponent();
-            tagComponent.tag = jsonData.get("TagComponent").get("tag").asString();
+            tagComponent.entityName = jsonData.get("TagComponent").get("tag").asString();
             entity.add(tagComponent);
         }
 
