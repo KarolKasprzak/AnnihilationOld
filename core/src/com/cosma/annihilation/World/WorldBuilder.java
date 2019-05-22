@@ -42,6 +42,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     private Viewport viewport;
     private CosmaMapLoader loader;
     private Signal<GameEvent> signal;
+    private boolean isPaused = false;
 
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
         ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
@@ -99,8 +100,10 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     public void update(float delta) {
         debugInput();
-        engine.update(delta);
-        camera.update();
+        if(!isPaused){
+            engine.update(delta);
+            camera.update();
+        }
     }
 
     public void resize(int w, int h) {
@@ -121,7 +124,9 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) this.saveMap();
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) camera.zoom = camera.zoom + 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.X)) camera.zoom = camera.zoom - 0.2f;
-
+        if (Gdx.input.isKeyPressed(Input.Keys.P)){
+            loadMap();
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)){
             if (Gdx.input.isKeyPressed(Input.Keys.D)){
                 StateManager.debugMode = true;
@@ -137,6 +142,23 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         json.setIgnoreUnknownFields(false);
         json.setSerializer(Entity.class, new GameEntitySerializer(engine,world));
         file.writeString(json.prettyPrint(loader.getMap()), false);
+
+    }
+
+    private void loadMap(){
+        isPaused = true;
+        System.out.println("e "+engine.getEntities().size());
+        System.out.println("b "+world.getBodyCount());
+        for(Entity entity: engine.getEntities()){
+            for(Component component: entity.getComponents()){
+                if(component instanceof BodyComponent){
+                    world.destroyBody(((BodyComponent) component).body);
+                }
+            }
+        }
+        engine.removeAllEntities();
+        System.out.println("e "+engine.getEntities().size());
+        System.out.println("b "+world.getBodyCount());
 
     }
 

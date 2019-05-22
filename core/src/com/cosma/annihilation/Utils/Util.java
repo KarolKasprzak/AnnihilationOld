@@ -64,10 +64,7 @@ public class Util {
     }
 
     public static Vector2 jsonStringToVector2(String string){
-        Vector2 vector2 = new
-        tile.setTextureRegion(texture.split(",")[1],texture.split(",")[0]);
-        setTile(Integer.parseInt(position.split(",")[0]),Integer.parseInt(position.split(",")[1]),tile);
-        return
+        return new Vector2(Float.parseFloat(string.split(",")[0]),Float.parseFloat(string.split(",")[1]));
     }
 
     public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name,float rotation) {

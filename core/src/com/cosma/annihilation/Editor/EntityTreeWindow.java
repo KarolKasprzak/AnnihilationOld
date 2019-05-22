@@ -1,5 +1,6 @@
 package com.cosma.annihilation.Editor;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
+import com.cosma.annihilation.Components.AiComponent;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Editor.CosmaMap.EntityEditOptionsWindow;
 import com.cosma.annihilation.Screens.MapEditor;
@@ -95,7 +97,16 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
     private void createEntity(String key, float x, float y) {
 
         Entity entity = json.fromJson(Entity.class, jsonList.get(key));
-        entity.getComponent(BodyComponent.class).body.setTransform(new Vector2(x, y), 0);
+        for(Component component: entity.getComponents()){
+            if(component instanceof BodyComponent){
+                ((BodyComponent) component).body.setTransform(x,y, 0);
+                continue;
+            }
+            if(component instanceof AiComponent){
+                ((AiComponent) component).startPosition.set(x,y);
+            }
+        }
+        entity.getComponent(BodyComponent.class).body.setTransform(x,y, 0);
         mapEditor.getMap().addEntity(entity);
     }
 

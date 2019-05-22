@@ -9,7 +9,7 @@ public class AiComponent implements Component {
     public boolean isActive = false;
     public boolean reactToPlayerWeapon;
     public boolean onPatrol;
-    public Vector2 startPosition;
+    public Vector2 startPosition = new Vector2();
 
     public ArtificialIntelligence ai = new HumanAi();
 

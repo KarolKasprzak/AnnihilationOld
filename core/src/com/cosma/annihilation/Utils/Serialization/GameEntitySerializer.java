@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.widget.VisLabel;
 
 import java.util.HashMap;
@@ -51,9 +52,6 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                  json.writeValue("hp", ((HealthComponent) component).hp);
                  json.writeValue("maxHP", ((HealthComponent) component).maxHP);
              }
-             if (component instanceof ActionComponent) {
-                 json.writeValue("action", ((ActionComponent) component).action.name());
-             }
              if (component instanceof AiComponent) {
                  json.writeValue("startPosition", ((AiComponent) component).startPosition.x+","+((AiComponent) component).startPosition.y);
              }
@@ -80,15 +78,21 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
          json.writeObjectEnd();
     }
 
-
-
     @Override
     public Entity read(Json json, JsonValue jsonData, Class type) {
+
         Entity entity = json.fromJson(Entity.class, jsonList.get(jsonData.get("entityName").asString()));
         for(Component component: entity.getComponents()){
             if(component instanceof BodyComponent){
-
+                ((BodyComponent) component).body.setTransform(Util.jsonStringToVector2(jsonData.get("position").asString()),0);
+                continue;
             }
+            if(component instanceof AiComponent){
+                if(jsonData.has("startPosition")){
+                    ((AiComponent) component).startPosition = Util.jsonStringToVector2(jsonData.get("startPosition").asString());
+                }
+            }
+
         }
         engine.addEntity(entity);
         return null;
