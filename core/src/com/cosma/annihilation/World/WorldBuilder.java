@@ -29,6 +29,7 @@ import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
+import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.StateManager;
 
 
@@ -134,7 +135,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         Json json = new Json();
         FileHandle file = Gdx.files.local("save/save.json");
         json.setIgnoreUnknownFields(false);
-        json.setSerializer(Entity.class, new EntitySerializer(world, engine));
+        json.setSerializer(Entity.class, new GameEntitySerializer(engine,world));
         file.writeString(json.prettyPrint(loader.getMap()), false);
 
     }

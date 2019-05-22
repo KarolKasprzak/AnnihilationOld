@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -60,6 +61,13 @@ public class Util {
     public static Vector3 getWorldCoordinates(int screenX, int screenY, OrthographicCamera camera) {
         Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
         return camera.unproject(worldCoordinates);
+    }
+
+    public static Vector2 jsonStringToVector2(String string){
+        Vector2 vector2 = new
+        tile.setTextureRegion(texture.split(",")[1],texture.split(",")[0]);
+        setTile(Integer.parseInt(position.split(",")[0]),Integer.parseInt(position.split(",")[1]),tile);
+        return
     }
 
     public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name,float rotation) {

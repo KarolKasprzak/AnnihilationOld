@@ -38,7 +38,7 @@ public class Tile implements Json.Serializable {
         this.atlasPath = atlasPath;
     }
 
-    public String getTextureDate(){
+    String getTextureDate(){
         return ((FileTextureData)textureRegion.getTexture().getTextureData()).getFileHandle().nameWithoutExtension()+".atlas"+","+atlasRegionName;
     }
 

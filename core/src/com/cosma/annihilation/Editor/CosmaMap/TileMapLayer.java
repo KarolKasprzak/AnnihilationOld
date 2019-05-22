@@ -50,9 +50,6 @@ public class TileMapLayer extends MapLayer implements Json.Serializable {
                 }
                 Tile tile = getTile(x,y);
                 json.writeObjectStart();
-                String position = x + "," + y;
-
-
                 json.writeValue("position",x+","+y);
                 json.writeValue("texture",tile.getTextureDate());
                 json.writeObjectEnd();

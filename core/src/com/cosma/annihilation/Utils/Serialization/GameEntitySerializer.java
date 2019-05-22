@@ -29,7 +29,9 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
         entityJason = new Json();
         entityJason.setSerializer(Entity.class, new EntitySerializer(world));
 
+
         //Load all entity
+        jsonList = new HashMap<>();
         FileHandle file = Gdx.files.local("entity");
         for (FileHandle rootDirectory : file.list()) {
             if (rootDirectory.isDirectory()) {
@@ -52,6 +54,9 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
              if (component instanceof ActionComponent) {
                  json.writeValue("action", ((ActionComponent) component).action.name());
              }
+             if (component instanceof AiComponent) {
+                 json.writeValue("startPosition", ((AiComponent) component).startPosition.x+","+((AiComponent) component).startPosition.y);
+             }
              if (component instanceof AnimationComponent) {
                  json.writeValue("id",((AnimationComponent) component).animationId.name());
              }
@@ -68,8 +73,8 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                  json.writeArrayEnd();
              }
              if (component instanceof BodyComponent) {
-                 json.writeValue("positionX",(((BodyComponent) component).body.getPosition().x));
-                 json.writeValue("positionY",(((BodyComponent) component).body.getPosition().y));
+                 json.writeValue("position",(((BodyComponent) component).body.getPosition().x)+","+((BodyComponent) component).body.getPosition().y);
+
              }
          }
          json.writeObjectEnd();
@@ -81,7 +86,9 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
     public Entity read(Json json, JsonValue jsonData, Class type) {
         Entity entity = json.fromJson(Entity.class, jsonList.get(jsonData.get("entityName").asString()));
         for(Component component: entity.getComponents()){
-            //TODO
+            if(component instanceof BodyComponent){
+
+            }
         }
         engine.addEntity(entity);
         return null;

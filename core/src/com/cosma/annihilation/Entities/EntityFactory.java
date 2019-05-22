@@ -47,42 +47,7 @@ public class EntityFactory {
     }
 
 
-    public Entity createTestEnemy(){
-        Entity entity = new Entity();
 
-        EnemyComponent enemyComponent = engine.createComponent(EnemyComponent.class);
-        BodyComponent bodyComponent = engine.createComponent(BodyComponent.class);
-        HealthComponent healthComponent = engine.createComponent(HealthComponent.class);
-        TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
-        SerializationComponent serializationComponent = engine.createComponent(SerializationComponent.class);
-
-
-        healthComponent.maxHP = 50;
-        healthComponent.hp = 50;
-        serializationComponent.type = EntityID.ENEMY_TEST;
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyComponent.body = world.createBody(bodyDef);
-        bodyComponent.body.setUserData(entity);
-        bodyComponent.body.setBullet(true);
-        //Physic fixture
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 1f);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
-        bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.ENEMY_TEST);
-
-        entity.add(textureComponent);
-        entity.add(bodyComponent);
-        entity.add(healthComponent);
-        entity.add(enemyComponent);
-        entity.add(serializationComponent);
-
-        engine.addEntity(entity);
-        return entity;
-    }
 
 
     public Entity createBulletEntity(float x, float y,float speed,boolean flip){
@@ -159,10 +124,8 @@ public class EntityFactory {
         TextureComponent textureComponent = new TextureComponent();
         ActionComponent actionComponent = new ActionComponent();
         HealthComponent healthComponent = new HealthComponent();
-        SerializationComponent serializationComponent = engine.createComponent(SerializationComponent.class);
         DoorComponent doorComponent = new DoorComponent();
 
-        serializationComponent.type = EntityID.DOOR;
         healthComponent.hp = 100;
         healthComponent.maxHP = 100;
 
@@ -195,7 +158,6 @@ public class EntityFactory {
         bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
         //-----------Body Component End----------------------
         entity.add(doorComponent);
-        entity.add(serializationComponent);
         entity.add(textureComponent);
         entity.add(bodyComponent);
         entity.add(actionComponent);
@@ -212,14 +174,10 @@ public class EntityFactory {
         ContainerComponent containerComponent = new ContainerComponent();
         TextureComponent textureComponent = new TextureComponent();
         ActionComponent actionComponent = new ActionComponent();
-        SerializationComponent serializationComponent = new SerializationComponent();
         HealthComponent healthComponent = new HealthComponent();
         healthComponent.hp = 50;
         healthComponent.maxHP = 50;
 
-
-
-        serializationComponent.type = EntityID.BOX;
         actionComponent.action = EntityAction.OPEN;
         containerComponent.name = "box";
         containerComponent.itemLocations = itemList;
@@ -249,7 +207,6 @@ public class EntityFactory {
         bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
         //-----------Body Component End----------------------
         entity.add(textureComponent);
-        entity.add(serializationComponent);
         entity.add(bodyComponent);
         entity.add(containerComponent);
         entity.add(actionComponent);
@@ -265,8 +222,7 @@ public class EntityFactory {
         BodyComponent bodyComponent = new BodyComponent();
         ContainerComponent containerComponent = new ContainerComponent();
         ActionComponent actionComponent = new ActionComponent();
-        SerializationComponent serializationComponent = new SerializationComponent();
-        serializationComponent.type = EntityID.BOX;
+
 
 
         actionComponent.action = EntityAction.OPEN;
@@ -301,7 +257,7 @@ public class EntityFactory {
         touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
         bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
         //-----------Body Component End----------------------
-        entity.add(serializationComponent);
+
         entity.add(bodyComponent);
         entity.add(containerComponent);
         entity.add(actionComponent);
@@ -321,7 +277,6 @@ public class EntityFactory {
         BodyComponent bodyComponent = new BodyComponent();
         PlayerComponent playerComponent = new PlayerComponent();
         HealthComponent healthComponent = new HealthComponent();
-        SerializationComponent typeComponent = new SerializationComponent();
         PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
         TextureComponent textureComponent = new TextureComponent();
         PlayerComponent stateComponent = new PlayerComponent();
@@ -332,7 +287,7 @@ public class EntityFactory {
 
 //        animationComponent.animatedSprite = new AnimatedSprite();
 
-        typeComponent.type = EntityID.PLAYER;
+
         healthComponent.hp = 67;
         playerComponent.collisionEntityList = new ArrayList<Entity>();
         playerInventoryComponent.inventoryItem = new Array<InventoryItemLocation>();
@@ -378,7 +333,7 @@ public class EntityFactory {
         entity.add(stateComponent);
         entity.add(textureComponent);
         entity.add(playerInventoryComponent);
-        entity.add(typeComponent);
+
         entity.add(healthComponent);
         entity.add(playerComponent);
         entity.add(bodyComponent);
