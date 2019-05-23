@@ -7,7 +7,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -37,7 +36,7 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
     private World world;
     private MapEditor mapEditor;
     private boolean canAddEntity = false;
-    private String selectedEntity;
+    private String selectedEntityName;
     private Body selectedBody;
     private boolean canMove = false;
     private  Json json;
@@ -84,8 +83,8 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
                 if (!tree.getSelection().isEmpty()) {
                     VisLabel label = ((VisLabel) tree.getSelection().first().getActor());
                     if (label.getName() != null) {
-                        selectedEntity = label.getName();
-                        System.out.println(selectedEntity);
+                        selectedEntityName = label.getName();
+                        System.out.println(selectedEntityName);
                         canAddEntity = true;
                         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
                     }
@@ -130,7 +129,7 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
         Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
         final Vector3 vec = mapEditor.getCamera().unproject(worldCoordinates);
         if (canAddEntity && button == Input.Buttons.LEFT) {
-            createEntity(selectedEntity, vec.x, vec.y);
+            createEntity(selectedEntityName, vec.x, vec.y);
             canAddEntity = false;
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
         }
@@ -147,6 +146,12 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
 
         if (canMove && button == Input.Buttons.LEFT) {
             selectedBody.setTransform(vec.x,vec.y,0);
+            if(selectedBody.getUserData() instanceof Entity){
+                Entity entity = (Entity) selectedBody.getUserData();
+                if(entity.getComponent(AiComponent.class) != null){
+                    entity.getComponent(AiComponent.class).startPosition.set(vec.x,vec.y);
+                }
+            }
             selectedBody.setActive(true);
             selectedBody.setAwake(true);
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);

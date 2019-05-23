@@ -72,6 +72,9 @@ public class CosmaMapLoader {
         map = json.fromJson(GameMap.class, mapFile);
     }
 
+
+
+
     public GameMap getMap() {
         return map;
     }

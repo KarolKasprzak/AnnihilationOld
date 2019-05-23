@@ -57,7 +57,6 @@ public class AiSystem extends IteratingSystem {
 
 
         Vector3 worldPosition = worldCamera.project(new Vector3(bodyComponent.body.getPosition().x,bodyComponent.body.getPosition().y+1,0));
-        System.out.println(worldPosition.x + " " + worldPosition.y);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         font.draw(batch, aiComponent.ai.getStatus(), worldPosition.x, worldPosition.y);

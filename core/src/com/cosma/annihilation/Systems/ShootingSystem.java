@@ -357,7 +357,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             weaponMagazine.setAmmoInMagazine(playerComponent.activeWeapon.getAmmoInMagazine());
             weaponMagazine.setMaxAmmoInMagazine(playerComponent.activeWeapon.getMaxAmmoInMagazine());
             playerComponent.isWeaponHidden = !playerComponent.isWeaponHidden;
-            System.out.println(body.getPosition());
         }
     }
 

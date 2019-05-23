@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -22,6 +23,7 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Editor.CosmaMap.GameMap;
+import com.cosma.annihilation.Editor.CosmaMap.MapLayer;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
@@ -43,6 +45,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     private CosmaMapLoader loader;
     private Signal<GameEvent> signal;
     private boolean isPaused = false;
+    private RayHandler rayHandler;
 
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
         ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
@@ -53,7 +56,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         SpriteBatch batch = new SpriteBatch();
 
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
-        RayHandler rayHandler = new RayHandler(world);
+        rayHandler = new RayHandler(world);
         engine = new PooledEngine();
         engine.addEntityListener(this);
 
@@ -71,7 +74,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
         engine.addSystem(new ActionSystem(world));
         engine.addSystem(new ShootingSystem(world, rayHandler,batch,camera));
-        engine.addSystem(new UserInterfaceSystem(engine,world));
+        engine.addSystem(new UserInterfaceSystem(engine,world,this));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
         engine.addSystem(new HealthSystem(camera));
@@ -136,7 +139,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     }
 
 
-    private void saveMap(){
+    public void saveMap(){
         Json json = new Json();
         FileHandle file = Gdx.files.local("save/save.json");
         json.setIgnoreUnknownFields(false);
@@ -145,7 +148,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     }
 
-    private void loadMap(){
+    public void loadMap(){
         isPaused = true;
         System.out.println("e "+engine.getEntities().size());
         System.out.println("b "+world.getBodyCount());
@@ -153,9 +156,19 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
             for(Component component: entity.getComponents()){
                 if(component instanceof BodyComponent){
                     world.destroyBody(((BodyComponent) component).body);
+                    ((BodyComponent) component).body = null;
                 }
             }
         }
+        Array<Body> bodies = new Array<>();
+        world.getBodies(bodies);
+        for(Body body: bodies){
+            world.destroyBody(body);
+            body = null;
+        }
+        rayHandler.removeAll();
+        bodies.clear();
+        bodies = null;
         engine.removeAllEntities();
         System.out.println("e "+engine.getEntities().size());
         System.out.println("b "+world.getBodyCount());

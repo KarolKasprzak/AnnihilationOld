@@ -33,6 +33,7 @@ import com.cosma.annihilation.Gui.GameMainMenuWindow;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.Util;
+import com.cosma.annihilation.World.WorldBuilder;
 
 public class UserInterfaceSystem extends IteratingSystem implements Listener<GameEvent> {
 
@@ -45,8 +46,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     private ComponentMapper<PlayerComponent> playerMapper;
     private BitmapFont font;
 
-
-    public UserInterfaceSystem(Engine engine,World world) {
+    public UserInterfaceSystem(Engine engine, World world, WorldBuilder worldBuilder) {
         super(Family.all(PlayerComponent.class).get(), Constants.USER_INTERFACE);
 
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
@@ -71,7 +71,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         containerWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.4f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.5f) / 2));
         stage.addActor(containerWindow);
 
-        gameMainMenuWindow = new GameMainMenuWindow("", skin, engine, Util.setWindowWidth(0.95f), Util.setWindowHeight(0.95f),world);
+        gameMainMenuWindow = new GameMainMenuWindow("", skin, engine, Util.setWindowWidth(0.95f), Util.setWindowHeight(0.95f),world,worldBuilder);
         gameMainMenuWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.95f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.95f) / 2));
         gameMainMenuWindow.setVisible(false);
         gameMainMenuWindow.setFillParent(true);

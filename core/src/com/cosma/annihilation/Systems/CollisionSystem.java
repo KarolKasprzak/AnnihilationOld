@@ -159,7 +159,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         if (fb.getUserData() == BodyID.PLAYER_FOOT && fa.getUserData() == BodyID.DESCENT_LADDER || fa.getUserData() == BodyID.PLAYER_FOOT && fb.getUserData() == BodyID.DESCENT_LADDER) {
             playerComponent.canClimbDown = true;
-            System.out.println("truewa");
             if (fa.getUserData() == BodyID.DESCENT_LADDER) {
                 ladderX = fa.getBody().getPosition().x;
                 ladderY = fa.getBody().getPosition().y;

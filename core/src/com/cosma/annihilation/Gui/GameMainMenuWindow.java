@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Utils.Util;
+import com.cosma.annihilation.World.WorldBuilder;
 
 public class GameMainMenuWindow extends Window {
 
@@ -25,11 +26,12 @@ public class GameMainMenuWindow extends Window {
     private Button menuButton;
     private Button characterButton;
     private Engine engine;
+    private WorldBuilder worldBuilder;
 
-
-    public GameMainMenuWindow(String title, Skin skin, Engine engine, float x, float y,World world) {
+    public GameMainMenuWindow(String title, Skin skin, Engine engine, float x, float y, World world, WorldBuilder worldBuilder) {
         super(title, skin);
 
+        this.worldBuilder = worldBuilder;
         this.skin = skin;
         this.setVisible(false);
         this.engine = engine;
@@ -89,11 +91,9 @@ public class GameMainMenuWindow extends Window {
     }
 
     void saveGame() {
-
-        playerInventoryWindow.saveInventory(engine);
-
-
-
+          System.out.println("save");
+//        playerInventoryWindow.saveInventory(engine);
+          worldBuilder.saveMap();
     }
 
 
@@ -102,7 +102,9 @@ public class GameMainMenuWindow extends Window {
     }
 
     void loadGame() {
-        playerInventoryWindow.loadInventory(engine);
+        System.out.println("load");
+        worldBuilder.loadMap();
+//        playerInventoryWindow.loadInventory(engine);
 
     }
 
