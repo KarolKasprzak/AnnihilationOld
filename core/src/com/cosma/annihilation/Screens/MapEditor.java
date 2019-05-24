@@ -30,6 +30,7 @@ import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
+import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.dialog.Dialogs;
@@ -251,7 +252,7 @@ public class MapEditor implements Screen, InputProcessor {
     private void checkAndSaveFile(FileHandle file) {
         Json json = new Json();
         json.setIgnoreUnknownFields(false);
-        json.setSerializer(Entity.class, new EntitySerializer(world, engine));
+        json.setSerializer(Entity.class, new GameEntitySerializer(world, engine));
         if (file.exists()) {
             Dialogs.showOptionDialog(stage, "Save:", "file exist, overwrite?", Dialogs.OptionDialogType.YES_NO, new OptionDialogAdapter() {
                 @Override

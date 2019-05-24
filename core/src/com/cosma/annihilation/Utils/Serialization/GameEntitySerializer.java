@@ -6,30 +6,25 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.Util;
-import com.kotcrab.vis.ui.widget.VisLabel;
 
 import java.util.HashMap;
 
 public class GameEntitySerializer implements Json.Serializer<Entity>  {
 
-    private World world;
+
     private Engine engine;
     private HashMap<String, FileHandle> jsonList;
-    private Json entityJason;
 
-    public GameEntitySerializer(Engine engine, World world) {
-        this.world = world;
+    public GameEntitySerializer(World world,Engine engine) {
         this.engine = engine;
 
-        entityJason = new Json();
-        entityJason.setSerializer(Entity.class, new EntitySerializer(world));
-
+        Json entityJason = new Json();
+        entityJason.setSerializer(Entity.class, new EntitySerializer(world,engine));
 
         //Load all entity
         jsonList = new HashMap<>();
@@ -50,26 +45,43 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
          for (Component component : object.getComponents()) {
              if (component instanceof HealthComponent) {
                  json.writeValue("hp", ((HealthComponent) component).hp);
-                 json.writeValue("maxHP", ((HealthComponent) component).maxHP);
+                 json.writeValue("maxHp", ((HealthComponent) component).maxHP);
              }
+
              if (component instanceof AiComponent) {
                  json.writeValue("startPosition", ((AiComponent) component).startPosition.x+","+((AiComponent) component).startPosition.y);
              }
+
+             if (component instanceof SerializationComponent) {
+                 json.writeValue("entityName", ((SerializationComponent) component).entityName);
+             }
+
              if (component instanceof AnimationComponent) {
                  json.writeValue("id",((AnimationComponent) component).animationId.name());
              }
+
              if (component instanceof ContainerComponent) {
                  json.writeValue("name", ((ContainerComponent) component).name);
                  json.writeArrayStart("itemList");
                  for (InventoryItemLocation location : ((ContainerComponent) component).itemLocations) {
-                     json.writeObjectStart();
-                     json.writeValue("tableIndex", location.getTableIndex());
-                     json.writeValue("itemID", location.getItemID());
-                     json.writeValue("itemsAmount", location.getItemsAmount());
-                     json.writeObjectEnd();
+                      saveItems(json,location);
                  }
                  json.writeArrayEnd();
              }
+
+             if (component instanceof PlayerInventoryComponent) {
+                 json.writeArrayStart("inventoryItem");
+                 for (InventoryItemLocation location : ((PlayerInventoryComponent) component).inventoryItem) {
+                  saveItems(json,location);
+                 }
+                 json.writeArrayEnd();
+                 json.writeArrayStart("equippedItem");
+                 for (InventoryItemLocation location : ((PlayerInventoryComponent) component).equippedItem) {
+                     saveItems(json,location);
+                 }
+                 json.writeArrayEnd();
+             }
+
              if (component instanceof BodyComponent) {
                  json.writeValue("position",(((BodyComponent) component).body.getPosition().x)+","+((BodyComponent) component).body.getPosition().y);
 
@@ -92,9 +104,23 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                     ((AiComponent) component).startPosition = Util.jsonStringToVector2(jsonData.get("startPosition").asString());
                 }
             }
-
+            if(component instanceof HealthComponent){
+                if(jsonData.has("hp")){
+                    ((HealthComponent) component).hp = jsonData.get("hp").asInt();
+                }
+                if(jsonData.has("maxHp")){
+                    ((HealthComponent) component).maxHP = jsonData.get("maxHp").asInt();
+                }
+            }
         }
         engine.addEntity(entity);
         return null;
+    }
+    static void saveItems(Json json,InventoryItemLocation location){
+        json.writeObjectStart();
+        json.writeValue("tableIndex", location.getTableIndex());
+        json.writeValue("itemID", location.getItemID());
+        json.writeValue("itemsAmount", location.getItemsAmount());
+        json.writeObjectEnd();
     }
 }

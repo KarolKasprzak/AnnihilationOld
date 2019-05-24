@@ -3,10 +3,8 @@ package com.cosma.annihilation.Utils.Serialization;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -18,21 +16,19 @@ import com.cosma.annihilation.Utils.AnimationFactory;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
-import java.util.HashMap;
-
 
 public class EntitySerializer implements Json.Serializer<Entity> {
     private World world;
     private Engine engine;
     private AnimationFactory animationFactory;
 
-
+    /** use in game **/
     public EntitySerializer(World world, Engine engine) {
         this.world = world;
         this.engine = engine;
         animationFactory = new AnimationFactory();
     }
-
+    /** use only in map editor **/
     public EntitySerializer(World world) {
         this.world = world;
         this.engine = null;
@@ -104,8 +100,8 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 continue;
             }
 
-            if (component instanceof TagComponent) {
-                json.writeValue("tag", ((TagComponent) component).entityName);
+            if (component instanceof SerializationComponent) {
+                json.writeValue("tag", ((SerializationComponent) component).entityName);
                 json.writeObjectEnd();
                 continue;
             }
@@ -114,11 +110,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 json.writeValue("name", ((ContainerComponent) component).name);
                 json.writeArrayStart("itemList");
                 for (InventoryItemLocation location : ((ContainerComponent) component).itemLocations) {
-                    json.writeObjectStart();
-                    json.writeValue("tableIndex", location.getTableIndex());
-                    json.writeValue("itemID", location.getItemID());
-                    json.writeValue("itemsAmount", location.getItemsAmount());
-                    json.writeObjectEnd();
+                  GameEntitySerializer.saveItems(json,location);
                 }
                 json.writeArrayEnd();
                 json.writeObjectEnd();
@@ -241,10 +233,10 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(textureComponent);
         }
 
-        if (jsonData.has("TagComponent")) {
-            TagComponent tagComponent = new TagComponent();
-            tagComponent.entityName = jsonData.get("TagComponent").get("tag").asString();
-            entity.add(tagComponent);
+        if (jsonData.has("SerializationComponent")) {
+            SerializationComponent serializationComponent = new SerializationComponent();
+            serializationComponent.entityName = jsonData.get("SerializationComponent").get("entityName").asString();
+            entity.add(serializationComponent);
         }
 
         if (jsonData.has("StateComponent")) {
