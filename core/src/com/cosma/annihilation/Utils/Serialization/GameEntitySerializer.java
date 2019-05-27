@@ -16,15 +16,13 @@ import java.util.HashMap;
 
 public class GameEntitySerializer implements Json.Serializer<Entity>  {
 
-
-    private Engine engine;
+    private Json loadJason;
     private HashMap<String, FileHandle> jsonList;
 
     public GameEntitySerializer(World world,Engine engine) {
-        this.engine = engine;
 
-        Json entityJason = new Json();
-        entityJason.setSerializer(Entity.class, new EntitySerializer(world,engine));
+        loadJason = new Json();
+        loadJason.setSerializer(Entity.class, new EntitySerializer(world,engine));
 
         //Load all entity
         jsonList = new HashMap<>();
@@ -32,7 +30,7 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
         for (FileHandle rootDirectory : file.list()) {
             if (rootDirectory.isDirectory()) {
                 for (FileHandle childrenDirectory : rootDirectory.list(".json")) {
-                    jsonList.put(childrenDirectory.nameWithoutExtension(), childrenDirectory);
+                    jsonList.put(childrenDirectory.name(), childrenDirectory);
                 }
             }
         }
@@ -61,7 +59,6 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
              }
 
              if (component instanceof ContainerComponent) {
-                 json.writeValue("name", ((ContainerComponent) component).name);
                  json.writeArrayStart("itemList");
                  for (InventoryItemLocation location : ((ContainerComponent) component).itemLocations) {
                       saveItems(json,location);
@@ -93,7 +90,7 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
     @Override
     public Entity read(Json json, JsonValue jsonData, Class type) {
 
-        Entity entity = json.fromJson(Entity.class, jsonList.get(jsonData.get("entityName").asString()));
+        Entity entity = loadJason.fromJson(Entity.class, jsonList.get(jsonData.get("entityName").asString()));
         for(Component component: entity.getComponents()){
             if(component instanceof BodyComponent){
                 ((BodyComponent) component).body.setTransform(Util.jsonStringToVector2(jsonData.get("position").asString()),0);
@@ -113,8 +110,7 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                 }
             }
         }
-        engine.addEntity(entity);
-        return null;
+        return entity;
     }
     static void saveItems(Json json,InventoryItemLocation location){
         json.writeObjectStart();

@@ -105,7 +105,6 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
                 ((AiComponent) component).startPosition.set(x,y);
             }
         }
-        entity.getComponent(BodyComponent.class).body.setTransform(x,y, 0);
         mapEditor.getMap().addEntity(entity);
     }
 

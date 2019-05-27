@@ -47,6 +47,7 @@ public class PlayerControlSystem extends IteratingSystem{
 
 
 
+
 //         prevent slip/idle mode
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && !animationComponent.isAnimationPlayed) {
                  playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
@@ -104,6 +105,7 @@ public class PlayerControlSystem extends IteratingSystem{
         //Moving on side
         if(playerComponent.canMoveOnSide && playerComponent.onGround && playerComponent.isWeaponHidden) {
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
+
                 animationComponent.animationState = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = player.velocity;

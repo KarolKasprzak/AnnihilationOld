@@ -104,7 +104,7 @@ public class GameMainMenuWindow extends Window {
     void loadGame() {
         System.out.println("load");
         worldBuilder.loadMap();
-//        playerInventoryWindow.loadInventory(engine);
+        playerInventoryWindow.loadInventory(engine);
 
     }
 

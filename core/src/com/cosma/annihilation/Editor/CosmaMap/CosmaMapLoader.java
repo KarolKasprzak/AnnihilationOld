@@ -15,6 +15,7 @@ import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
+import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.Util;
 
 
@@ -22,16 +23,28 @@ public class CosmaMapLoader {
     private GameMap map;
     private World world;
     private Engine engine;
-
+    private RayHandler rayHandler;
 
 //    public CosmaMapLoader(String mapPath) {
 //        loadMap(mapPath);
 //    }
 
-    public CosmaMapLoader(String mapPath, World world, RayHandler rayHandler, Engine engine) {
+    public CosmaMapLoader(World world, RayHandler rayHandler, Engine engine) {
         this.world = world;
         this.engine = engine;
-        loadMap(mapPath);
+        this.rayHandler = rayHandler;
+    }
+
+    public void loadMap(String mapPath) {
+        FileHandle mapFile = Gdx.files.local(mapPath);
+        Json json = new Json();
+        json.setUsePrototypes(false);
+        json.setSerializer(Entity.class,new GameEntitySerializer(world,engine));
+        map = json.fromJson(GameMap.class, mapFile);
+        createMapObject();
+    }
+
+    private void createMapObject(){
         for (ObjectMapLayer layer : map.getLayers().getByType(ObjectMapLayer.class)) {
             for (RectangleObject object : layer.getObjects().getByType(RectangleObject.class)) {
                 Util.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation() * MathUtils.degreesToRadians);
@@ -62,16 +75,8 @@ public class CosmaMapLoader {
                 map.putLight(light.getName(), cone);
             }
         }
-    }
 
-    private void loadMap(String mapPath) {
-        FileHandle mapFile = Gdx.files.local(mapPath);
-        Json json = new Json();
-        json.setUsePrototypes(false);
-        json.setSerializer(Entity.class,new EntitySerializer(world,engine));
-        map = json.fromJson(GameMap.class, mapFile);
     }
-
 
 
 

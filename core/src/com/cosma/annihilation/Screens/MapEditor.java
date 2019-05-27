@@ -60,6 +60,7 @@ public class MapEditor implements Screen, InputProcessor {
     public ObjectPanel objectPanel;
     private MapRender mapRender;
     public LightsPanel lightsPanel;
+    private String currentMapPatch;
 
     private boolean isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
     private VisLabel editorModeLabel;
@@ -158,8 +159,7 @@ public class MapEditor implements Screen, InputProcessor {
         fileMenu.addItem(new MenuItem("New gameMap", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                createNewMap();
-//                stage.addActor(mapCreatorWindow);
+                stage.addActor(mapCreatorWindow);
             }
         }));
         fileMenu.addItem(new MenuItem("Save", new ChangeListener() {
@@ -181,7 +181,12 @@ public class MapEditor implements Screen, InputProcessor {
             }
         }));
         fileMenu.addItem(new MenuItem("GameMap options"));
-        fileMenu.addItem(new MenuItem("Exit"));
+        fileMenu.addItem(new MenuItem("Exit", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+            }
+        }));
         menuBar.addMenu(fileMenu);
 
     }
@@ -216,13 +221,16 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     public void loadMap(String path) {
+        currentMapPatch = path;
         if (getMap() != null && !getMap().getAllEntity().isEmpty()) {
             for (Entity entity : getMap().getAllEntity()) {
                 world.destroyBody(entity.getComponent(BodyComponent.class).body);
-//                getMap().removeEntity(entity);
             }
+            getMap().getAllEntity().clear();
+            gameMap = null;
         }
-        CosmaMapLoader loader = new CosmaMapLoader(path, world, rayHandler, engine);
+        CosmaMapLoader loader = new CosmaMapLoader(world, rayHandler, engine);
+        loader.loadMap(path);
         this.gameMap = loader.getMap();
         if (rightTable.hasChildren()) {
             rightTable.clear();
@@ -236,6 +244,7 @@ public class MapEditor implements Screen, InputProcessor {
         Dialogs.showInputDialog(stage, "Enter file name", "name:", new InputDialogAdapter() {
             @Override
             public void finished(String input) {
+                currentMapPatch = "map/" + input + ".map";
                 FileHandle file = Gdx.files.local("map/" + input + ".map");
                 checkAndSaveFile(file);
             }
@@ -243,10 +252,11 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
     private void saveMap() {
+        if(currentMapPatch != null){
+            FileHandle file = Gdx.files.local(currentMapPatch);
+            checkAndSaveFile(file);
+        } else System.out.println("map path is null");
 
-//        FileHandle file = Gdx.files.local("map/"+gameMap.getMapName()+".map");
-        FileHandle file = Gdx.files.local("map/map.map");
-        checkAndSaveFile(file);
     }
 
     private void checkAndSaveFile(FileHandle file) {

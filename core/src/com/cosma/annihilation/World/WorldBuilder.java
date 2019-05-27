@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
@@ -20,17 +19,12 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
-import com.cosma.annihilation.Editor.CosmaMap.GameMap;
-import com.cosma.annihilation.Editor.CosmaMap.MapLayer;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
-import com.cosma.annihilation.Utils.AssetLoader;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
-import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.StateManager;
 
@@ -42,7 +36,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     public World world;
     private OrthographicCamera camera;
     private Viewport viewport;
-    private CosmaMapLoader loader;
+    private CosmaMapLoader mapLoader;
     private Signal<GameEvent> signal;
     private boolean isPaused = false;
     private RayHandler rayHandler;
@@ -65,7 +59,8 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         EntityFactory.getInstance().setWorld(world);
         signal = new Signal<GameEvent>();
 
-        loader = new CosmaMapLoader("map/map.map", world, rayHandler, engine);
+        mapLoader = new CosmaMapLoader( world, rayHandler, engine);
+        mapLoader.loadMap("map/test_map.map");
 
 //        if (isGameLoaded) {
 //            gui.loadGame();
@@ -82,7 +77,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PlayerControlSystem());
         engine.addSystem(new CameraSystem(camera));
-        engine.addSystem(new TileMapRender(camera, loader.getMap()));
+        engine.addSystem(new TileMapRender(camera, mapLoader.getMap()));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera, world));
         engine.addSystem(new AiSystem(world,batch,camera));
@@ -98,7 +93,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
-
+        StateManager.debugMode = true;
     }
 
     public void update(float delta) {
@@ -143,8 +138,8 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         Json json = new Json();
         FileHandle file = Gdx.files.local("save/save.json");
         json.setIgnoreUnknownFields(false);
-        json.setSerializer(Entity.class, new GameEntitySerializer(engine,world));
-        file.writeString(json.prettyPrint(loader.getMap()), false);
+        json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));
+        file.writeString(json.prettyPrint(mapLoader.getMap()), false);
 
     }
 
@@ -164,14 +159,14 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         world.getBodies(bodies);
         for(Body body: bodies){
             world.destroyBody(body);
-            body = null;
         }
         rayHandler.removeAll();
         bodies.clear();
-        bodies = null;
         engine.removeAllEntities();
         System.out.println("e "+engine.getEntities().size());
         System.out.println("b "+world.getBodyCount());
+        mapLoader.loadMap("save/save.json");
+        isPaused = false;
 
     }
 
