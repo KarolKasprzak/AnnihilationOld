@@ -162,7 +162,7 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
             world.QueryAABB(new QueryCallback() {
                 @Override
                 public boolean reportFixture(final Fixture fixture) {
-                    for (Entity entity : mapEditor.getMap().getAllEntity()) {
+                    for (Entity entity : mapEditor.getMap().getEntityArrayList()) {
                         if (fixture.getBody() == entity.getComponent(BodyComponent.class).body) {
                             final int delete = 1;
                             final int move = 2;

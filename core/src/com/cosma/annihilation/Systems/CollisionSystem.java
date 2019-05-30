@@ -66,7 +66,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Body playerBody = bodyMapper.get(entity).body;
         PlayerComponent playerComponent = playerMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
-        System.out.println("dsaaaaa");
 
         if (entity.getComponent(PlayerComponent.class).numFootContacts >= 1) {
             playerComponent.onGround = true;

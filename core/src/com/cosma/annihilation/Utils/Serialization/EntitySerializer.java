@@ -23,7 +23,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
     private AnimationFactory animationFactory;
 
     /** use in game **/
-    public EntitySerializer(World world, Engine engine) {
+    EntitySerializer(World world, Engine engine) {
         this.world = world;
         this.engine = engine;
         animationFactory = new AnimationFactory();
@@ -47,6 +47,14 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 json.writeObjectEnd();
                 continue;
             }
+
+//            if (component instanceof GateComponent) {
+//                json.writeValue("targetMapPath", ((GateComponent) component).targetMapPath);
+//                json.writeValue("positionX", ((GateComponent) component).playerPositionOnTargetMap.x);
+//                json.writeValue("positionY", ((GateComponent) component).playerPositionOnTargetMap.y);
+//                json.writeObjectEnd();
+//                continue;
+//            }
 
             if (component instanceof TextureComponent) {
                 if (((TextureComponent) component).texture == null) {
@@ -239,6 +247,13 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(serializationComponent);
         }
 
+        if (jsonData.has("GateComponent")) {
+            GateComponent gateComponent = new GateComponent();
+//            gateComponent.targetMapPath = jsonData.get("GateComponent").get("targetMapPath").asString();
+//            gateComponent.playerPositionOnTargetMap.set(jsonData.get("GateComponent").get("positionX").asFloat(),jsonData.get("GateComponent").get("positionY").asFloat());
+            entity.add(gateComponent);
+        }
+
         if (jsonData.has("StateComponent")) {
             StateComponent stateComponent = new StateComponent();
             entity.add(stateComponent);
@@ -247,7 +262,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         if (jsonData.has("ContainerComponent")) {
             ContainerComponent containerComponent = new ContainerComponent();
             containerComponent.name = jsonData.get("ContainerComponent").get("name").asString();
-            containerComponent.itemLocations = new Array<InventoryItemLocation>();
+            containerComponent.itemLocations = new Array<>();
             for (JsonValue value : jsonData.get("ContainerComponent").get("itemList")) {
                 InventoryItemLocation location = new InventoryItemLocation();
                 location.setTableIndex(value.get("tableIndex").asInt());

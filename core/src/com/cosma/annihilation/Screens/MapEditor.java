@@ -29,8 +29,8 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
-import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
+import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.FocusManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.dialog.Dialogs;
@@ -222,11 +222,11 @@ public class MapEditor implements Screen, InputProcessor {
 
     public void loadMap(String path) {
         currentMapPatch = path;
-        if (getMap() != null && !getMap().getAllEntity().isEmpty()) {
-            for (Entity entity : getMap().getAllEntity()) {
+        if (getMap() != null && !getMap().getEntityArrayList().isEmpty()) {
+            for (Entity entity : getMap().getEntityArrayList()) {
                 world.destroyBody(entity.getComponent(BodyComponent.class).body);
             }
-            getMap().getAllEntity().clear();
+            getMap().getEntityArrayList().clear();
             gameMap = null;
         }
         CosmaMapLoader loader = new CosmaMapLoader(world, rayHandler, engine);
@@ -244,6 +244,7 @@ public class MapEditor implements Screen, InputProcessor {
         Dialogs.showInputDialog(stage, "Enter file name", "name:", new InputDialogAdapter() {
             @Override
             public void finished(String input) {
+                gameMap.setMapName(input + ".map");
                 currentMapPatch = "map/" + input + ".map";
                 FileHandle file = Gdx.files.local("map/" + input + ".map");
                 checkAndSaveFile(file);
@@ -255,7 +256,9 @@ public class MapEditor implements Screen, InputProcessor {
         if(currentMapPatch != null){
             FileHandle file = Gdx.files.local(currentMapPatch);
             checkAndSaveFile(file);
-        } else System.out.println("map path is null");
+        } else {
+            Dialogs.showOKDialog(stage, "Error", "First use 'save as'!");
+        }
 
     }
 
@@ -334,9 +337,12 @@ public class MapEditor implements Screen, InputProcessor {
             Gdx.gl.glDisable(GL20.GL_BLEND);
             mapRender.renderMap();
         }
-        if (gameMap != null && !gameMap.getAllEntity().isEmpty()) {
+        if (gameMap != null && !gameMap.getEntityArrayList().isEmpty()) {
             batch.begin();
-            for (Entity entity : gameMap.getAllEntity()) {
+            for (Entity entity : gameMap.getEntityArrayList()) {
+                if (Util.hasComponent(entity,TextureComponent.class)) {
+                    continue;
+                }
                 TextureComponent textureComponent = entity.getComponent(TextureComponent.class);
                 if (textureComponent.texture == null) {
                     continue;

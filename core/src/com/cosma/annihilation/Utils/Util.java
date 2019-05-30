@@ -1,6 +1,8 @@
 package com.cosma.annihilation.Utils;
 
 import box2dLight.PointLight;
+import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -50,6 +52,10 @@ public class Util {
             return true;
         }
         return false;
+    }
+
+    public  static boolean hasComponent(Entity entity,Class<extends Component>  components){
+        return entity.getComponent(componentClass) != null;
     }
 
     public static float roundFloat(float number, int decimalPlace) {

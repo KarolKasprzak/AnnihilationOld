@@ -69,7 +69,7 @@ public class GameMap{
 
     public void setMapName(String mapName) {this.mapName = mapName;}
 
-    public ArrayList<Entity> getAllEntity(){
+    public ArrayList<Entity> getEntityArrayList(){
         return entityList;
     }
 

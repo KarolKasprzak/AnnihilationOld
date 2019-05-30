@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Items.ItemFactory;
@@ -136,11 +137,22 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
     public void saveMap(){
         Json json = new Json();
-        FileHandle file = Gdx.files.local("save/save.json");
-        json.setIgnoreUnknownFields(false);
         json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));
-        file.writeString(json.prettyPrint(mapLoader.getMap()), false);
+        FileHandle mapFile = Gdx.files.local("save/"+mapLoader.getMap().getMapName());
+        FileHandle playerFile = Gdx.files.local("save/player.json");
+        Entity playerEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        playerEntity.getComponent(PlayerComponent.class).mapName = mapLoader.getMap().getMapName();
+        playerFile.writeString(json.prettyPrint( playerEntity),false);
 
+
+        json.setIgnoreUnknownFields(false);
+        for(Entity entity: engine.getEntities()){
+            if(!mapLoader.getMap().getEntityArrayList().contains(entity)){
+                mapLoader.getMap().getEntityArrayList().add(entity);
+            }
+        }
+        mapLoader.getMap().getEntityArrayList().remove(playerEntity);
+        mapFile.writeString(json.prettyPrint(mapLoader.getMap()), false);
     }
 
     public void loadMap(){

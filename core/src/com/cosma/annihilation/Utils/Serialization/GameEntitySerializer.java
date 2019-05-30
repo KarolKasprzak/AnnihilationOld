@@ -44,18 +44,27 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
              if (component instanceof HealthComponent) {
                  json.writeValue("hp", ((HealthComponent) component).hp);
                  json.writeValue("maxHp", ((HealthComponent) component).maxHP);
+                 continue;
              }
 
              if (component instanceof AiComponent) {
                  json.writeValue("startPosition", ((AiComponent) component).startPosition.x+","+((AiComponent) component).startPosition.y);
+                 continue;
              }
 
              if (component instanceof SerializationComponent) {
                  json.writeValue("entityName", ((SerializationComponent) component).entityName);
+                 continue;
+             }
+
+             if (component instanceof PlayerComponent) {
+                 json.writeValue("mapName", ((PlayerComponent) component).mapName);
+                 continue;
              }
 
              if (component instanceof AnimationComponent) {
                  json.writeValue("id",((AnimationComponent) component).animationId.name());
+                 continue;
              }
 
              if (component instanceof ContainerComponent) {
@@ -64,6 +73,7 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                       saveItems(json,location);
                  }
                  json.writeArrayEnd();
+                 continue;
              }
 
              if (component instanceof PlayerInventoryComponent) {
@@ -77,10 +87,18 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                      saveItems(json,location);
                  }
                  json.writeArrayEnd();
+                 continue;
              }
 
              if (component instanceof BodyComponent) {
                  json.writeValue("position",(((BodyComponent) component).body.getPosition().x)+","+((BodyComponent) component).body.getPosition().y);
+                 continue;
+             }
+
+             if (component instanceof GateComponent) {
+                 json.writeValue("targetMapPath", ((GateComponent) component).targetMapPath);
+                 json.writeValue("targetPosition", ((GateComponent) component).playerPositionOnTargetMap.x+"'"+((GateComponent) component).playerPositionOnTargetMap.y);
+                 json.writeObjectEnd();
 
              }
          }
@@ -101,6 +119,15 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                     ((AiComponent) component).startPosition = Util.jsonStringToVector2(jsonData.get("startPosition").asString());
                 }
             }
+            if(component instanceof GateComponent){
+                if(jsonData.has("targetPosition")){
+                    ((GateComponent) component).playerPositionOnTargetMap = Util.jsonStringToVector2(jsonData.get("targetPosition").asString());
+                }
+                if(jsonData.has("targetMapPath")){
+                    ((GateComponent) component).targetMapPath = jsonData.get("targetMapPath").asString();
+                }
+            }
+
             if(component instanceof HealthComponent){
                 if(jsonData.has("hp")){
                     ((HealthComponent) component).hp = jsonData.get("hp").asInt();
