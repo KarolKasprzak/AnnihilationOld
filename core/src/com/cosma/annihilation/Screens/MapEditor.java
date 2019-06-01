@@ -340,7 +340,7 @@ public class MapEditor implements Screen, InputProcessor {
         if (gameMap != null && !gameMap.getEntityArrayList().isEmpty()) {
             batch.begin();
             for (Entity entity : gameMap.getEntityArrayList()) {
-                if (Util.hasComponent(entity,TextureComponent.class)) {
+                if (!Util.hasComponent(entity,TextureComponent.class)) {
                     continue;
                 }
                 TextureComponent textureComponent = entity.getComponent(TextureComponent.class);

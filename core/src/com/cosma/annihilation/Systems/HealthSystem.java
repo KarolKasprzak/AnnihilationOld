@@ -10,8 +10,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
+import com.cosma.annihilation.Utils.Enums.GameEvent;
 
-public class HealthSystem extends IteratingSystem implements Listener<EntityEventSignal> {
+public class HealthSystem extends IteratingSystem implements Listener<GameEvent> {
 
 
     private ComponentMapper<HealthComponent> healthMapper;
@@ -39,16 +40,8 @@ public class HealthSystem extends IteratingSystem implements Listener<EntityEven
     }
 
     @Override
-    public void receive(Signal<EntityEventSignal> signal, EntityEventSignal entityEvent) {
-        switch (entityEvent.getGameEvent()) {
-            case OBJECT_HIT:
-                 calculateAccuracy(entityEvent);
+    public void receive(Signal<GameEvent> signal, GameEvent entityEvent) {
 
-                break;
-            case WEAPON_SHOOT:
-
-                break;
-        }
     }
 
     private void calculateAccuracy(EntityEventSignal entityEvent){

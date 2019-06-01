@@ -155,7 +155,7 @@ public class EntityFactory {
         touchSensorFixture.shape = sensorShape;
         touchSensorFixture.isSensor = true;
         touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-        bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
+
         //-----------Body Component End----------------------
         entity.add(doorComponent);
         entity.add(textureComponent);
@@ -204,7 +204,7 @@ public class EntityFactory {
         touchSensorFixture.shape = sensorShape;
         touchSensorFixture.isSensor = true;
         touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-        bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
+
         //-----------Body Component End----------------------
         entity.add(textureComponent);
         entity.add(bodyComponent);
@@ -255,7 +255,7 @@ public class EntityFactory {
         touchSensorFixture.shape = sensorShape;
         touchSensorFixture.isSensor = true;
         touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-        bodyComponent.body.createFixture(touchSensorFixture).setUserData(BodyID.CONTAINER);
+
         //-----------Body Component End----------------------
 
         entity.add(bodyComponent);

@@ -2,6 +2,7 @@ package com.cosma.annihilation.World;
 
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -21,6 +22,7 @@ import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
+import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
@@ -30,7 +32,7 @@ import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.StateManager;
 
 
-public class WorldBuilder implements Disposable, EntityListener, InputProcessor {
+public class WorldBuilder implements Disposable, EntityListener, InputProcessor, Listener<GameEvent> {
 
 
     private Engine engine;
@@ -41,6 +43,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     private Signal<GameEvent> signal;
     private boolean isPaused = false;
     private RayHandler rayHandler;
+    private Json json;
 
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
         ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
@@ -62,6 +65,9 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
         mapLoader = new CosmaMapLoader( world, rayHandler, engine);
         mapLoader.loadMap("map/test_map.map");
+
+        json = new Json();
+        json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));
 
 //        if (isGameLoaded) {
 //            gui.loadGame();
@@ -89,7 +95,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         inputMultiplexer.addProcessor(this);
 
         engine.getSystem(PlayerControlSystem.class).addListenerSystems();
-        engine.getSystem(CollisionSystem.class).addListenerSystems();
+        engine.getSystem(CollisionSystem.class).addListenerSystems(this);
 
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
@@ -136,8 +142,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
 
 
     public void saveMap(){
-        Json json = new Json();
-        json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));
         FileHandle mapFile = Gdx.files.local("save/"+mapLoader.getMap().getMapName());
         FileHandle playerFile = Gdx.files.local("save/player.json");
         Entity playerEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
@@ -181,6 +185,41 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
         isPaused = false;
 
     }
+
+    public void goToMap(){
+        saveMap();
+        isPaused = true;
+        System.out.println("e "+engine.getEntities().size());
+        System.out.println("b "+world.getBodyCount());
+//        for(Entity entity: engine.getEntities()){
+//            for(Component component: entity.getComponents()){
+//                if(component instanceof BodyComponent){
+//                    world.destroyBody(((BodyComponent) component).body);
+//                    ((BodyComponent) component).body = null;
+//                }
+//            }
+//        }
+        Array<Body> bodies = new Array<>();
+        world.getBodies(bodies);
+//        for(Body body: bodies){
+//            world.destroyBody(body);
+//        }
+//        rayHandler.removeAll();
+//        bodies.clear();
+//        engine.removeAllEntities();
+        System.out.println("e "+engine.getEntities().size());
+        System.out.println("b "+world.getBodyCount());
+
+        FileHandle playerFile = Gdx.files.local("save/player.json");
+        Entity playerEntity  = json.fromJson(Entity.class, playerFile);
+
+
+        mapLoader.loadMap("map/"+playerEntity.getComponent(PlayerComponent.class).mapName);
+        mapLoader.getMap().getEntityArrayList().add(playerEntity);
+        isPaused = false;
+
+    }
+
 
 
     public Engine getEngine() {
@@ -263,5 +302,12 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor 
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    @Override
+    public void receive(Signal<GameEvent> signal, GameEvent object) {
+        if(object.equals(GameEvent.PLAYER_GO_TO_NEW_MAP)){
+            goToMap();
+        }
     }
 }

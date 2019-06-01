@@ -5,6 +5,7 @@ public enum EntityAction {
     OPEN,
     PICK_UP,
     OPEN_DOOR,
-    CROUCH
+    CROUCH,
+    GO_TO
 
 }

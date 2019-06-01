@@ -97,9 +97,7 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
 
              if (component instanceof GateComponent) {
                  json.writeValue("targetMapPath", ((GateComponent) component).targetMapPath);
-                 json.writeValue("targetPosition", ((GateComponent) component).playerPositionOnTargetMap.x+"'"+((GateComponent) component).playerPositionOnTargetMap.y);
-                 json.writeObjectEnd();
-
+                 json.writeValue("targetPosition", ((GateComponent) component).playerPositionOnTargetMap.x+","+((GateComponent) component).playerPositionOnTargetMap.y);
              }
          }
          json.writeObjectEnd();

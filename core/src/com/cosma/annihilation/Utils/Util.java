@@ -54,7 +54,7 @@ public class Util {
         return false;
     }
 
-    public  static boolean hasComponent(Entity entity,Class<extends Component>  components){
+    public  static boolean hasComponent(Entity entity,Class<? extends Component> componentClass ){
         return entity.getComponent(componentClass) != null;
     }
 

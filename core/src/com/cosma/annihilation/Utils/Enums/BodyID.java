@@ -7,9 +7,10 @@ public enum  BodyID {
     GROUND,
     DESCENT_LADDER,
     LADDER,
-    CONTAINER,
+    ACTION_TRIGGER,
     BULLET,
     BULLET_SHELL,
-    ENEMY_TEST
+    ENEMY_TEST,
+    GATE
 
 }

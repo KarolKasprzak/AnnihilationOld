@@ -12,6 +12,7 @@ package com.cosma.annihilation.Utils.Enums;
         OBJECT_HIT,
         CROUCH,
         OPEN_MENU,
-        START_ATTACK_ANIMATION
+        START_ATTACK_ANIMATION,
+        PLAYER_GO_TO_NEW_MAP
     }
 

@@ -249,8 +249,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
         if (jsonData.has("GateComponent")) {
             GateComponent gateComponent = new GateComponent();
-//            gateComponent.targetMapPath = jsonData.get("GateComponent").get("targetMapPath").asString();
-//            gateComponent.playerPositionOnTargetMap.set(jsonData.get("GateComponent").get("positionX").asFloat(),jsonData.get("GateComponent").get("positionY").asFloat());
             entity.add(gateComponent);
         }
 

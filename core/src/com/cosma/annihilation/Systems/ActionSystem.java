@@ -44,8 +44,13 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
         if (!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
+            for(Entity entity1: playerComponent.collisionEntityList){
+
+            }
+
             playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
         } else
+
             playerComponent.processedEntity = null;
     }
 
@@ -53,7 +58,13 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     public void receive(Signal<GameEvent> signal, GameEvent event) {
         switch(event){
             case PERFORM_ACTION:
+                if (playerComponent.processedEntity == null){
+                    System.out.println("null");
+                }
+                    System.out.println(playerComponent.isWeaponHidden);
+
                 if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden) {
+                    System.out.println(playerComponent.processedEntity.getComponent(SerializationComponent.class).entityName);
                     EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
                     switch (action) {
                         case OPEN_DOOR:

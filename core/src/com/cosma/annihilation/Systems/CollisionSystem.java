@@ -1,9 +1,6 @@
 package com.cosma.annihilation.Systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.physics.box2d.*;
@@ -16,31 +13,28 @@ import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.World.WorldBuilder;
 
 
 public class CollisionSystem extends IteratingSystem implements ContactListener {
 
-    private Signal<EntityEventSignal> signal;
-    private World world;
+    private Signal<GameEvent> signal;
     private float ladderX;
     private float ladderY;
     private float ladderHeight;
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
-    private AnimationComponent animationComponent;
     private Filter goTroughFilter;
     private Filter normalFilter;
-    public Array<Body> bodiesToRemove;
+    Array<Body> bodiesToRemove;
     private EntityEventSignal entityEventSignal;
-
 
     public CollisionSystem(World world) {
         super(Family.all(PlayerComponent.class).get(), Constants.PHYSIC_SYSTEM);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
-        this.world = world;
 
         world.setContactListener(this);
         //Filter for one way wall
@@ -49,16 +43,17 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         goTroughFilter.groupIndex = -1;
         normalFilter = new Filter();
         normalFilter.categoryBits = CollisionID.NO_SHADOW;
-        bodiesToRemove = new Array<Body>();
+        bodiesToRemove = new Array<>();
 
-        signal = new Signal<EntityEventSignal>();
+        signal = new Signal<>();
         entityEventSignal = new EntityEventSignal();
 
 
     }
 
-    public void addListenerSystems() {
+    public void addListenerSystems(WorldBuilder worldBuilder) {
         signal.add(this.getEngine().getSystem(HealthSystem.class));
+        signal.add(worldBuilder);
     }
 
     @Override
@@ -114,19 +109,40 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 //        bulletCollision(fa,fb);
 //        bulletCollision(fb,fa);
 
-//        addEntityToActionList(fa, fb);
+        addEntityToActionList(fa, fb);
 
         //Bullet shell contact
+
+//        if (fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.GATE || fb.getUserData() == BodyID.PLAYER_BODY && fa.getUserData() == BodyID.GATE) {
+//            Entity playerEntity;
+//            Entity gateEntity;
+//            if (fa.getUserData() == BodyID.PLAYER_BODY) {
+//                playerEntity = (Entity) fa.getBody().getUserData();
+//                gateEntity = (Entity) fb.getBody().getUserData();
+//            } else {
+//                playerEntity = (Entity) fb.getBody().getUserData();
+//                gateEntity = (Entity) fa.getBody().getUserData();
+//            }
+//            playerEntity.getComponent(PlayerComponent.class).mapName = gateEntity.getComponent(GateComponent.class).targetMapPath;
+//
+//
+//            signal.dispatch(GameEvent.PLAYER_GO_TO_NEW_MAP);
+//
+//
+////           playerEntity.getComponent(BodyComponent.class).body.setTransform(gateEntity.getComponent(GateComponent.class).playerPositionOnTargetMap,0);
+//
+//        }
+
+
         if (fa.getUserData() == BodyID.BULLET_SHELL) {
             removeShellAfterTime(fa);
-
         }
         if (fb.getUserData() == BodyID.BULLET_SHELL) {
             removeShellAfterTime(fb);
         }
         //Player contacts
         if (isPlayerFixture(fa) || isPlayerFixture(fb)) {
-            PlayerComponent playerComponent = getPlayerComponent(fa,fb);
+            PlayerComponent playerComponent = getPlayerComponent(fa, fb);
 
             //Player ground contact
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
@@ -186,7 +202,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
         //Player contacts
         if (isPlayerFixture(fa) || isPlayerFixture(fb)) {
-            PlayerComponent playerComponent = getPlayerComponent(fa,fb);
+            PlayerComponent playerComponent = getPlayerComponent(fa, fb);
             //Player ground contact
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
                 playerComponent.onGround = false;
@@ -235,6 +251,14 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         return false;
     }
 
+    private boolean isFixtureHaveComponent(Fixture fixture, Class<? extends Component> componentClass) {
+        if (fixture.getBody().getUserData() instanceof Entity) {
+            Entity entity = (Entity) fixture.getBody().getUserData();
+            return entity.getComponent(componentClass) != null;
+        }
+        return false;
+    }
+
     private void removeShellAfterTime(final Fixture fixture) {
         Timer.schedule(new Timer.Task() {
             @Override
@@ -263,7 +287,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             if (fb.getBody().getUserData() instanceof Entity) {
                 Entity entity = (Entity) fa.getBody().getUserData();
                 entityEventSignal.setEvent(GameEvent.OBJECT_HIT, (Entity) fb.getBody().getUserData(), entity.getComponent(BulletComponent.class).dmg, entity.getComponent(BulletComponent.class).isBulletHit);
-                signal.dispatch(entityEventSignal);
+
             }
             if (!bodiesToRemove.contains(fa.getBody(), true)) {
                 bodiesToRemove.add(fa.getBody());
@@ -272,40 +296,77 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         }
     }
 
-    private PlayerComponent getPlayerComponent(Fixture fa, Fixture fb){
+    private PlayerComponent getPlayerComponent(Fixture fa, Fixture fb) {
         if (isPlayerFixture(fa)) {
             Entity entity = (Entity) fa.getBody().getUserData();
-            return  entity.getComponent(PlayerComponent.class);
+            return entity.getComponent(PlayerComponent.class);
         } else {
             Entity entity = (Entity) fb.getBody().getUserData();
             return entity.getComponent(PlayerComponent.class);
         }
     }
 
+    private void addEntityToActionList(Fixture fa, Fixture fb) {
+        if(fa.getUserData() == BodyID.ACTION_TRIGGER || fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.ACTION_TRIGGER || fb.getUserData() == BodyID.PLAYER_BODY ){
+            Entity playerEntity = (fa.getUserData() == BodyID.PLAYER_BODY) ? (Entity)fa.getBody().getUserData() : (Entity)fb.getBody().getUserData();
+            Entity actionEntity = (fa.getUserData() == BodyID.ACTION_TRIGGER) ? (Entity)fa.getBody().getUserData() : (Entity)fb.getBody().getUserData();
+            PlayerComponent playerComponent = playerEntity.getComponent(PlayerComponent.class);
+            if (!playerComponent.collisionEntityList.contains(actionEntity)) {
+                System.out.println(actionEntity.getComponent(SerializationComponent.class).entityName);
+                  playerComponent.collisionEntityList.add(actionEntity);
+            }
+
+        }
+    }
 
 
 //    private void addEntityToActionList(Fixture fa, Fixture fb) {
-//        if (fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.CONTAINER && fa.getUserData() == BodyID.PLAYER_BODY) {
-//            if (fa.getUserData() != BodyID.PLAYER_BODY) {
-//                if (!playerComponent.collisionEntityList.contains(fa.getBody().getUserData())) {
-//                    playerComponent.collisionEntityList.add((Entity) fa.getBody().getUserData());
+//        if (isPlayerFixture(fa) && isFixtureHaveComponent(fb, ActionComponent.class) || isPlayerFixture(fb) && isFixtureHaveComponent(fa, ActionComponent.class)) {
+//            Entity playerEntity;
+//            if(isPlayerFixture(fa)){
+//                playerEntity = (Entity) fa.getBody().getUserData();
+//            }else{
+//                playerEntity = (Entity) fb.getBody().getUserData();
+//            }
+//            PlayerComponent playerComponent = playerEntity.getComponent(PlayerComponent.class);
+//
+//            if (fa.getUserData() == BodyID.PLAYER_BODY) {
+//                Entity actionEntity = (Entity) fb.getBody().getUserData();
+//                if (!playerComponent.collisionEntityList.contains(actionEntity)) {
+//                    playerComponent.collisionEntityList.add(actionEntity);
 //                }
-//            } else if (!playerComponent.collisionEntityList.contains(fb.getBody().getUserData())) {
-//                playerComponent.collisionEntityList.add((Entity) fb.getBody().getUserData());
+//            } else {
+//                Entity actionEntity = (Entity) fa.getBody().getUserData();
+//                if (!playerComponent.collisionEntityList.contains(actionEntity)) {
+//                    playerComponent.collisionEntityList.add(actionEntity);
+//                }
 //            }
 //        }
 //    }
-//
-//    private void removeEntityFromActionList(Fixture fa, Fixture fb) {
-//        if (fa.getUserData() == BodyID.CONTAINER && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.CONTAINER && fa.getUserData() == BodyID.PLAYER_BODY) {
-//            if (fa.getUserData() != BodyID.PLAYER_BODY) {
-//                playerComponent.collisionEntityList.remove(fa.getBody().getUserData());
-//                Entity entity = (Entity) fa.getBody().getUserData();
-//                entity.getComponent(TextureComponent.class).renderWithShader = false;
-//            } else
-//                playerComponent.collisionEntityList.remove(fb.getBody().getUserData());
-//            Entity entity = (Entity) fb.getBody().getUserData();
-//            entity.getComponent(TextureComponent.class).renderWithShader = false;
-//        }
-//    }
+
+
+    private void removeEntityFromActionList(Fixture fa, Fixture fb) {
+        if (isPlayerFixture(fa) && isFixtureHaveComponent(fb, ActionComponent.class) || isPlayerFixture(fb) && isFixtureHaveComponent(fa, ActionComponent.class)) {
+            Entity playerEntity;
+            if(isPlayerFixture(fa)){
+                playerEntity = (Entity) fa.getBody().getUserData();
+            }else{
+                playerEntity = (Entity) fb.getBody().getUserData();
+            }
+            PlayerComponent playerComponent = playerEntity.getComponent(PlayerComponent.class);
+
+            if (fa.getUserData() != BodyID.PLAYER_BODY) {
+
+                Entity entity = (Entity) fa.getBody().getUserData();
+                playerComponent.collisionEntityList.remove(entity);
+                entity.getComponent(TextureComponent.class).renderWithShader = false;
+            } else{
+                Entity entity = (Entity) fb.getBody().getUserData();
+                playerComponent.collisionEntityList.remove(entity);
+                entity.getComponent(TextureComponent.class).renderWithShader = false;
+            }
+
+
+        }
+    }
 }
