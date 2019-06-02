@@ -117,11 +117,19 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                     ((AiComponent) component).startPosition = Util.jsonStringToVector2(jsonData.get("startPosition").asString());
                 }
             }
+
+            if(component instanceof PlayerComponent){
+                if(jsonData.has("mapName")){
+                    ((PlayerComponent) component).mapName = jsonData.get("mapName").asString();
+                }
+            }
+
             if(component instanceof GateComponent){
                 if(jsonData.has("targetPosition")){
                     ((GateComponent) component).playerPositionOnTargetMap = Util.jsonStringToVector2(jsonData.get("targetPosition").asString());
                 }
                 if(jsonData.has("targetMapPath")){
+
                     ((GateComponent) component).targetMapPath = jsonData.get("targetMapPath").asString();
                 }
             }

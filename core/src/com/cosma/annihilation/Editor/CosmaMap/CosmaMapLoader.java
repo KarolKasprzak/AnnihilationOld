@@ -78,8 +78,6 @@ public class CosmaMapLoader {
 
     }
 
-
-
     public GameMap getMap() {
         return map;
     }

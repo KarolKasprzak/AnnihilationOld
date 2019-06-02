@@ -93,7 +93,7 @@ public class GameMainMenuWindow extends Window {
     void saveGame() {
           System.out.println("save");
 //        playerInventoryWindow.saveInventory(engine);
-          worldBuilder.saveMap();
+          worldBuilder.saveMap(false);
     }
 
 

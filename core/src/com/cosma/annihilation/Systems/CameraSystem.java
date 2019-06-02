@@ -11,7 +11,6 @@ import com.cosma.annihilation.Utils.Constants;
 
 public class CameraSystem extends IteratingSystem {
 
-    private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
     private OrthographicCamera camera;
 
@@ -19,7 +18,6 @@ public class CameraSystem extends IteratingSystem {
 
         super(Family.all(PlayerComponent.class).get(),Constants.CAMERA_SYSTEM);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-        playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         this.camera = camera;
     }
     @Override

@@ -28,6 +28,9 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
@@ -43,7 +46,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent statsComponent;
     private StateComponent stateComponent;
-    private Thread thread;
 
     private Batch batch;
 
@@ -57,6 +59,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private boolean isMeleeAttackFinish = true;
     private Signal<GameEvent> signal;
     private Vector2 raycastEnd;
+    private ExecutorService executor;
     ParticleEffect pe;
     Camera camera;
     public ShootingSystem(World world, RayHandler rayHandler, Batch batch, Camera camera) {
@@ -98,25 +101,33 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         signal = new Signal<GameEvent>();
 
-        //TODO
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        playerComponent.canMoveOnSide = true;
-                        isMeleeAttackFinish = true;
-                        world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
-                        if(calculateAttackAccuracy() && targetEntity != null){
-                            targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
-                        }
+        executor = Executors.newCachedThreadPool();
 
-                    }
-                }, animationComponent.currentAnimation.getAnimationDuration());
-                thread.interrupt();
-            }
-        });
+
+
+
+//        //TODO
+//        thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Timer.schedule(new Timer.Task() {
+//                    @Override
+//                    public void run() {
+//                        playerComponent.canMoveOnSide = true;
+//                        isMeleeAttackFinish = true;
+//                        world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+//                        if(calculateAttackAccuracy() && targetEntity != null){
+//                            targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
+//                        }
+//
+//                    }
+//                }, animationComponent.currentAnimation.getAnimationDuration());
+//                thread.interrupt();
+//
+//            }
+//        });
+
+
 
         callback = new RayCastCallback() {
             @Override
@@ -224,11 +235,23 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
             animationComponent.animationState = AnimationStates.MELEE;
             float timer = animationComponent.currentAnimation.getAnimationDuration();
+            System.out.println(timer);
             playerComponent.canMoveOnSide = false;
 
+            Runnable meleeAttack = () -> Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    playerComponent.canMoveOnSide = true;
+                    isMeleeAttackFinish = true;
+                    world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+                    if(calculateAttackAccuracy() && targetEntity != null){
+                        targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
+                    }
+                }
+            }, animationComponent.currentAnimation.getAnimationDuration());
+            executor.execute(meleeAttack);
 
 
-            thread.start();
 
 
 //            Timer.schedule(new Timer.Task() {

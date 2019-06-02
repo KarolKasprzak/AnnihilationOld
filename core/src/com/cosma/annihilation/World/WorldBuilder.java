@@ -9,6 +9,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -17,12 +18,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaMapLoader;
-import com.cosma.annihilation.Editor.CosmaMap.GameMap;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
@@ -48,6 +49,8 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
         ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
 
+
+        //Game camera
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(9,5,camera);
         viewport.apply(false);
@@ -74,7 +77,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 //
 //        }
 
-        engine.addSystem(new ActionSystem(world));
+        engine.addSystem(new ActionSystem(world,this));
         engine.addSystem(new ShootingSystem(world, rayHandler,batch,camera));
         engine.addSystem(new UserInterfaceSystem(engine,world,this));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
@@ -100,7 +103,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
-        StateManager.debugMode = true;
     }
 
     public void update(float delta) {
@@ -126,7 +128,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.translate(0, -1);
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.translate(-1, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.translate(1, 0);
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) this.saveMap();
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) camera.zoom = camera.zoom + 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.X)) camera.zoom = camera.zoom - 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.P)){
@@ -134,18 +135,20 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)){
             if (Gdx.input.isKeyPressed(Input.Keys.D)){
-                StateManager.debugMode = true;
+                StateManager.debugMode = !StateManager.debugMode;
             }
         }
         camera.update();
     }
 
 
-    public void saveMap(){
+    public void saveMap(boolean isPlayerGoToNewLocation){
         FileHandle mapFile = Gdx.files.local("save/"+mapLoader.getMap().getMapName());
         FileHandle playerFile = Gdx.files.local("save/player.json");
         Entity playerEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        playerEntity.getComponent(PlayerComponent.class).mapName = mapLoader.getMap().getMapName();
+        if(!isPlayerGoToNewLocation){
+            playerEntity.getComponent(PlayerComponent.class).mapName = mapLoader.getMap().getMapName();
+        }
         playerFile.writeString(json.prettyPrint( playerEntity),false);
 
 
@@ -187,32 +190,31 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     }
 
     public void goToMap(){
-        saveMap();
+        saveMap(true);
         isPaused = true;
         System.out.println("e "+engine.getEntities().size());
         System.out.println("b "+world.getBodyCount());
-//        for(Entity entity: engine.getEntities()){
-//            for(Component component: entity.getComponents()){
-//                if(component instanceof BodyComponent){
-//                    world.destroyBody(((BodyComponent) component).body);
-//                    ((BodyComponent) component).body = null;
-//                }
-//            }
-//        }
+        for(Entity entity: engine.getEntities()){
+            for(Component component: entity.getComponents()){
+                if(component instanceof BodyComponent){
+                    world.destroyBody(((BodyComponent) component).body);
+                    ((BodyComponent) component).body = null;
+                }
+            }
+        }
         Array<Body> bodies = new Array<>();
         world.getBodies(bodies);
-//        for(Body body: bodies){
-//            world.destroyBody(body);
-//        }
-//        rayHandler.removeAll();
-//        bodies.clear();
-//        engine.removeAllEntities();
+        for(Body body: bodies){
+            world.destroyBody(body);
+        }
+        rayHandler.removeAll();
+        bodies.clear();
+        engine.removeAllEntities();
         System.out.println("e "+engine.getEntities().size());
         System.out.println("b "+world.getBodyCount());
 
         FileHandle playerFile = Gdx.files.local("save/player.json");
         Entity playerEntity  = json.fromJson(Entity.class, playerFile);
-
 
         mapLoader.loadMap("map/"+playerEntity.getComponent(PlayerComponent.class).mapName);
         mapLoader.getMap().getEntityArrayList().add(playerEntity);

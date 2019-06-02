@@ -13,6 +13,7 @@ import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.Util;
 import com.cosma.annihilation.World.WorldBuilder;
 
 
@@ -197,7 +198,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
-//        removeEntityFromActionList(fa, fb);
+        removeEntityFromActionList(fa, fb);
 
 
         //Player contacts
@@ -307,66 +308,28 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
     }
 
     private void addEntityToActionList(Fixture fa, Fixture fb) {
-        if(fa.getUserData() == BodyID.ACTION_TRIGGER || fa.getUserData() == BodyID.PLAYER_BODY && fb.getUserData() == BodyID.ACTION_TRIGGER || fb.getUserData() == BodyID.PLAYER_BODY ){
+        if(fa.getUserData() == BodyID.ACTION_TRIGGER && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.ACTION_TRIGGER && fa.getUserData() == BodyID.PLAYER_BODY ){
             Entity playerEntity = (fa.getUserData() == BodyID.PLAYER_BODY) ? (Entity)fa.getBody().getUserData() : (Entity)fb.getBody().getUserData();
             Entity actionEntity = (fa.getUserData() == BodyID.ACTION_TRIGGER) ? (Entity)fa.getBody().getUserData() : (Entity)fb.getBody().getUserData();
             PlayerComponent playerComponent = playerEntity.getComponent(PlayerComponent.class);
             if (!playerComponent.collisionEntityList.contains(actionEntity)) {
-                System.out.println(actionEntity.getComponent(SerializationComponent.class).entityName);
                   playerComponent.collisionEntityList.add(actionEntity);
             }
 
         }
     }
 
-
-//    private void addEntityToActionList(Fixture fa, Fixture fb) {
-//        if (isPlayerFixture(fa) && isFixtureHaveComponent(fb, ActionComponent.class) || isPlayerFixture(fb) && isFixtureHaveComponent(fa, ActionComponent.class)) {
-//            Entity playerEntity;
-//            if(isPlayerFixture(fa)){
-//                playerEntity = (Entity) fa.getBody().getUserData();
-//            }else{
-//                playerEntity = (Entity) fb.getBody().getUserData();
-//            }
-//            PlayerComponent playerComponent = playerEntity.getComponent(PlayerComponent.class);
-//
-//            if (fa.getUserData() == BodyID.PLAYER_BODY) {
-//                Entity actionEntity = (Entity) fb.getBody().getUserData();
-//                if (!playerComponent.collisionEntityList.contains(actionEntity)) {
-//                    playerComponent.collisionEntityList.add(actionEntity);
-//                }
-//            } else {
-//                Entity actionEntity = (Entity) fa.getBody().getUserData();
-//                if (!playerComponent.collisionEntityList.contains(actionEntity)) {
-//                    playerComponent.collisionEntityList.add(actionEntity);
-//                }
-//            }
-//        }
-//    }
-
-
     private void removeEntityFromActionList(Fixture fa, Fixture fb) {
-        if (isPlayerFixture(fa) && isFixtureHaveComponent(fb, ActionComponent.class) || isPlayerFixture(fb) && isFixtureHaveComponent(fa, ActionComponent.class)) {
-            Entity playerEntity;
-            if(isPlayerFixture(fa)){
-                playerEntity = (Entity) fa.getBody().getUserData();
-            }else{
-                playerEntity = (Entity) fb.getBody().getUserData();
-            }
+        if(fa.getUserData() == BodyID.ACTION_TRIGGER && fb.getUserData() == BodyID.PLAYER_BODY || fb.getUserData() == BodyID.ACTION_TRIGGER && fa.getUserData() == BodyID.PLAYER_BODY ){
+            Entity playerEntity = (fa.getUserData() == BodyID.PLAYER_BODY) ? (Entity)fa.getBody().getUserData() : (Entity)fb.getBody().getUserData();
+            Entity actionEntity = (fa.getUserData() == BodyID.ACTION_TRIGGER) ? (Entity)fa.getBody().getUserData() : (Entity)fb.getBody().getUserData();
             PlayerComponent playerComponent = playerEntity.getComponent(PlayerComponent.class);
-
-            if (fa.getUserData() != BodyID.PLAYER_BODY) {
-
-                Entity entity = (Entity) fa.getBody().getUserData();
-                playerComponent.collisionEntityList.remove(entity);
-                entity.getComponent(TextureComponent.class).renderWithShader = false;
-            } else{
-                Entity entity = (Entity) fb.getBody().getUserData();
-                playerComponent.collisionEntityList.remove(entity);
-                entity.getComponent(TextureComponent.class).renderWithShader = false;
+            if (playerComponent.collisionEntityList.contains(actionEntity)) {
+                playerComponent.collisionEntityList.remove(actionEntity);
+                if(Util.hasComponent(actionEntity,TextureComponent.class)){
+                    actionEntity.getComponent(TextureComponent.class).renderWithShader = false;
+                }
             }
-
-
         }
     }
 }

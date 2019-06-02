@@ -59,7 +59,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         stage.getViewport().apply(true);
 
         Table coreTable = new Table();
-        coreTable.setDebug(true);
+        coreTable.setDebug(false);
         coreTable.setFillParent(true);
         stage.addActor(coreTable);
 

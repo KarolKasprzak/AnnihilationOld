@@ -12,6 +12,8 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.Util;
+import com.cosma.annihilation.World.WorldBuilder;
 
 public class ActionSystem extends IteratingSystem implements Listener<GameEvent> {
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -20,13 +22,15 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     private Body playerBody;
     private World world;
+    private WorldBuilder worldBuilder;
 
     Filter filter;
     Filter filter1;
 
-    public ActionSystem(World world) {
+    public ActionSystem(World world, WorldBuilder worldBuilder) {
         super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
         this.world = world;
+        this.worldBuilder = worldBuilder;
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
 
         stateMapper = ComponentMapper.getFor(PlayerComponent.class);
@@ -44,13 +48,10 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
         if (!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
-            for(Entity entity1: playerComponent.collisionEntityList){
-
+            if(Util.hasComponent(playerComponent.processedEntity,TextureComponent.class)){
+                playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
             }
-
-            playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
         } else
-
             playerComponent.processedEntity = null;
     }
 
@@ -64,7 +65,6 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
                     System.out.println(playerComponent.isWeaponHidden);
 
                 if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden) {
-                    System.out.println(playerComponent.processedEntity.getComponent(SerializationComponent.class).entityName);
                     EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
                     switch (action) {
                         case OPEN_DOOR:
@@ -72,6 +72,9 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
                             break;
                         case OPEN:
                             openBoxAction();
+                            break;
+                        case GO_TO:
+                            goToAnotherMap();
                             break;
                     }
                 }
@@ -82,18 +85,12 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
         }
 
     }
-//
-//    private void playerCrouch(){
-//        if(playerState.crouch){
-//            Fixture fixture = playerBody.getFixtureList().get(0);
-//            Shape shape = fixture.getShape();
-//
-//
-//
-//        }
-//    }
 
-
+    private void goToAnotherMap(){
+        playerComponent.mapName = playerComponent.processedEntity.getComponent(GateComponent.class).targetMapPath;
+        worldBuilder.goToMap();
+//        playerComponent.ggetComponent(BodyComponent.class).body.setTransform(gateEntity.getComponent(GateComponent.class).playerPositionOnTargetMap,0);
+    }
 
     private void openBoxAction() {
         if (playerComponent.processedEntity.getComponent(ContainerComponent.class).itemLocations.size > -1) {
