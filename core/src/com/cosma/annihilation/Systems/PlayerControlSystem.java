@@ -18,6 +18,9 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlayerControlSystem extends IteratingSystem{
 
     private ComponentMapper<PlayerComponent> playerMapper;
@@ -25,30 +28,39 @@ public class PlayerControlSystem extends IteratingSystem{
     private ComponentMapper<StateComponent> stateMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
-    private boolean isLeftButtonClicked = false;
-    public PlayerControlSystem() {
+    private ArrayList<GameEvent> gameEventList;
+    public PlayerControlSystem(ArrayList<GameEvent> gameEventList) {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
+        this.gameEventList = gameEventList;
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         stateMapper = ComponentMapper.getFor(StateComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         signal = new Signal<GameEvent>();
+
     }
+
+
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
 
         BodyComponent playerBody = bodyMapper.get(entity);
-        PlayerComponent player = playerMapper.get(entity);
         PlayerComponent playerComponent = playerMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
         StateComponent  stateComponent = stateMapper.get(entity);
 
 
-
-
+        for(GameEvent gameEvent: gameEventList ){
+            signal.dispatch(gameEvent);
+        }
+        gameEventList.clear();
 
 //         prevent slip/idle mode
+//        if(animationComponent.isAnimationPlayed){
+//            System.out.println(animationComponent.isAnimationPlayed);
+//        }
+
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && !animationComponent.isAnimationPlayed) {
                  playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
                  animationComponent.animationState = AnimationStates.IDLE;
@@ -108,7 +120,7 @@ public class PlayerControlSystem extends IteratingSystem{
 
                 animationComponent.animationState = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
-                float desiredSpeed = player.velocity;
+                float desiredSpeed = playerComponent.velocity;
                 playerComponent.climbing = false;
                 animationComponent.spriteDirection = true;
                 float speedX = desiredSpeed - vec.x;
@@ -119,7 +131,7 @@ public class PlayerControlSystem extends IteratingSystem{
             if (Gdx.input.isKeyPressed(Input.Keys.A) || playerComponent.goLeft) {
                 animationComponent.animationState = AnimationStates.WALK;
                 Vector2 vec = playerBody.body.getLinearVelocity();
-                float desiredSpeed = -player.velocity;
+                float desiredSpeed = -playerComponent.velocity;
                 float speedX = desiredSpeed - vec.x;
                 playerComponent.climbing = false;
                 animationComponent.spriteDirection = false;
@@ -133,7 +145,7 @@ public class PlayerControlSystem extends IteratingSystem{
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
                 animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
                 Vector2 vec = playerBody.body.getLinearVelocity();
-                float desiredSpeed = player.velocity*0.8f;
+                float desiredSpeed = playerComponent.velocity*0.8f;
                 playerComponent.climbing = false;
                 animationComponent.spriteDirection = true;
                 float speedX = desiredSpeed - vec.x;
@@ -144,7 +156,7 @@ public class PlayerControlSystem extends IteratingSystem{
             if (Gdx.input.isKeyPressed(Input.Keys.A) || playerComponent.goLeft) {
                 animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
                 Vector2 vec = playerBody.body.getLinearVelocity();
-                float desiredSpeed = -player.velocity*0.8f;
+                float desiredSpeed = -playerComponent.velocity*0.8f;
                 float speedX = desiredSpeed - vec.x;
                 playerComponent.climbing = false;
                 animationComponent.spriteDirection = false;

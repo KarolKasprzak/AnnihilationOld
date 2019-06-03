@@ -32,6 +32,8 @@ import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.StateManager;
 
+import java.util.ArrayList;
+
 
 public class WorldBuilder implements Disposable, EntityListener, InputProcessor, Listener<GameEvent> {
 
@@ -45,6 +47,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     private boolean isPaused = false;
     private RayHandler rayHandler;
     private Json json;
+    private ArrayList<GameEvent> gameEventList;
 
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
         ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
@@ -55,7 +58,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         viewport = new ExtendViewport(9,5,camera);
         viewport.apply(false);
         SpriteBatch batch = new SpriteBatch();
-
+        //Box2d world & light handler
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
         rayHandler = new RayHandler(world);
         engine = new PooledEngine();
@@ -72,6 +75,8 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         json = new Json();
         json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));
 
+        gameEventList = new ArrayList<>();
+
 //        if (isGameLoaded) {
 //            gui.loadGame();
 //
@@ -85,7 +90,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         engine.addSystem(new HealthSystem(camera));
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
-        engine.addSystem(new PlayerControlSystem());
+        engine.addSystem(new PlayerControlSystem(gameEventList));
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera, mapLoader.getMap()));
         engine.addSystem(new AnimationSystem());
@@ -235,7 +240,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     @Override
     public void entityRemoved(Entity entity) {
 
-
     }
 
     @Override
@@ -271,13 +275,16 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(button == Input.Buttons.LEFT){
-            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
-            signal.dispatch(GameEvent.PERFORM_ACTION);
+            gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
+            gameEventList.add(GameEvent.PERFORM_ACTION);
+//            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
+//            signal.dispatch(GameEvent.PERFORM_ACTION);
         }
 
         //Weapon take out/hide
         if(button == Input.Buttons.RIGHT){
-            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
+//            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
+            gameEventList.add(GameEvent.WEAPON_TAKE_OUT);
         }
 
         return false;
@@ -286,7 +293,8 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if(button == Input.Buttons.LEFT){
-            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
+            gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_UP);
+//            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
         }
         return false;
     }
