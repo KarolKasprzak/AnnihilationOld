@@ -33,13 +33,16 @@ public class AnimationFactory {
         Animation<TextureRegion> playerIdleAnimation = new Animation(0.1f,standNoWeapon);
         playerAnimationMap.put("IDLE",playerIdleAnimation);
 
+        TextureRegion standWeaponSmall = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_small_weapons_stand.png",Texture.class));
+        Animation<TextureRegion> playerIdleWeaponSmallAnimation = new Animation(0.1f,standWeaponSmall);
+        playerAnimationMap.put("IDLE_WEAPON_SMALL",playerIdleWeaponSmallAnimation);
+
         TextureRegion jumpNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_jump.png",Texture.class));
         Animation<TextureRegion> playerJumpAnimation = new Animation(0.1f,jumpNoWeapon);
         playerAnimationMap.put("JUMP",playerJumpAnimation);
 
-        Animation<TextureRegion> playerMeleeAnimation = new Animation(1/6f,Annihilation.getAssets().get("gfx/player/player_melee.atlas",
-                TextureAtlas.class).getRegions(),
-                Animation.PlayMode.NORMAL);
+        Animation<TextureRegion> playerMeleeAnimation = new Animation(0.1f,Annihilation.getAssets().get("gfx/player/player_melee.atlas",
+                TextureAtlas.class).getRegions(),Animation.PlayMode.NORMAL);
         playerAnimationMap.put("MELEE",playerMeleeAnimation);
 
         //Test enemy animation

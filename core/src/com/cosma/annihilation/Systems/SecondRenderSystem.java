@@ -48,7 +48,6 @@ public class SecondRenderSystem extends IteratingSystem implements Disposable {
 
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-
         loadShader();
 
 
@@ -87,6 +86,16 @@ public class SecondRenderSystem extends IteratingSystem implements Disposable {
                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
             batch.setShader(null);
         }
+        if (textureComponent.texture != null && textureComponent.renderAfterLight) {
+
+            position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
+            position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
+            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
+                    textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
+                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
+        }
+
+
     }
 
     @Override

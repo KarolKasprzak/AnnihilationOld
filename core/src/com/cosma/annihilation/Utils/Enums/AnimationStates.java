@@ -5,5 +5,6 @@ public enum AnimationStates {
     WALK,
     JUMP,
     MELEE,
-    WALK_WEAPON_SMALL
+    WALK_WEAPON_SMALL,
+    IDLE_WEAPON_SMALL
 }

@@ -37,10 +37,7 @@ public class PlayerControlSystem extends IteratingSystem{
         stateMapper = ComponentMapper.getFor(StateComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         signal = new Signal<GameEvent>();
-
     }
-
-
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -56,21 +53,17 @@ public class PlayerControlSystem extends IteratingSystem{
         }
         gameEventList.clear();
 
-//         prevent slip/idle mode
-//        if(animationComponent.isAnimationPlayed){
-//            System.out.println(animationComponent.isAnimationPlayed);
-//        }
-
-        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && !animationComponent.isAnimationPlayed) {
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && animationComponent.isAnimationFinish) {
                  playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
                  animationComponent.animationState = AnimationStates.IDLE;
+                 if(!playerComponent.isWeaponHidden){
+                     animationComponent.animationState = AnimationStates.IDLE_WEAPON_SMALL;
+                 }
         }
-
 
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround) {
             playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
         }
-
 
         // Jumping
         if (playerComponent.onGround && playerComponent.canJump && playerComponent.isWeaponHidden) {
@@ -100,6 +93,7 @@ public class PlayerControlSystem extends IteratingSystem{
                 }
             }
         }
+
         if(playerComponent.canClimb || playerComponent.canClimbDown) {
             if (Gdx.input.isKeyPressed(Input.Keys.S)|| playerComponent.goDown) {
                 playerComponent.climbing = true;
@@ -107,11 +101,9 @@ public class PlayerControlSystem extends IteratingSystem{
             }
         }
 
-
         //Stealth mode
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
             //TODO
-
         }
 
         //Moving on side

@@ -81,7 +81,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
 
         batch.begin();
-        if (textureComponent.texture != null ) {
+        if (textureComponent.texture != null && !textureComponent.renderAfterLight) {
             position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
             position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
              batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
@@ -90,7 +90,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
         }
 
-        if (textureComponent.textureRegion != null ) {
+        if (textureComponent.textureRegion != null && !textureComponent.renderAfterLight) {
             position.x = position.x - textureComponent.textureRegion.getRegionWidth()/32/2;
             position.y = position.y - textureComponent.textureRegion.getRegionHeight()/32/2;
 

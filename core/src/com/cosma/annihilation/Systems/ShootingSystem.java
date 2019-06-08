@@ -29,8 +29,6 @@ import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ShootingSystem extends IteratingSystem implements Listener<GameEvent> {
@@ -189,30 +187,25 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private void meleeAttack() {
         if (!playerComponent.isWeaponHidden & isMeleeAttackFinish) {
             isMeleeAttackFinish = false;
-            animationComponent.isAnimationPlayed = true;
-
-            world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
-
+            animationComponent.isAnimationFinish = false;
             animationComponent.time = 0;
-
+            world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
             animationComponent.animationState = AnimationStates.MELEE;
-            float timer = animationComponent.currentAnimation.getAnimationDuration();
-            System.out.println(timer);
+            float animationTimer = animationComponent.animationMap.get(AnimationStates.MELEE.toString()).getAnimationDuration();
             playerComponent.canMoveOnSide = false;
 
             Timer.schedule(new Timer.Task() {
                                @Override
                                public void run() {
-                                   playerComponent.canMoveOnSide = true;
-                                   isMeleeAttackFinish = true;
                                    world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
                                    if (calculateAttackAccuracy() && targetEntity != null) {
                                        targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
                                    }
-                                   System.out.println("go");
-                                   animationComponent.isAnimationPlayed = false;
+                                   animationComponent.isAnimationFinish = true;
+                                   playerComponent.canMoveOnSide = true;
+                                   isMeleeAttackFinish = true;
                                }
-                           }, 1);
+                           }, animationTimer);
         }
     }
 
@@ -233,7 +226,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             }
             shootLight();
             this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f));
-            this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f,12, false));
+            this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.63f,20, animationComponent.spriteDirection));
             Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
             sound.play();
             weaponMagazine.removeAmmoFromMagazine();
@@ -350,12 +343,11 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         switch (playerComponent.activeWeapon.getItemID()){
             case P38:
                 weaponLight.attachToBody(body,direction-0.1f,0.5f);
-
                 break;
-
+            case MP44:
+                weaponLight.attachToBody(body,direction-0.1f,0.5f);
+                break;
         }
-
-
 
         weaponLight.setActive(true);
         Timer.schedule(new Timer.Task() {

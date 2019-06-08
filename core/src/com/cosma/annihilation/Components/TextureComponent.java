@@ -11,6 +11,7 @@ public class TextureComponent implements Component {
     public String texturePatch;
     public Texture texture;
     public TextureRegion textureRegion;
+    public  boolean renderAfterLight = false;
     public boolean flipTexture = false;
     public boolean renderWithShader = false;
 }

@@ -10,13 +10,10 @@ import com.cosma.annihilation.Utils.*;
 public class AnimationSystem extends IteratingSystem {
 
     private ComponentMapper<TextureComponent> textureMapper;
-    private ComponentMapper<StateComponent> stateMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
-
 
     public AnimationSystem() {
         super(Family.all(TextureComponent.class, AnimationComponent.class).get(), Constants.ANIMATION);
-        stateMapper = ComponentMapper.getFor(StateComponent.class);
         textureMapper = ComponentMapper.getFor(TextureComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
     }
@@ -25,7 +22,6 @@ public class AnimationSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         TextureComponent textureComponent = textureMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
-        StateComponent stateComponent = stateMapper.get(entity);
 
         textureComponent.flipTexture = !animationComponent.spriteDirection;
 

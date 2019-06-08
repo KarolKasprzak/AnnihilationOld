@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Components.*;
@@ -117,6 +118,20 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                     ((AiComponent) component).startPosition = Util.jsonStringToVector2(jsonData.get("startPosition").asString());
                 }
             }
+
+            if(component instanceof ContainerComponent){
+                if(jsonData.has("itemList")){
+                    ((ContainerComponent) component).itemLocations = new Array<>();
+                    for (JsonValue value : jsonData.get("itemList")){
+                        InventoryItemLocation location = new InventoryItemLocation();
+                        location.setTableIndex(value.get("tableIndex").asInt());
+                        location.setItemID(value.get("itemID").asString());
+                        location.setItemsAmount(value.get("itemsAmount").asInt());
+                        ((ContainerComponent) component).itemLocations.add(location);
+                    }
+                }
+            }
+
 
             if(component instanceof PlayerComponent){
                 if(jsonData.has("mapName")){
