@@ -14,6 +14,7 @@ import com.cosma.annihilation.Components.AnimationComponent;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.StateComponent;
+import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
@@ -133,9 +134,10 @@ public class PlayerControlSystem extends IteratingSystem{
             }
         }
         //Moving on side with weapon
-        if(playerComponent.canMoveOnSide && playerComponent.onGround && !playerComponent.isWeaponHidden) {
+        if(playerComponent.canMoveOnSide && playerComponent.onGround && !playerComponent.isWeaponHidden && playerComponent.activeWeapon != null) {
+
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
-                animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
+                setPlayerAnimation(playerComponent,animationComponent);
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = playerComponent.velocity*0.8f;
                 playerComponent.climbing = false;
@@ -146,7 +148,7 @@ public class PlayerControlSystem extends IteratingSystem{
                         playerBody.body.getWorldCenter(), true);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.A) || playerComponent.goLeft) {
-                animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
+                setPlayerAnimation(playerComponent,animationComponent);
                 Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -playerComponent.velocity*0.8f;
                 float speedX = desiredSpeed - vec.x;
@@ -163,6 +165,18 @@ public class PlayerControlSystem extends IteratingSystem{
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
+    }
+
+    public void setPlayerAnimation(PlayerComponent playerComponent, AnimationComponent animationComponent){
+        WeaponItem.ItemID weaponID = playerComponent.activeWeapon.getItemID();
+        switch (weaponID) {
+            case P38:
+                animationComponent.animationState = AnimationStates.WALK_WEAPON_SMALL;
+                break;
+            case MP44:
+                animationComponent.animationState = AnimationStates.WALK_WEAPON_MP;
+                break;
+        }
     }
 
 }

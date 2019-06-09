@@ -24,6 +24,7 @@ import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
@@ -224,9 +225,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             if(calculateAttackAccuracy() && targetEntity != null){
                 targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
             }
-            shootLight();
-            this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f));
-            this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.63f,20, animationComponent.spriteDirection));
+            shootingLight();
+            createShellAndBullet();
             Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
             sound.play();
             weaponMagazine.removeAmmoFromMagazine();
@@ -234,6 +234,24 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             weaponMagazine.reload();
         }
     }
+
+    private void createShellAndBullet(){
+        WeaponItem.ItemID weaponID = playerComponent.activeWeapon.getItemID();
+        switch (weaponID) {
+            case P38:
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.63f,20, animationComponent.spriteDirection));
+                this.getEngine().addEntity(EntityFactory.getInstance().createShootSplashEntity(body.getPosition().x + 1.1f*direction,body.getPosition().y + 0.59f,animationComponent.spriteDirection));
+                break;
+            case MP44:
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.4f*direction, body.getPosition().y + 0.3f));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.3f,20, animationComponent.spriteDirection));
+                break;
+        }
+
+
+    }
+
 
 
 //    private void weaponShoot() {
@@ -339,13 +357,13 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     }
 
 
-    private void shootLight(){
+    private void shootingLight(){
         switch (playerComponent.activeWeapon.getItemID()){
             case P38:
                 weaponLight.attachToBody(body,direction-0.1f,0.5f);
                 break;
             case MP44:
-                weaponLight.attachToBody(body,direction-0.1f,0.5f);
+                weaponLight.attachToBody(body,direction-0.1f,0.3f);
                 break;
         }
 

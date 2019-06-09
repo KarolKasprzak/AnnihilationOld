@@ -29,6 +29,11 @@ public class AnimationFactory {
                 ,Animation.PlayMode.LOOP);
         playerAnimationMap.put("WALK_WEAPON_SMALL",playerWalkSmallWeaponAnimation);
 
+        Animation<TextureRegion> playerWeaponMpWalkAnimation = new Animation(0.1f,
+                Annihilation.getAssets().get("gfx/player/player_weapon_mp_walk.atlas",TextureAtlas.class).getRegions()
+                ,Animation.PlayMode.LOOP);
+        playerAnimationMap.put("WALK_WEAPON_MP",playerWeaponMpWalkAnimation);
+
         TextureRegion standNoWeapon = new TextureRegion(Annihilation.getAssets().get("gfx/player/player_stand.png",Texture.class));
         Animation<TextureRegion> playerIdleAnimation = new Animation(0.1f,standNoWeapon);
         playerAnimationMap.put("IDLE",playerIdleAnimation);

@@ -61,6 +61,8 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         //Box2d world & light handler
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
         rayHandler = new RayHandler(world);
+        RayHandler.useDiffuseLight(true);
+        rayHandler.setShadows(true);
         engine = new PooledEngine();
         engine.addEntityListener(this);
 
@@ -85,6 +87,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         engine.addSystem(new ActionSystem(world,this));
         engine.addSystem(new ShootingSystem(world, rayHandler,batch,camera));
         engine.addSystem(new UserInterfaceSystem(engine,world,this));
+        engine.addSystem(new SpriteRenderSystem(camera,batch));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
         engine.addSystem(new HealthSystem(camera));

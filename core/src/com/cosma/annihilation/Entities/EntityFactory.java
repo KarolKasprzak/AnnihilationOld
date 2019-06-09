@@ -77,14 +77,12 @@ public class EntityFactory {
         fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
         bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.BULLET);
 
-
-        float yVelocity = MathUtils.random(-1.2f,2f);
+        float yVelocity = MathUtils.random(-1f,1.5f);
         if(flip){
             bodyComponent.body.setLinearVelocity(speed,yVelocity);
             textureComponent.flipTexture = true;
         }else{
             bodyComponent.body.setLinearVelocity(-speed,yVelocity);
-
         }
 
         entity.add(textureComponent);
@@ -129,6 +127,28 @@ public class EntityFactory {
 
         return entity;
     }
+
+    public Entity createShootSplashEntity(float x, float y,boolean flip){
+        Entity entity =  engine.createEntity();
+        SpriteComponent spriteComponent = engine.createComponent(SpriteComponent.class);
+        spriteComponent.texture = Annihilation.getAssets().get("gfx/textures/splash.png");
+        spriteComponent.x = x;
+        spriteComponent.y = y;
+        spriteComponent.isLifeTimeLimited = true;
+        spriteComponent.lifeTime = 0.18f;
+
+
+        if(flip){
+            spriteComponent.flipTexture = true;
+        }
+        entity.add(spriteComponent);
+
+        return entity;
+
+    }
+
+
+
 
     public Entity createDoorEntity(){
         Entity entity = new Entity();
@@ -179,109 +199,6 @@ public class EntityFactory {
         return entity;
     }
 
-    public Entity createBoxEntity(float x, float y, Array<InventoryItemLocation> itemList) {
-        Entity entity = new Entity();
-        //Component
-        BodyComponent bodyComponent = new BodyComponent();
-        ContainerComponent containerComponent = new ContainerComponent();
-        TextureComponent textureComponent = new TextureComponent();
-        ActionComponent actionComponent = new ActionComponent();
-        HealthComponent healthComponent = new HealthComponent();
-        healthComponent.hp = 50;
-        healthComponent.maxHP = 50;
-
-        actionComponent.action = EntityAction.OPEN;
-        containerComponent.name = "box";
-        containerComponent.itemLocations = itemList;
-
-        //----------Body Component----------------------
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
-        bodyComponent.body = world.createBody(bodyDef);
-        bodyComponent.body.setUserData(entity);
-        //Physic fixture
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.93f / 2, 0.93f / 2);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 8f;
-        fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
-        bodyComponent.body.createFixture(fixtureDef);
-        //Sensor fixture
-        CircleShape sensorShape = new CircleShape();
-        sensorShape.setRadius(1);
-        FixtureDef touchSensorFixture = new FixtureDef();
-        touchSensorFixture.shape = sensorShape;
-        touchSensorFixture.isSensor = true;
-        touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-
-        //-----------Body Component End----------------------
-        entity.add(textureComponent);
-        entity.add(bodyComponent);
-        entity.add(containerComponent);
-        entity.add(actionComponent);
-        entity.add(healthComponent);
-        engine.addEntity(entity);
-        return entity;
-    }
-
-    public Entity createBoxEntityTest() {
-        Entity entity = new Entity();
-
-
-        BodyComponent bodyComponent = new BodyComponent();
-        ContainerComponent containerComponent = new ContainerComponent();
-        ActionComponent actionComponent = new ActionComponent();
-
-
-
-        actionComponent.action = EntityAction.OPEN;
-        containerComponent.name = "box";
-        //----------Body Component----------------------
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyComponent.body = world.createBody(bodyDef);
-        bodyComponent.body.setUserData(entity);
-        //Physic fixture
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1f / 2, 1f / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 8f;
-        fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.NO_SHADOW | CollisionID.JUMPABLE_OBJECT;
-        bodyComponent.body.createFixture(fixtureDef);
-        //Render fixture
-        FixtureDef renderFixture = new FixtureDef();
-        renderFixture.shape = shape;
-        renderFixture.isSensor = true;
-        renderFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-
-        //Sensor fixture
-        CircleShape sensorShape = new CircleShape();
-        sensorShape.setRadius(1);
-        FixtureDef touchSensorFixture = new FixtureDef();
-        touchSensorFixture.shape = sensorShape;
-        touchSensorFixture.isSensor = true;
-        touchSensorFixture.filter.categoryBits = CollisionID.NO_SHADOW;
-
-        //-----------Body Component End----------------------
-
-        entity.add(bodyComponent);
-        entity.add(containerComponent);
-        entity.add(actionComponent);
-        engine.addEntity(entity);
-        return entity;
-    }
-
-    public void createPlayerEntity(Engine engine,World world) {
-        this.engine = engine;
-        this.world = world;
-        createPlayerEntity();
-    }
 
     public Entity createPlayerEntity() {
         Entity entity = new Entity();
