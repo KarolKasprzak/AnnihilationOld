@@ -42,6 +42,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private World world;
     private AnimationComponent animationComponent;
     private PlayerComponent playerComponent;
+    private BodyComponent bodyComponent;
     private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent statsComponent;
     private StateComponent stateComponent;
@@ -85,7 +86,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         raycastEnd = new Vector2();
 
-        weaponLight = new PointLight(rayHandler, 90, new Color(1,0.8f,0,0.8f), 0.8f,0,0);
+        weaponLight = new PointLight(rayHandler, 45, new Color(1,0.8f,0,1), 0.8f,0,0);
         weaponLight.setStaticLight(false);
         Filter filter = new Filter();
         filter.maskBits = CollisionID.CAST_SHADOW;
@@ -101,7 +102,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                 if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class ) != null){
                     targetEntity =(Entity)fixture.getBody().getUserData();
-                    System.out.println(targetEntity.getComponent(HealthComponent.class).hp);
                 }else targetEntity = null;
                 return 0;
             }
@@ -129,7 +129,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         playerInventoryComponent = playerDateMapper.get(entity);
         statsComponent = playerStatsMapper.get(entity);
         animationComponent = playerAnimMapper.get(entity);
-
+        bodyComponent = bodyMapper.get(entity);
         body = bodyMapper.get(entity).body;
 
 
@@ -223,8 +223,12 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         if (weaponMagazine.hasAmmo()) {
             world.rayCast(callback,body.getPosition(),raycastEnd.set(body.getPosition().x+15*direction,body.getPosition().y));
             if(calculateAttackAccuracy() && targetEntity != null){
+                System.out.println("hit");
                 targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
+                targetEntity.getComponent(HealthComponent.class).isHit = true;
+                targetEntity.getComponent(HealthComponent.class).attackerPosition =  bodyComponent.body.getPosition();
             }
+            targetEntity = null;
             shootingLight();
             createShellAndBullet();
             Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
@@ -246,6 +250,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             case MP44:
                 this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.4f*direction, body.getPosition().y + 0.3f));
                 this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.3f,20, animationComponent.spriteDirection));
+                this.getEngine().addEntity(EntityFactory.getInstance().createShootSplashEntity(body.getPosition().x + 1.1f*direction,body.getPosition().y + 0.29f,animationComponent.spriteDirection));
                 break;
         }
 

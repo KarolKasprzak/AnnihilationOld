@@ -7,7 +7,8 @@ public class SpriteComponent implements Component {
     public float time = 0;
     public float lifeTime = 0;
     public boolean isLifeTimeLimited = false;
-    public boolean flipTexture = false;
+    public boolean flipX = false;
+    public boolean flipY = false;
     public float x;
     public float y;
     public float angle = 0;

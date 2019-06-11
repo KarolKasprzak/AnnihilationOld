@@ -8,6 +8,7 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.cosma.annihilation.Components.*;
+import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
@@ -17,25 +18,33 @@ public class HealthSystem extends IteratingSystem implements Listener<GameEvent>
 
     private ComponentMapper<HealthComponent> healthMapper;
     private  OrthographicCamera camera;
+    private ComponentMapper<BodyComponent> bodyMapper;
 
     public HealthSystem(OrthographicCamera camera) {
-        super(Family.all(HealthComponent.class).get(), Constants.HEALTH_SYSTEM);
+        super(Family.all(HealthComponent.class,BodyComponent.class).get(), Constants.HEALTH_SYSTEM);
         this.camera = camera;
 
         healthMapper = ComponentMapper.getFor(HealthComponent.class);
-
+        bodyMapper = ComponentMapper.getFor(BodyComponent.class);
     }
 
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         HealthComponent healthComponent = healthMapper.get(entity);
-
+        BodyComponent bodyComponent = bodyMapper.get(entity);
 
         if (healthComponent.hp <= 0) {
             getEngine().getSystem(CollisionSystem.class).bodiesToRemove.add(entity.getComponent(BodyComponent.class).body);
             this.getEngine().removeEntity(entity);
         }
+        if(healthComponent.isHit){
+
+            this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x,bodyComponent.body.getPosition().y));
+
+            healthComponent.isHit = false;
+        }
+
 
     }
 

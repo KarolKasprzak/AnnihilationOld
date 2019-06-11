@@ -99,7 +99,7 @@ public class EntityFactory {
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
 
         textureComponent.texture = Annihilation.getAssets().get("gfx/textures/bullet_shell.png");
-
+        textureComponent.renderAfterLight = true;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -137,17 +137,26 @@ public class EntityFactory {
         spriteComponent.isLifeTimeLimited = true;
         spriteComponent.lifeTime = 0.18f;
 
-
         if(flip){
-            spriteComponent.flipTexture = true;
+            spriteComponent.flipX = true;
         }
         entity.add(spriteComponent);
 
         return entity;
-
     }
 
+    public Entity createBloodSplashEntity(float x, float y){
+        Entity entity =  engine.createEntity();
+        SpriteComponent spriteComponent = engine.createComponent(SpriteComponent.class);
+        spriteComponent.texture = Annihilation.getAssets().get("gfx/textures/blood.png");
+        spriteComponent.x = x;
+        spriteComponent.y = y;
+        spriteComponent.isLifeTimeLimited = true;
+        spriteComponent.lifeTime = 1;
+        entity.add(spriteComponent);
 
+        return entity;
+    }
 
 
     public Entity createDoorEntity(){

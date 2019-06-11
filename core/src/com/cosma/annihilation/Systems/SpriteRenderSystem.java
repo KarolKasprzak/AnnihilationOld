@@ -39,7 +39,9 @@ public class SpriteRenderSystem extends IteratingSystem implements Disposable {
     @Override
     public void update(float deltaTime) {
         batch.setProjectionMatrix(camera.combined);
+        batch.begin();
         super.update(deltaTime);
+        batch.end();
     }
 
     @Override
@@ -50,16 +52,16 @@ public class SpriteRenderSystem extends IteratingSystem implements Disposable {
         if(spriteComponent.isLifeTimeLimited){
             spriteComponent.time += deltaTime;
         }
-        
-        batch.begin();
+
+
         if (spriteComponent.texture != null) {
             position.x = position.x - (float) spriteComponent.texture.getWidth() / 32 / 2;
             position.y = position.y - (float) spriteComponent.texture.getHeight() / 32 / 2;
-            batch.draw(new TextureRegion(spriteComponent.texture), position.x+(spriteComponent.flipTexture ? spriteComponent.texture.getWidth() / 32 : 0), position.y, (float) spriteComponent.texture.getWidth() / 32 / 2, (float) spriteComponent.texture.getHeight() / 32 / 2,
-                    spriteComponent.texture.getWidth() / 32 * (spriteComponent.flipTexture ? -1 : 1), spriteComponent.texture.getHeight() / 32,
+            batch.draw(new TextureRegion(spriteComponent.texture), position.x+(spriteComponent.flipX ? spriteComponent.texture.getWidth() / 32 : 0), position.y, (float) spriteComponent.texture.getWidth() / 32 / 2, (float) spriteComponent.texture.getHeight() / 32 / 2,
+                    spriteComponent.texture.getWidth() / 32 * (spriteComponent.flipX ? -1 : 1), spriteComponent.texture.getHeight() / 32,
                     1, 1, spriteComponent.angle);
         }
-        batch.end();
+
 
         if(spriteComponent.isLifeTimeLimited){
            if(spriteComponent.time >= spriteComponent.lifeTime){
