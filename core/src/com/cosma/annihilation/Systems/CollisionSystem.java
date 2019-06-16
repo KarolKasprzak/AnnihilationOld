@@ -107,8 +107,8 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
 
-//        bulletCollision(fa,fb);
-//        bulletCollision(fb,fa);
+        bulletCollision(fa,fb);
+        bulletCollision(fb,fa);
 
         addEntityToActionList(fa, fb);
 
@@ -285,11 +285,6 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 
     private void bulletCollision(Fixture fa, Fixture fb) {
         if (fa.getUserData() == BodyID.BULLET) {
-            if (fb.getBody().getUserData() instanceof Entity) {
-                Entity entity = (Entity) fa.getBody().getUserData();
-                entityEventSignal.setEvent(GameEvent.OBJECT_HIT, (Entity) fb.getBody().getUserData(), entity.getComponent(BulletComponent.class).dmg, entity.getComponent(BulletComponent.class).isBulletHit);
-
-            }
             if (!bodiesToRemove.contains(fa.getBody(), true)) {
                 bodiesToRemove.add(fa.getBody());
                 getEngine().removeEntity((Entity) fa.getBody().getUserData());

@@ -55,7 +55,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
         //Game camera
         camera = new OrthographicCamera();
-        viewport = new ExtendViewport(9,5,camera);
+        viewport = new ExtendViewport(11,7,camera);
         viewport.apply(false);
         SpriteBatch batch = new SpriteBatch();
         //Box2d world & light handler

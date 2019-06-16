@@ -55,7 +55,7 @@ public class PlayerControlSystem extends IteratingSystem{
         gameEventList.clear();
 
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && animationComponent.isAnimationFinish) {
-                 playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
+                 playerBody.body.setLinearVelocity(0, playerBody.body.getLinearVelocity().y);
                  animationComponent.animationState = AnimationStates.IDLE;
                  if(!playerComponent.isWeaponHidden){
                      animationComponent.animationState = AnimationStates.IDLE_WEAPON_SMALL;
@@ -63,7 +63,7 @@ public class PlayerControlSystem extends IteratingSystem{
         }
 
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround) {
-            playerBody.body.setLinearVelocity(new Vector2(0, playerBody.body.getLinearVelocity().y));
+            playerBody.body.setLinearVelocity(0, playerBody.body.getLinearVelocity().y);
         }
 
         // Jumping

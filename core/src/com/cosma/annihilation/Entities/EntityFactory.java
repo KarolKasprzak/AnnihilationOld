@@ -99,7 +99,7 @@ public class EntityFactory {
         TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
 
         textureComponent.texture = Annihilation.getAssets().get("gfx/textures/bullet_shell.png");
-        textureComponent.renderAfterLight = true;
+        textureComponent.renderAfterLight = false;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
