@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
-import com.cosma.annihilation.Utils.Enums.AnimationStates;
+import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;

@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Utils;
+package com.cosma.annihilation.Utils.Animation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -72,10 +72,9 @@ public class AnimationFactory {
         hazmatAnimationMap.put("ENEMY_SHOOT",hazmatShootAnimation);
 
 
-
         animationMap.put(AnimationId.PLAYER,playerAnimationMap);
         animationMap.put(AnimationId.TEST_ZOMBIE,zombieAnimationMap);
-        animationMap.put(AnimationId.HAZMAT_NPC,hazmatAnimationMap);
+        animationMap.put(AnimationId.HAZMAT_NPC,new NpcHazmat());
 
 
 

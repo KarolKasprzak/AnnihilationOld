@@ -1,6 +1,5 @@
 package com.cosma.annihilation.Ai;
 
-import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -12,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
-import com.cosma.annihilation.Utils.Enums.AnimationStates;
+import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Util;
 
 
@@ -104,35 +103,39 @@ public class HumanAi implements ArtificialIntelligence {
 
         void update(Entity aiEntity) {
             animationComponent = aiEntity.getComponent(AnimationComponent.class);
+            HealthComponent healthComponent = aiEntity.getComponent(HealthComponent.class);
             aiBody = aiEntity.getComponent(BodyComponent.class).body;
             time += Gdx.graphics.getDeltaTime();
             World world = aiBody.getWorld();
 
+            if(!healthComponent.isDead){
+                if(!isBlocked){
+                    if (animationComponent.spriteDirection) {
+                        world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x + 4, aiBody.getPosition().y));
+                    } else
+                        world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x - 4, aiBody.getPosition().y));
 
-            if(!isBlocked){
-                if (animationComponent.spriteDirection) {
-                    world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x + 4, aiBody.getPosition().y));
-                } else
-                    world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x - 4, aiBody.getPosition().y));
+                    if (!isEnemySpotted) {
+                        goToPosition(targetPosition, animationComponent, aiBody);
+                        aiStatus = "on patrol";
+                        animationComponent.animationState = AnimationStates.WALK;
+                        if ((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition) {
 
-                if (!isEnemySpotted) {
-                    goToPosition(targetPosition, animationComponent, aiBody);
-                    aiStatus = "on patrol";
-                    animationComponent.animationState = AnimationStates.WALK;
-                    if ((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition) {
-
-                        if (animationComponent.spriteDirection) {
-                            targetPosition.x = targetPosition.x - patrolRange;
-                        } else targetPosition.x = targetPosition.x + patrolRange;
-                        onPosition = true;
-                    } else onPosition = false;
-                } else {
-                    aiStatus = "find enemy";
-                    animationComponent.animationState = AnimationStates.IDLE;
-                    aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
-                    shoot(animationComponent,aiBody);
+                            if (animationComponent.spriteDirection) {
+                                targetPosition.x = targetPosition.x - patrolRange;
+                            } else targetPosition.x = targetPosition.x + patrolRange;
+                            onPosition = true;
+                        } else onPosition = false;
+                    } else {
+                        aiStatus = "find enemy";
+                        animationComponent.animationState = AnimationStates.IDLE;
+                        aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
+                        shoot(animationComponent,aiBody);
+                    }
+                    isEnemySpotted = false;
                 }
-                isEnemySpotted = false;
+            }else{ aiBody.setLinearVelocity(new Vector2(0, aiBody.getLinearVelocity().y));
+
             }
         }
 

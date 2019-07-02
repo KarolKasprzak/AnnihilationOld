@@ -26,7 +26,7 @@ import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.Constants;
-import com.cosma.annihilation.Utils.Enums.AnimationStates;
+import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 

@@ -3,12 +3,10 @@ package com.cosma.annihilation.Systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Components.AnimationComponent;
 import com.cosma.annihilation.Components.BodyComponent;
@@ -16,11 +14,10 @@ import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.StateComponent;
 import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.Constants;
-import com.cosma.annihilation.Utils.Enums.AnimationStates;
+import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class PlayerControlSystem extends IteratingSystem{
 

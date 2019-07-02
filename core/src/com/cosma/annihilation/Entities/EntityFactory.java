@@ -145,14 +145,15 @@ public class EntityFactory {
         return entity;
     }
 
-    public Entity createBloodSplashEntity(float x, float y){
+    public Entity createBloodSplashEntity(float x, float y, float angle){
         Entity entity =  engine.createEntity();
         SpriteComponent spriteComponent = engine.createComponent(SpriteComponent.class);
         spriteComponent.texture = Annihilation.getAssets().get("gfx/textures/blood.png");
         spriteComponent.x = x;
         spriteComponent.y = y;
         spriteComponent.isLifeTimeLimited = true;
-        spriteComponent.lifeTime = 1;
+        spriteComponent.lifeTime = 4;
+        spriteComponent.angle = angle;
         entity.add(spriteComponent);
 
         return entity;

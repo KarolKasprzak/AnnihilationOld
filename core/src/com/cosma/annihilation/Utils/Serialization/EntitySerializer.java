@@ -12,7 +12,7 @@ import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
-import com.cosma.annihilation.Utils.AnimationFactory;
+import com.cosma.annihilation.Utils.Animation.AnimationFactory;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 

@@ -1,0 +1,31 @@
+package com.cosma.annihilation.Utils.Animation;
+
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.cosma.annihilation.Annihilation;
+
+import java.util.HashMap;
+
+ class NpcHazmat extends HashMap<String,Animation<TextureRegion>> {
+
+     NpcHazmat(){
+        TextureAtlas textureAtlas = Annihilation.getAssets().get("gfx/atlas/hazmat_suit_pistol/texture.atlas");
+
+        //WALK
+        Animation<TextureRegion> walkAnimation = new Animation<>(0.1f,textureAtlas.findRegions("texture_walk"),Animation.PlayMode.LOOP);
+        System.out.println("Key:"+walkAnimation.getKeyFrames().length);
+        this.put("WALK",walkAnimation);
+        //IDLE
+        Animation<TextureRegion> idleAnimation = new Animation<>(0.1f,textureAtlas.findRegions("texture_walk"),Animation.PlayMode.LOOP);
+        this.put("IDLE",idleAnimation);
+        //SHOOT
+        Animation<TextureRegion> shootAnimation = new Animation<>(0.1f,textureAtlas.findRegions("texture_shoot"),Animation.PlayMode.NORMAL);
+        this.put("ENEMY_SHOOT",shootAnimation);
+        //SHOOT
+        Animation<TextureRegion> deathStandAnimation = new Animation<>(0.15f,textureAtlas.findRegions("texture_die_fight"),Animation.PlayMode.NORMAL);
+        this.put("DEATH_STAND",deathStandAnimation);
+
+    }
+}
+

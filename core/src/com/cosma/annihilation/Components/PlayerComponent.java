@@ -2,9 +2,7 @@ package com.cosma.annihilation.Components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Items.WeaponItem;
-import com.cosma.annihilation.Utils.Enums.AnimationStates;
 
 import java.util.ArrayList;
 

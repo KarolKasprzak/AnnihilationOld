@@ -7,11 +7,15 @@ import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Entities.EntityFactory;
+import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.Util;
 
 public class HealthSystem extends IteratingSystem implements Listener<GameEvent> {
 
@@ -35,12 +39,28 @@ public class HealthSystem extends IteratingSystem implements Listener<GameEvent>
         BodyComponent bodyComponent = bodyMapper.get(entity);
 
         if (healthComponent.hp <= 0) {
-            getEngine().getSystem(CollisionSystem.class).bodiesToRemove.add(entity.getComponent(BodyComponent.class).body);
-            this.getEngine().removeEntity(entity);
+            if(Util.hasComponent(entity,AnimationComponent.class)){
+                healthComponent.isDead = true;
+                AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
+
+                animationComponent.animationState = AnimationStates.DEATH_STAND;
+            }
+
+
+//            getEngine().getSystem(CollisionSystem.class).bodiesToRemove.add(entity.getComponent(BodyComponent.class).body);
+//            this.getEngine().removeEntity(entity);
         }
         if(healthComponent.isHit){
+            Vector2 attackerPosition = healthComponent.attackerPosition;
+            Vector2 position = bodyComponent.body.getPosition();
+            if(attackerPosition.x > position.x){
+                this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x-1,bodyComponent.body.getPosition().y+MathUtils.random(-0.2f,0.7f),0));
+            }else{
+                this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x+1,bodyComponent.body.getPosition().y,0));
+            }
 
-            this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x,bodyComponent.body.getPosition().y));
+
+
 
             healthComponent.isHit = false;
         }

@@ -3,8 +3,8 @@ package com.cosma.annihilation.Components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.cosma.annihilation.Utils.AnimationFactory;
-import com.cosma.annihilation.Utils.Enums.AnimationStates;
+import com.cosma.annihilation.Utils.Animation.AnimationFactory;
+import com.cosma.annihilation.Utils.Animation.AnimationStates;
 
 import java.util.HashMap;
 

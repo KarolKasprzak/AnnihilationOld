@@ -1,4 +1,4 @@
-package com.cosma.annihilation.Utils.Enums;
+package com.cosma.annihilation.Utils.Animation;
 
 public enum AnimationStates {
     IDLE,
@@ -9,5 +9,7 @@ public enum AnimationStates {
     ENEMY_SHOOT,
     WALK_WEAPON_SMALL,
     IDLE_WEAPON_SMALL,
-    WALK_WEAPON_MP
+    WALK_WEAPON_MP,
+    DEATH_STAND,
+    DEATH_CROUCH
 }
