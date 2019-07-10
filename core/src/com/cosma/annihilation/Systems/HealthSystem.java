@@ -42,8 +42,8 @@ public class HealthSystem extends IteratingSystem implements Listener<GameEvent>
             if(Util.hasComponent(entity,AnimationComponent.class)){
                 healthComponent.isDead = true;
                 AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
-
                 animationComponent.animationState = AnimationStates.DEATH_STAND;
+                entity.getComponent(BodyComponent.class).body.setActive(false);
             }
 
 

@@ -69,7 +69,7 @@ public class AnimationFactory {
         Animation<TextureRegion>hazmatShootAnimation = new Animation<>(0.1f,
                 Annihilation.getAssets().get("gfx/atlas/hazmat_npc_shoot.atlas",TextureAtlas.class).getRegions()
                 ,Animation.PlayMode.NORMAL);
-        hazmatAnimationMap.put("ENEMY_SHOOT",hazmatShootAnimation);
+        hazmatAnimationMap.put("NPC_SHOOT",hazmatShootAnimation);
 
 
         animationMap.put(AnimationId.PLAYER,playerAnimationMap);

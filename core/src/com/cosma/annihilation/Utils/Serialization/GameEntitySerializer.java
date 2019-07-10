@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.cosma.annihilation.Ai.HumanAi;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Utils.Util;
@@ -113,9 +114,11 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                 ((BodyComponent) component).body.setTransform(Util.jsonStringToVector2(jsonData.get("position").asString()),0);
                 continue;
             }
+            //TEST!! *TODO
             if(component instanceof AiComponent){
                 if(jsonData.has("startPosition")){
                     ((AiComponent) component).startPosition = Util.jsonStringToVector2(jsonData.get("startPosition").asString());
+                    ((AiComponent) component).ai = new HumanAi(((AiComponent) component).startPosition);
                 }
             }
 

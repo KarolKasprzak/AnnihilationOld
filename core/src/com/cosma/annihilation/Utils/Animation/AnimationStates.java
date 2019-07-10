@@ -6,10 +6,12 @@ public enum AnimationStates {
     JUMP,
     MELEE,
     ATTACK,
-    ENEMY_SHOOT,
+    NPC_SHOOT,
     WALK_WEAPON_SMALL,
     IDLE_WEAPON_SMALL,
     WALK_WEAPON_MP,
+    IDLE_WEAPON_MP,
     DEATH_STAND,
-    DEATH_CROUCH
+    DEATH_CROUCH,
+    DEATH_CRITICAL
 }

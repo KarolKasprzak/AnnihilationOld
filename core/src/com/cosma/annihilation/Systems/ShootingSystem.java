@@ -56,6 +56,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private Entity targetEntity;
     private PointLight weaponLight;
     private int direction = 1;
+    private float weaponReloadTimer = 0;
     private boolean isMeleeAttackFinish = true;
     private Signal<GameEvent> signal;
     private Vector2 raycastEnd;
@@ -116,7 +117,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         pe.setPosition(body.getPosition().x,body.getPosition().y);
 
         batch.begin();
-
         pe.update(deltaTime);
         pe.draw(batch);
         batch.end();
@@ -131,6 +131,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         animationComponent = playerAnimMapper.get(entity);
         bodyComponent = bodyMapper.get(entity);
         body = bodyMapper.get(entity).body;
+
+        weaponReloadTimer += deltaTime;
 
 
         if (!animationComponent.spriteDirection) {
@@ -215,7 +217,14 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             isWeaponShooting = true;
             automaticWeaponShoot();
         }else
-            weaponShoot();
+            semiAutomaticShoot();
+    }
+
+    private void semiAutomaticShoot(){
+     if(weaponReloadTimer > playerComponent.activeWeapon.getReloadTime()){
+        weaponShoot();
+        weaponReloadTimer = 0;
+     }
     }
 
     private void weaponShoot() {
@@ -256,27 +265,6 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
 
     }
-
-
-
-//    private void weaponShoot() {
-//        if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
-//            if (weaponMagazine.hasAmmo()) {
-//                if (playerComponent.playerDirection) {
-//                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f, body.getPosition().y + 0.63f, 20, false,playerComponent.activeWeapon.getDamage(),calculateAttackAccuracy());
-//                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f, body.getPosition().y + 0.63f);
-//                } else {
-//                    EntityFactory.getInstance().createBulletEntity(body.getPosition().x - 1.1f, body.getPosition().y + 0.63f, -20, true,playerComponent.activeWeapon.getDamage(),calculateAttackAccuracy());
-//                    EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x - 0.7f, body.getPosition().y + 0.63f);
-//                }
-//                Sound sound = assetLoader.manager.get(SfxAssetDescriptors.pistolSound);
-//                sound.play();
-//                weaponMagazine.removeAmmoFromMagazine();
-//            } else {
-//                weaponMagazine.reload();
-//            }
-//        }
-//    }
 
     private void automaticWeaponShoot(){
         com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {

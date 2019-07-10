@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.cosma.annihilation.Components.*;
@@ -22,6 +23,7 @@ public class AiSystem extends IteratingSystem {
     private ComponentMapper<AiComponent> aiMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
+    private ComponentMapper<HealthComponent> healthMapper;
     private BitmapFont font;
     private SpriteBatch batch;
     private Camera camera;
@@ -35,6 +37,7 @@ public class AiSystem extends IteratingSystem {
         aiMapper = ComponentMapper.getFor(AiComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
+        healthMapper = ComponentMapper.getFor(HealthComponent.class);
         font = new BitmapFont();
         font.setColor(Color.RED);
         font.getData().setScale(1, 1);
@@ -50,9 +53,12 @@ public class AiSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         AiComponent aiComponent = aiMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
+        HealthComponent healthComponent = healthMapper.get(entity);
         BodyComponent bodyComponent = bodyMapper.get(entity);
+        if(!healthComponent.isDead){
+            aiComponent.ai.update(entity);
+        }else bodyComponent.body.setLinearVelocity(new Vector2(0, bodyComponent.body.getLinearVelocity().y));
 
-        aiComponent.ai.update(entity);
 
 
 

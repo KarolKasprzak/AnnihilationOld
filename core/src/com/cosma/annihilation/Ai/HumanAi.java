@@ -21,22 +21,16 @@ public class HumanAi implements ArtificialIntelligence {
     private PatrolBehaviour patrolBehaviour;
 
 
-    public HumanAi() {
+    public HumanAi(Vector2 startPosition) {
         this.startPosition = startPosition;
         patrolBehaviour = new PatrolBehaviour(5, 1);
-
+        patrolBehaviour.setStartPosition(startPosition);
 
     }
 
     @Override
     public void update(Entity entity) {
-        Body body = entity.getComponent(BodyComponent.class).body;
-
-        AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
-        patrolBehaviour.setStartPosition(body.getPosition());
         patrolBehaviour.update(entity);
-
-
     }
 
     @Override
@@ -56,7 +50,7 @@ public class HumanAi implements ArtificialIntelligence {
         Body aiBody;
         AnimationComponent animationComponent;
         boolean onPosition = false;
-        RayCastCallback shootCallback, callback;
+        RayCastCallback frontRayCallback_SHOOT, frontRayCallback;
         Body targetBody;
         Entity targetEntity;
         Vector2 raycastEnd = new Vector2();
@@ -66,7 +60,7 @@ public class HumanAi implements ArtificialIntelligence {
             this.patrolRange = patrolRange;
             this.timeToTurn = timeToTurn;
 
-            shootCallback = new RayCastCallback() {
+            frontRayCallback_SHOOT = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                     if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class) != null) {
@@ -76,7 +70,7 @@ public class HumanAi implements ArtificialIntelligence {
                 }
             };
 
-            callback = new RayCastCallback() {
+            frontRayCallback = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                     if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(PlayerComponent.class) != null) {
@@ -108,74 +102,72 @@ public class HumanAi implements ArtificialIntelligence {
             time += Gdx.graphics.getDeltaTime();
             World world = aiBody.getWorld();
 
-            if(!healthComponent.isDead){
-                if(!isBlocked){
-                    if (animationComponent.spriteDirection) {
-                        world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x + 4, aiBody.getPosition().y));
-                    } else
-                        world.rayCast(callback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x - 4, aiBody.getPosition().y));
 
-                    if (!isEnemySpotted) {
-                        goToPosition(targetPosition, animationComponent, aiBody);
-                        aiStatus = "on patrol";
-                        animationComponent.animationState = AnimationStates.WALK;
-                        if ((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition) {
+            if (!isBlocked) {
+                if (animationComponent.spriteDirection) {
+                    world.rayCast(frontRayCallback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x + 4, aiBody.getPosition().y));
+                } else
+                    world.rayCast(frontRayCallback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x - 4, aiBody.getPosition().y));
 
-                            if (animationComponent.spriteDirection) {
-                                targetPosition.x = targetPosition.x - patrolRange;
-                            } else targetPosition.x = targetPosition.x + patrolRange;
-                            onPosition = true;
-                        } else onPosition = false;
-                    } else {
-                        aiStatus = "find enemy";
-                        animationComponent.animationState = AnimationStates.IDLE;
-                        aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
-                        shoot(animationComponent,aiBody);
-                    }
-                    isEnemySpotted = false;
-                }
-            }else{ aiBody.setLinearVelocity(new Vector2(0, aiBody.getLinearVelocity().y));
+                if (!isEnemySpotted) {
+                    goToPosition(targetPosition, animationComponent, aiBody);
+                    aiStatus = "on patrol";
+                    animationComponent.animationState = AnimationStates.WALK;
+                    if ((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition) {
 
-            }
-        }
-
-        private void goToPosition(Vector2 targetPosition, AnimationComponent animationComponent, Body aiBody) {
-            Vector2 aiPosition = aiBody.getPosition();
-            if (Util.roundFloat(targetPosition.x, 1) != Util.roundFloat(aiPosition.x, 1)) {
-                if (targetPosition.x < aiPosition.x) {
-                    aiBody.setLinearVelocity(new Vector2(-1, 0));
-                    animationComponent.spriteDirection = false;
+                        if (animationComponent.spriteDirection) {
+                            targetPosition.x = targetPosition.x - patrolRange;
+                        } else targetPosition.x = targetPosition.x + patrolRange;
+                        onPosition = true;
+                    } else onPosition = false;
                 } else {
-                    aiBody.setLinearVelocity(new Vector2(1, 0));
-                    animationComponent.spriteDirection = true;
+                    aiStatus = "find enemy";
+                    animationComponent.animationState = AnimationStates.IDLE;
+                    aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
+                    shoot(animationComponent, aiBody);
                 }
-            } else aiBody.setLinearVelocity(new Vector2(0, 0));
-        }
-
-        private void shoot(AnimationComponent animationComponent, Body aiBody) {
-            World world = aiBody.getWorld();
-            world.rayCast(callback, aiBody.getPosition(), raycastEnd.set(aiBody.getPosition().x + 15, aiBody.getPosition().y));
-            if (targetEntity != null) {
-                System.out.println("hit");
-                targetEntity.getComponent(HealthComponent.class).hp -= 5;
-                targetEntity.getComponent(HealthComponent.class).isHit = true;
-                targetEntity.getComponent(HealthComponent.class).attackerPosition = aiBody.getPosition();
+                isEnemySpotted = false;
             }
-            isBlocked = true;
-            animationComponent.time = 0;
-            animationComponent.animationState = AnimationStates.ENEMY_SHOOT;
-            float animationTimer = animationComponent.animationMap.get(AnimationStates.ENEMY_SHOOT.toString()).getAnimationDuration();
 
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    isBlocked = false;
-                }
-            }, animationTimer+0.3f);
-            targetEntity = null;
-            Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
-            sound.play();
-        }
     }
+
+    private void goToPosition(Vector2 targetPosition, AnimationComponent animationComponent, Body aiBody) {
+        Vector2 aiPosition = aiBody.getPosition();
+        if (Util.roundFloat(targetPosition.x, 1) != Util.roundFloat(aiPosition.x, 1)) {
+            if (targetPosition.x < aiPosition.x) {
+                aiBody.setLinearVelocity(new Vector2(-1, 0));
+                animationComponent.spriteDirection = false;
+            } else {
+                aiBody.setLinearVelocity(new Vector2(1, 0));
+                animationComponent.spriteDirection = true;
+            }
+        } else aiBody.setLinearVelocity(new Vector2(0, 0));
+    }
+
+    private void shoot(AnimationComponent animationComponent, Body aiBody) {
+        World world = aiBody.getWorld();
+        world.rayCast(frontRayCallback, aiBody.getPosition(), raycastEnd.set(aiBody.getPosition().x + 15, aiBody.getPosition().y));
+        if (targetEntity != null) {
+            System.out.println("hit");
+            targetEntity.getComponent(HealthComponent.class).hp -= 5;
+            targetEntity.getComponent(HealthComponent.class).isHit = true;
+            targetEntity.getComponent(HealthComponent.class).attackerPosition = aiBody.getPosition();
+        }
+        isBlocked = true;
+        animationComponent.time = 0;
+        animationComponent.animationState = AnimationStates.NPC_SHOOT;
+        float animationTimer = animationComponent.animationMap.get(AnimationStates.NPC_SHOOT.toString()).getAnimationDuration();
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                isBlocked = false;
+            }
+        }, animationTimer + 0.3f);
+        targetEntity = null;
+        Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
+        sound.play();
+    }
+}
 }
 

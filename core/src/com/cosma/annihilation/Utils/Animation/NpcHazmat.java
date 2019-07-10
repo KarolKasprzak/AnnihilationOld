@@ -21,7 +21,7 @@ import java.util.HashMap;
         this.put("IDLE",idleAnimation);
         //SHOOT
         Animation<TextureRegion> shootAnimation = new Animation<>(0.1f,textureAtlas.findRegions("texture_shoot"),Animation.PlayMode.NORMAL);
-        this.put("ENEMY_SHOOT",shootAnimation);
+        this.put("NPC_SHOOT",shootAnimation);
         //SHOOT
         Animation<TextureRegion> deathStandAnimation = new Animation<>(0.15f,textureAtlas.findRegions("texture_die_fight"),Animation.PlayMode.NORMAL);
         this.put("DEATH_STAND",deathStandAnimation);

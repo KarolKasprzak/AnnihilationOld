@@ -152,7 +152,7 @@ public class EntityFactory {
         spriteComponent.x = x;
         spriteComponent.y = y;
         spriteComponent.isLifeTimeLimited = true;
-        spriteComponent.lifeTime = 4;
+        spriteComponent.lifeTime = 20;
         spriteComponent.angle = angle;
         entity.add(spriteComponent);
 

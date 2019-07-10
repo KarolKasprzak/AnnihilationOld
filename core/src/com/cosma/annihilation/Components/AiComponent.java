@@ -11,6 +11,6 @@ public class AiComponent implements Component {
     public boolean onPatrol;
     public Vector2 startPosition = new Vector2();
 
-    public ArtificialIntelligence ai = new HumanAi();
+    public ArtificialIntelligence ai;
 
 }
