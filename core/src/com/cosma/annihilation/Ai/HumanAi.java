@@ -24,7 +24,7 @@ public class HumanAi implements ArtificialIntelligence {
     public HumanAi(Vector2 startPosition) {
         this.startPosition = startPosition;
         patrolBehaviour = new PatrolBehaviour(5, 1);
-        patrolBehaviour.setStartPosition(startPosition);
+        patrolBehaviour.setNpcStartPosition(startPosition);
 
     }
 
@@ -45,16 +45,13 @@ public class HumanAi implements ArtificialIntelligence {
         float timeToTurn;
         boolean isBlocked = false;
         boolean isEnemySpotted = false;
-        Vector2 startPosition;
-        Vector2 targetPosition = new Vector2();
+        Vector2 npcStartPosition,targetPosition = new Vector2(),npcTargetPosition = new Vector2(),raycastEnd = new Vector2();
         Body aiBody;
         AnimationComponent animationComponent;
         boolean onPosition = false;
         RayCastCallback frontRayCallback_SHOOT, frontRayCallback;
         Body targetBody;
         Entity targetEntity;
-        Vector2 raycastEnd = new Vector2();
-
 
         private PatrolBehaviour(float patrolRange, float timeToTurn) {
             this.patrolRange = patrolRange;
@@ -86,11 +83,10 @@ public class HumanAi implements ArtificialIntelligence {
 
         }
 
-        void setStartPosition(Vector2 vector2) {
-
-            if (this.startPosition == null) {
-                this.startPosition = vector2;
-                targetPosition.x = startPosition.x - patrolRange;
+        void setNpcStartPosition(Vector2 vector2) {
+            if (this.npcStartPosition == null) {
+                this.npcStartPosition = vector2;
+                targetPosition.x = npcStartPosition.x - patrolRange;
             }
 
         }
@@ -104,12 +100,22 @@ public class HumanAi implements ArtificialIntelligence {
 
 
             if (!isBlocked) {
+                //Search enemy
                 if (animationComponent.spriteDirection) {
-                    world.rayCast(frontRayCallback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x + 4, aiBody.getPosition().y));
+                    world.rayCast(frontRayCallback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x + 7, aiBody.getPosition().y));
                 } else
-                    world.rayCast(frontRayCallback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x - 4, aiBody.getPosition().y));
-
-                if (!isEnemySpotted) {
+                    world.rayCast(frontRayCallback, aiBody.getPosition(), new Vector2(aiBody.getPosition().x - 7, aiBody.getPosition().y));
+                //If found
+                if(isEnemySpotted){
+                    if(isEnemyInRange(world,animationComponent)){
+                        aiStatus = "shoot mode";
+                        aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
+                        shoot(animationComponent,aiBody);
+                    }else{
+                        aiStatus = "follow mode";
+                        followEnemy(aiBody,animationComponent);
+                    }
+                }else{
                     goToPosition(targetPosition, animationComponent, aiBody);
                     aiStatus = "on patrol";
                     animationComponent.animationState = AnimationStates.WALK;
@@ -120,15 +126,42 @@ public class HumanAi implements ArtificialIntelligence {
                         } else targetPosition.x = targetPosition.x + patrolRange;
                         onPosition = true;
                     } else onPosition = false;
-                } else {
-                    aiStatus = "find enemy";
-                    animationComponent.animationState = AnimationStates.IDLE;
-                    aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
-                    shoot(animationComponent, aiBody);
                 }
                 isEnemySpotted = false;
+
+
+//                if (!isEnemySpotted) {
+//                    goToPosition(targetPosition, animationComponent, aiBody);
+//                    aiStatus = "on patrol";
+//                    animationComponent.animationState = AnimationStates.WALK;
+//                    if ((int) targetPosition.x == (int) aiBody.getPosition().x && !onPosition) {
+//
+//                        if (animationComponent.spriteDirection) {
+//                            targetPosition.x = targetPosition.x - patrolRange;
+//                        } else targetPosition.x = targetPosition.x + patrolRange;
+//                        onPosition = true;
+//                    } else onPosition = false;
+//                } else {
+//                    aiStatus = "find enemy";
+//                    animationComponent.animationState = AnimationStates.IDLE;
+//                    aiBody.setLinearVelocity(0, aiBody.getLinearVelocity().y);
+//                    shoot(animationComponent, aiBody);
+//                }
+//                isEnemySpotted = false;
             }
 
+    }
+
+
+
+    private boolean isEnemyInRange(World world,AnimationComponent animationComponent){
+        if (animationComponent.spriteDirection) {
+            world.rayCast(frontRayCallback_SHOOT, aiBody.getPosition(), raycastEnd.set(aiBody.getPosition().x + 4, aiBody.getPosition().y));
+            return targetEntity != null;
+        } else{
+            world.rayCast(frontRayCallback_SHOOT, aiBody.getPosition(), raycastEnd.set(aiBody.getPosition().x - 4, aiBody.getPosition().y));
+            return targetEntity != null;
+        }
     }
 
     private void goToPosition(Vector2 targetPosition, AnimationComponent animationComponent, Body aiBody) {
@@ -144,12 +177,18 @@ public class HumanAi implements ArtificialIntelligence {
         } else aiBody.setLinearVelocity(new Vector2(0, 0));
     }
 
+    private void followEnemy(Body aiBody,AnimationComponent animationComponent){
+            if(startPosition.x +10 >= aiBody.getPosition().x ){
+                goToPosition(targetBody.getPosition(),animationComponent,aiBody);
+            }
+    }
+
     private void shoot(AnimationComponent animationComponent, Body aiBody) {
         World world = aiBody.getWorld();
-        world.rayCast(frontRayCallback, aiBody.getPosition(), raycastEnd.set(aiBody.getPosition().x + 15, aiBody.getPosition().y));
+        world.rayCast(frontRayCallback_SHOOT, aiBody.getPosition(), raycastEnd.set(aiBody.getPosition().x + 15, aiBody.getPosition().y));
         if (targetEntity != null) {
             System.out.println("hit");
-            targetEntity.getComponent(HealthComponent.class).hp -= 5;
+            targetEntity.getComponent(HealthComponent.class).hp -= 20;
             targetEntity.getComponent(HealthComponent.class).isHit = true;
             targetEntity.getComponent(HealthComponent.class).attackerPosition = aiBody.getPosition();
         }
