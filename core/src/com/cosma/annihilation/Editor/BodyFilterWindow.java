@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.cosma.annihilation.Utils.ContactFilterManager;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
 import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel;

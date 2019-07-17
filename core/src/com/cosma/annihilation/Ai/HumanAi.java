@@ -79,8 +79,6 @@ public class HumanAi implements ArtificialIntelligence {
                     return 0;
                 }
             };
-
-
         }
 
         void setNpcStartPosition(Vector2 vector2) {
@@ -88,7 +86,6 @@ public class HumanAi implements ArtificialIntelligence {
                 this.npcStartPosition = vector2;
                 targetPosition.x = npcStartPosition.x - patrolRange;
             }
-
         }
 
         void update(Entity aiEntity) {
@@ -97,7 +94,6 @@ public class HumanAi implements ArtificialIntelligence {
             aiBody = aiEntity.getComponent(BodyComponent.class).body;
             time += Gdx.graphics.getDeltaTime();
             World world = aiBody.getWorld();
-
 
             if (!isBlocked) {
                 //Search enemy
@@ -166,6 +162,7 @@ public class HumanAi implements ArtificialIntelligence {
 
     private void goToPosition(Vector2 targetPosition, AnimationComponent animationComponent, Body aiBody) {
         Vector2 aiPosition = aiBody.getPosition();
+        animationComponent.animationState = AnimationStates.WALK;
         if (Util.roundFloat(targetPosition.x, 1) != Util.roundFloat(aiPosition.x, 1)) {
             if (targetPosition.x < aiPosition.x) {
                 aiBody.setLinearVelocity(new Vector2(-1, 0));
