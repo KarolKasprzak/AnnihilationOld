@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.ContainerComponent;
+import com.cosma.annihilation.Components.SerializationComponent;
 import com.cosma.annihilation.Editor.BodyFilterWindow;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
@@ -16,7 +17,7 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner;
 
 public class EntityEditOptionsWindow extends VisWindow {
     public EntityEditOptionsWindow(Entity entity) {
-        super("Entity:");
+        super(entity.getComponent(SerializationComponent.class).entityName);
         addCloseButton();
 
         for(Component component: entity.getComponents()){

@@ -10,6 +10,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
+import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -51,6 +53,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
     private Color selectedColor;
     private MapLight selectedLight;
     private Light selectedBox2dLight;
+    private Filter filter;
     private boolean canDragObject, isLeftButtonPressed, isRightButtonPressed, canCreateLight = false, isLightListWindowOpen = false;
 
     void setLightListWindowOpen(boolean isLightListWindowOpen) {
@@ -71,6 +74,11 @@ public class LightsPanel extends VisWindow implements InputProcessor {
                 image.setColor(newColor);
             }
         });
+
+        filter = new Filter();
+        filter.categoryBits = CollisionID.LIGHT;
+        filter.maskBits = CollisionID.MASK_LIGHT;
+
 
         distanceSpinner = new Spinner("distance", new SimpleFloatSpinnerModel(5f, 1f, 25f, 0.5f, 2));
         distanceSpinner.getTextField().setFocusBorderEnabled(false);
@@ -229,11 +237,13 @@ public class LightsPanel extends VisWindow implements InputProcessor {
             if (selectedLightType == 0) {
                 mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createPointLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance());
                 PointLight light = new PointLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y);
+                light.setContactFilter(filter);
                 mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }
             if (selectedLightType == 1) {
                 mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createConeLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance(), 270, 45);
                 ConeLight light = new ConeLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y, 270, 45);
+                light.setContactFilter(filter);
                 mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }
             canCreateLight = false;

@@ -90,7 +90,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         weaponLight = new PointLight(rayHandler, 45, new Color(1,0.8f,0,1), 0.8f,0,0);
         weaponLight.setStaticLight(false);
         Filter filter = new Filter();
-        filter.maskBits = CollisionID.CAST_SHADOW;
+        filter.categoryBits = CollisionID.LIGHT;
+        filter.maskBits = CollisionID.MASK_LIGHT;
         weaponLight.setContactFilter(filter);
         weaponLight.setSoftnessLength(0.3f);
         weaponLight.setSoft(true);

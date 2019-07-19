@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Components.AiComponent;
 import com.cosma.annihilation.Components.BodyComponent;
+import com.cosma.annihilation.Components.SerializationComponent;
 import com.cosma.annihilation.Editor.CosmaMap.EntityEditOptionsWindow;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
@@ -167,8 +168,9 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
                             final int delete = 1;
                             final int move = 2;
                             final int options = 3;
-                            Dialogs.showConfirmDialog(getStage(), "Entity:", "what do you want?",
-                                    new String[]{"delete", "move", "options"}, new Integer[]{delete, move, options},
+                            final int cancel = 4;
+                            Dialogs.showConfirmDialog(getStage(), entity.getComponent(SerializationComponent.class).entityName, "what do you want?",
+                                    new String[]{"delete", "move", "options","cancel"}, new Integer[]{delete, move, options, cancel},
                                     new ConfirmDialogListener<Integer>() {
                                         @Override
                                         public void result(Integer result) {
@@ -184,12 +186,13 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
                                             }
 
                                             if (result == options){
-//                                                BodyFilterWindow bodyFilterWindow = new BodyFilterWindow(fixture.getBody());
                                                 EntityEditOptionsWindow window = new EntityEditOptionsWindow(entity);
                                                 getStage().addActor(window);
                                             }
 
-
+                                            if (result == cancel){
+//
+                                            }
                                         }
                                     }).setPosition(Gdx.input.getX(),Gdx.input.getY());
                         }

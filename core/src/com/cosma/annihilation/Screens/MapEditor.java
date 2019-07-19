@@ -192,32 +192,15 @@ public class MapEditor implements Screen, InputProcessor {
     }
 
 
-    private void createNewMap() {
-        gameMap = new GameMap(50, 50, 32);
+    public void createNewMap(int x, int y, int scale) {
+        gameMap = new GameMap(x, y, scale);
         mapRender = new MapRender(shapeRenderer, gameMap, batch);
-
         loadPanels();
-
+        setCameraOnMapCenter();
     }
 
     public InputMultiplexer getInputMultiplexer() {
         return im;
-    }
-
-    public void createNewMap(int x, int y, int scale) {
-        gameMap = new GameMap(x, y, scale);
-        mapRender = new MapRender(shapeRenderer, gameMap, batch);
-
-        layersPanel = new LayersPanel(this);
-        layersPanel.setModal(false);
-        rightTable.add(layersPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.35f);
-        rightTable.row();
-        tilesPanel = new TilesPanel(this);
-        rightTable.add(tilesPanel).fillX().top().minHeight(layersPanel.getParent().getHeight() * 0.25f).maxHeight(layersPanel.getParent().getHeight() * 0.35f);
-        rightTable.row();
-        rightTable.add().expandY();
-        setCameraOnMapCenter();
-
     }
 
     public void loadMap(String path) {

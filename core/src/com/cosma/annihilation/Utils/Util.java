@@ -86,7 +86,8 @@ public class Util {
         fixtureDef.shape = shape;
         fixtureDef.density = 5f;
         fixtureDef.friction = 1f;
-        fixtureDef.filter.categoryBits = CollisionID.SCENERY | CollisionID.CAST_SHADOW | CollisionID.JUMPABLE_OBJECT;
+        fixtureDef.filter.categoryBits = CollisionID.SCENERY;
+        fixtureDef.filter.maskBits = CollisionID.MASK_SCENERY;
         body.createFixture(fixtureDef);
         body.setTransform(body.getPosition(),rotation);
     }

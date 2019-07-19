@@ -38,7 +38,6 @@ class LightFilterWindow extends VisWindow {
         final VisSelectBox<ContactFilterManager.ContactFilterValue> category2= new VisSelectBox<>();
         category2.setItems(contactManager.getContactFilterArray());
         VisCheckBox onlyMaskCheck = new VisCheckBox("Only mask", false);
-
         add(new VisLabel("mask:"));
         add(mask);
         add(mask1);

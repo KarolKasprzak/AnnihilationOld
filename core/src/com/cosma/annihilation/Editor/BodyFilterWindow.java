@@ -16,14 +16,19 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner;
 public class BodyFilterWindow extends VisWindow {
 
     private Fixture fixture;
+    private VisLabel currentCategory, currentMask;
 
     public BodyFilterWindow(final Body body) {
         super("Entity:");
         TableUtils.setSpacingDefaults(this);
         addCloseButton();
+
         VisTextButton acceptButton = new VisTextButton("accept");
 
         ContactFilterManager contactManager= new ContactFilterManager();
+
+        currentCategory = new VisLabel();
+        currentMask = new VisLabel();
 
         final VisSelectBox<ContactFilterManager.ContactFilterValue> mask= new VisSelectBox<>();
         mask.setItems((contactManager.getContactFilterArray()));
@@ -54,12 +59,19 @@ public class BodyFilterWindow extends VisWindow {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 fixture = body.getFixtureList().get(((IntSpinnerModel) fixtureSpinner.getModel()).getValue() - 1);
+                currentCategory.setText("c. category: "+fixture.getFilterData().categoryBits);
+                currentMask.setText("c. mask: "+fixture.getFilterData().maskBits);
             }
         });
 
-        add(fixtureSpinner);
+        currentCategory.setText("c. category: "+fixture.getFilterData().categoryBits);
+        currentMask.setText("c. mask: "+fixture.getFilterData().maskBits);
+        add(currentCategory).left();
+        add(currentMask).left();
         row();
-        add(new VisLabel("mask:"));
+        add(fixtureSpinner).left();
+        row();
+        add(new VisLabel("mask:")).left();
         add(mask);
         add(mask1);
         add(onlyMaskCheck);

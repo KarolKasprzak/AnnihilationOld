@@ -24,8 +24,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     private World world;
     private WorldBuilder worldBuilder;
 
-    Filter filter;
-    Filter filter1;
+//    Filter filter;
+//    Filter filter1;
 
     public ActionSystem(World world, WorldBuilder worldBuilder) {
         super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
@@ -34,11 +34,11 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
 
         stateMapper = ComponentMapper.getFor(PlayerComponent.class);
-        filter = new Filter();
-        filter.categoryBits = CollisionID.NO_SHADOW;
-
-        filter1 = new Filter();
-        filter1.categoryBits = CollisionID.CAST_SHADOW;
+//        filter = new Filter();
+//        filter.categoryBits = CollisionID.NO_SHADOW;
+//
+//        filter1 = new Filter();
+//        filter1.categoryBits = CollisionID.CAST_SHADOW;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
                     EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
                     switch (action) {
                         case OPEN_DOOR:
-                            doorAction();
+//                            doorAction();
                             break;
                         case OPEN:
                             openBoxAction();
@@ -98,23 +98,23 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
         }
     }
 
-    private void doorAction() {
-        if (playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).isSensor()) {
-            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(false);
-            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter1);
-            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).refilter();
-            playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = false;
-
-        } else {
-            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
-            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
-            playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = true;
-
-        }
-    }
-
-    public void loadDoor(Entity entity){
-        entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
-        entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
-    }
+//    private void doorAction() {
+//        if (playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).isSensor()) {
+//            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(false);
+//            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter1);
+//            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).refilter();
+//            playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = false;
+//
+//        } else {
+//            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
+//            playerComponent.processedEntity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
+//            playerComponent.processedEntity.getComponent(DoorComponent.class).isOpen = true;
+//
+//        }
+//    }
+//
+//    public void loadDoor(Entity entity){
+//        entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setSensor(true);
+//        entity.getComponent(BodyComponent.class).body.getFixtureList().get(0).setFilterData(filter);
+//    }
 }

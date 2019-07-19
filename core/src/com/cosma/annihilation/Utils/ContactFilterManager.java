@@ -6,23 +6,39 @@ import com.kotcrab.vis.ui.widget.VisSelectBox;
 
 public class ContactFilterManager {
 
-    private Array<ContactFilterValue> filterValueArray = new Array<>();
+    private Array<ContactFilterValue> categoryValueArray = new Array<>();
+    private Array<ContactFilterValue> maskValueArray = new Array<>();
 
 
+    private final short LIGHT = 0x0001;
+    private final short PLAYER = 0x0002;
+    private final short SCENERY = 0x0004;
+    private final short SCENERY_BACKGROUND = 0x0008;
+    private final short ENEMY = 0x0016;
+    private final short NPC = 0x0032;
+    private final short BACKGROUND = 0x0064;
 
-    public static final short LIGHTSOURCE = 0x0001;
-    public static final short SHADOWLESS = 0x0002;
-    public static final short SCENERY = 0x0004;
-    public static final short JUMPABLE_OBJECT = 0x0008;
-    public static final short PLAYER = 0x0016;
-    public static final short OPONENTS = 0x0032;
-    public static final short BACKGROUND = 0x0064;
+    private final short LIGHT_MASK = SCENERY;
+    private final short PLAYER_MASK = ENEMY|SCENERY;
+    private final short SCENERY_MASK = -1;
+    private final short SCENERY_BACKGROUND_MASK = SCENERY;
+    private final short ENEMY_MASK = SCENERY;
+    private final short NPC_MASK = SCENERY;
+    private final short BACKGROUND_MASK = SCENERY;
 
     public ContactFilterManager() {
-        filterValueArray.add(new ContactFilterValue("Select", (short) 0x0000));
-        filterValueArray.add(new ContactFilterValue("Light source", (short) 0x0001));
-        filterValueArray.add(new ContactFilterValue("Shadowless", (short) 0x0002));
-        filterValueArray.add(new ContactFilterValue("ground", (short) 0x0004));
+        categoryValueArray.add(new ContactFilterValue("Select", (short) 0x0000));
+        categoryValueArray.add(new ContactFilterValue("Player", PLAYER));
+        categoryValueArray.add(new ContactFilterValue("Enemy", ENEMY));
+        categoryValueArray.add(new ContactFilterValue("Npc", NPC));
+        categoryValueArray.add(new ContactFilterValue("Light", LIGHT));
+
+        maskValueArray.add(new ContactFilterValue("Select", (short) 0x0000));
+        maskValueArray.add(new ContactFilterValue("Player", PLAYER_MASK));
+
+//        categoryValueArray.add(new ContactFilterValue("Light source", (short) 0x0001));
+//        categoryValueArray.add(new ContactFilterValue("Shadowless", (short) 0x0002));
+//        categoryValueArray.add(new ContactFilterValue("ground", (short) 0x0004));
 
     }
 
@@ -71,7 +87,7 @@ public class ContactFilterManager {
     }
 
     public Array<ContactFilterValue> getContactFilterArray() {
-        return filterValueArray;
+        return categoryValueArray;
     }
 
     public class ContactFilterValue {
