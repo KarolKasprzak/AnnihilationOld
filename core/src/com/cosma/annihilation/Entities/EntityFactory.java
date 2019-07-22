@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Enums.BodyID;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
+import com.cosma.annihilation.Utils.CollisionID;
 
 public class EntityFactory {
 

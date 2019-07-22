@@ -11,7 +11,7 @@ import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.EntityEventSignal;
 import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Enums.BodyID;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.Util;
 import com.cosma.annihilation.World.WorldBuilder;

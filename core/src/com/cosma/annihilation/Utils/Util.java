@@ -1,19 +1,13 @@
 package com.cosma.annihilation.Utils;
 
-import box2dLight.PointLight;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.cosma.annihilation.Utils.Enums.BodyID;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
 
 import java.math.BigDecimal;
 

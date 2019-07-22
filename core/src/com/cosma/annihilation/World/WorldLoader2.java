@@ -21,7 +21,7 @@
 //import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 //import com.cosma.annihilation.Utils.Constants;
 //import com.cosma.annihilation.Utils.Enums.BodyID;
-//import com.cosma.annihilation.Utils.Enums.CollisionID;
+//import com.cosma.annihilation.Utils.CollisionID;
 //
 //class WorldLoader2 {
 //

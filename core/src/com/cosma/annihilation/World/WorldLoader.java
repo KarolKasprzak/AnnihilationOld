@@ -17,7 +17,7 @@
 //import com.cosma.annihilation.Entities.EntityFactory;
 //import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 //import com.cosma.annihilation.Utils.Enums.BodyID;
-//import com.cosma.annihilation.Utils.Enums.CollisionID;
+//import com.cosma.annihilation.Utils.CollisionID;
 //import com.cosma.annihilation.Utils.Constants;
 //
 //import java.util.ArrayList;

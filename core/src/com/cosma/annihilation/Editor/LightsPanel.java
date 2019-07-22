@@ -21,7 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;

@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
-import com.cosma.annihilation.Utils.Enums.CollisionID;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
 import com.cosma.annihilation.Utils.Util;
 import com.cosma.annihilation.World.WorldBuilder;

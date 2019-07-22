@@ -97,7 +97,7 @@ public class ContactFilterManager {
         @Override
         public String toString() {
 
-            return name;
+            return name + " " + value;
         }
 
         public ContactFilterValue(String name, short value) {
@@ -105,7 +105,5 @@ public class ContactFilterManager {
             this.value = value;
 
         }
-
-
     }
 }

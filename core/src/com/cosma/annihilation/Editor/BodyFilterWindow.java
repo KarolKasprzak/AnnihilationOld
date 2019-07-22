@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.ContactFilterManager;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
@@ -25,21 +26,18 @@ public class BodyFilterWindow extends VisWindow {
 
         VisTextButton acceptButton = new VisTextButton("accept");
 
-        ContactFilterManager contactManager= new ContactFilterManager();
+        ContactFilterManager contactManager = new ContactFilterManager();
+        CollisionID collisionID = new CollisionID();
 
         currentCategory = new VisLabel();
         currentMask = new VisLabel();
 
-        final VisSelectBox<ContactFilterManager.ContactFilterValue> mask= new VisSelectBox<>();
-        mask.setItems((contactManager.getContactFilterArray()));
-        final VisSelectBox<ContactFilterManager.ContactFilterValue> mask1= new VisSelectBox<>();
-        mask1.setItems(contactManager.getContactFilterArray());
-        final VisSelectBox<ContactFilterManager.ContactFilterValue> category= new VisSelectBox<>();
-        category.setItems(contactManager.getContactFilterArray());
-        final VisSelectBox<ContactFilterManager.ContactFilterValue> category1= new VisSelectBox<>();
-        category1.setItems(contactManager.getContactFilterArray());
-        final VisSelectBox<ContactFilterManager.ContactFilterValue> category2= new VisSelectBox<>();
-        category2.setItems(contactManager.getContactFilterArray());
+        final VisSelectBox<CollisionID.ContactFilterValue> mask= new VisSelectBox<>();
+        mask.setItems(collisionID.getMaskArray());
+
+        final VisSelectBox<CollisionID.ContactFilterValue> category= new VisSelectBox<>();
+        category.setItems(collisionID.getCategoryArray());
+
         VisCheckBox onlyMaskCheck = new VisCheckBox("Only mask", false);
 
         fixture = body.getFixtureList().get(0);
@@ -73,24 +71,23 @@ public class BodyFilterWindow extends VisWindow {
         row();
         add(new VisLabel("mask:")).left();
         add(mask);
-        add(mask1);
         add(onlyMaskCheck);
         row();
-        add(new VisLabel("category:"));
+        add(new VisLabel("category:")).left();
         add(category);
-        add(category1);
-        add(category2);
         row();
         add(acceptButton);
         acceptButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                fixture = body.getFixtureList().get(((IntSpinnerModel) fixtureSpinner.getModel()).getValue() - 1);
-                if(contactManager.getFilter(mask,mask1,category,category1,category2,onlyMaskCheck.isChecked()) != null){
-                    Filter filter = contactManager.getFilter(mask,mask1,category,category1,category2,onlyMaskCheck.isChecked());
-                    fixture.setFilterData(filter);
-                    fixture.refilter();
-                }
+
+                Filter filter = new Filter();
+                filter.maskBits =  mask.getSelected().getValue();
+                filter.categoryBits = category.getSelected().getValue();
+                fixture.getFilterData().maskBits = mask.getSelected().getValue();
+                fixture.getFilterData().categoryBits = category.getSelected().getValue();
+                fixture.setFilterData(filter);
+                fixture.refilter();
                 close();
             }
         });
