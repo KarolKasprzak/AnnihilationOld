@@ -8,6 +8,7 @@ import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLights;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObjects;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
+import com.cosma.annihilation.Utils.CollisionID;
 
 public class LightsMapLayer extends MapLayer {
     private int width;
@@ -28,7 +29,7 @@ public class LightsMapLayer extends MapLayer {
     public void createPointLight(float x, float y, Color color, int raysNumber, float maxDistance) {
         String name = "PointLight_" + (lights.getCount() + 1);
         MapPointLight light = new MapPointLight(x,y,color,raysNumber,maxDistance);
-        light.setMaskBit((short)1);
+        light.setMaskBit(CollisionID.MASK_LIGHT);
         light.setName(name);
         lights.add(light);
     }
@@ -36,7 +37,7 @@ public class LightsMapLayer extends MapLayer {
     public void createConeLight(float x, float y, Color color, int raysNumber, float maxDistance,float direction,float coneDegree) {
         String name = "ConeLight_" + (lights.getCount() + 1);
         MapConeLight light = new MapConeLight(x,y,color,raysNumber,maxDistance,direction,coneDegree);
-        light.setMaskBit((short)1);
+        light.setMaskBit(CollisionID.MASK_LIGHT);
         light.setName(name);
         lights.add(light);
     }

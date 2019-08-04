@@ -7,6 +7,8 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Components.AnimationComponent;
 import com.cosma.annihilation.Components.BodyComponent;
@@ -19,7 +21,7 @@ import com.cosma.annihilation.Utils.Enums.GameEvent;
 
 import java.util.ArrayList;
 
-public class PlayerControlSystem extends IteratingSystem{
+public class PlayerControlSystem extends IteratingSystem implements InputProcessor {
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
@@ -27,6 +29,9 @@ public class PlayerControlSystem extends IteratingSystem{
     private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
     private ArrayList<GameEvent> gameEventList;
+    // false = left, true = right
+    private boolean mouseCursorPosition = false;
+
     public PlayerControlSystem(ArrayList<GameEvent> gameEventList) {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
         this.gameEventList = gameEventList;
@@ -43,7 +48,8 @@ public class PlayerControlSystem extends IteratingSystem{
         BodyComponent playerBody = bodyMapper.get(entity);
         PlayerComponent playerComponent = playerMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
-        StateComponent  stateComponent = stateMapper.get(entity);
+
+        animationComponent.spriteDirection = mouseCursorPosition;
 
 
         for(GameEvent gameEvent: gameEventList ){
@@ -107,24 +113,35 @@ public class PlayerControlSystem extends IteratingSystem{
         //Moving on side
         if(playerComponent.canMoveOnSide && playerComponent.onGround && playerComponent.isWeaponHidden) {
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
-
-                animationComponent.animationState = AnimationStates.WALK;
-                Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = playerComponent.velocity;
                 playerComponent.climbing = false;
-                animationComponent.spriteDirection = true;
+                if(animationComponent.spriteDirection){
+                    animationComponent.animationState = AnimationStates.WALK;
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP);
+                }else{
+                    animationComponent.animationState = AnimationStates.WALK;
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+                    desiredSpeed = desiredSpeed *0.7f;
+                }
+                Vector2 vec = playerBody.body.getLinearVelocity();
                 float speedX = desiredSpeed - vec.x;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.A) || playerComponent.goLeft) {
-                animationComponent.animationState = AnimationStates.WALK;
-                Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -playerComponent.velocity;
-                float speedX = desiredSpeed - vec.x;
                 playerComponent.climbing = false;
-                animationComponent.spriteDirection = false;
+                if(animationComponent.spriteDirection){
+                    animationComponent.animationState = AnimationStates.WALK;
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+                    desiredSpeed = desiredSpeed *0.7f;
+                }else{
+                    animationComponent.animationState = AnimationStates.WALK;
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP);
+                }
+                Vector2 vec = playerBody.body.getLinearVelocity();
+                float speedX = desiredSpeed - vec.x;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
@@ -132,25 +149,36 @@ public class PlayerControlSystem extends IteratingSystem{
         }
         //Moving on side with weapon
         if(playerComponent.canMoveOnSide && playerComponent.onGround && !playerComponent.isWeaponHidden && playerComponent.activeWeapon != null) {
-
             if (Gdx.input.isKeyPressed(Input.Keys.D ) || playerComponent.goRight) {
-                setPlayerAnimation(playerComponent,animationComponent);
-                Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = playerComponent.velocity*0.8f;
+                if(animationComponent.spriteDirection){
+                    setPlayerAnimation(playerComponent,animationComponent);
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP);
+                }else{
+                    setPlayerAnimation(playerComponent,animationComponent);
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+                    desiredSpeed = desiredSpeed *0.7f;
+                }
+                Vector2 vec = playerBody.body.getLinearVelocity();
                 playerComponent.climbing = false;
-                animationComponent.spriteDirection = true;
                 float speedX = desiredSpeed - vec.x;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.A) || playerComponent.goLeft) {
-                setPlayerAnimation(playerComponent,animationComponent);
-                Vector2 vec = playerBody.body.getLinearVelocity();
                 float desiredSpeed = -playerComponent.velocity*0.8f;
+                if(animationComponent.spriteDirection){
+                    setPlayerAnimation(playerComponent,animationComponent);
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP_REVERSED);
+                    desiredSpeed = desiredSpeed *0.7f;
+                }else{
+                    setPlayerAnimation(playerComponent,animationComponent);
+                    animationComponent.currentAnimation.setPlayMode(Animation.PlayMode.LOOP);
+                }
+                Vector2 vec = playerBody.body.getLinearVelocity();
                 float speedX = desiredSpeed - vec.x;
                 playerComponent.climbing = false;
-                animationComponent.spriteDirection = false;
                 float impulse = playerBody.body.getMass() * speedX;
                 playerBody.body.applyLinearImpulse(new Vector2(impulse, 0),
                         playerBody.body.getWorldCenter(), true);
@@ -176,4 +204,46 @@ public class PlayerControlSystem extends IteratingSystem{
         }
     }
 
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        int x = Gdx.graphics.getWidth();
+        int y = Gdx.graphics.getHeight();
+        mouseCursorPosition = screenX >= x / 2;
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
 }

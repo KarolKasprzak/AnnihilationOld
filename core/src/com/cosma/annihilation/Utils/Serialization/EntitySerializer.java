@@ -13,165 +13,41 @@ import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.Animation.AnimationFactory;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
+
+import java.lang.reflect.Field;
 
 
 public class EntitySerializer implements Json.Serializer<Entity> {
     private World world;
     private Engine engine;
     private AnimationFactory animationFactory;
+    private CollisionID collisionID;
 
-    /** use in game **/
+    /**
+     * use in game
+     **/
     EntitySerializer(World world, Engine engine) {
         this.world = world;
         this.engine = engine;
         animationFactory = new AnimationFactory();
+        collisionID = new CollisionID();
     }
-    /** use only in map editor **/
+
+    /**
+     * use only in map editor
+     **/
     public EntitySerializer(World world) {
         this.world = world;
         this.engine = null;
         animationFactory = new AnimationFactory();
+        collisionID = new CollisionID();
     }
 
     @Override
     public void write(Json json, Entity object, Class knownType) {
-
-        json.writeObjectStart();
-        for (Component component : object.getComponents()) {
-            json.writeObjectStart(component.getClass().getSimpleName());
-            if (component instanceof HealthComponent) {
-                json.writeValue("hp", ((HealthComponent) component).hp);
-                json.writeValue("maxHP", ((HealthComponent) component).maxHP);
-                json.writeObjectEnd();
-                continue;
-            }
-
-//            if (component instanceof GateComponent) {
-//                json.writeValue("targetMapPath", ((GateComponent) component).targetMapPath);
-//                json.writeValue("positionX", ((GateComponent) component).playerPositionOnTargetMap.x);
-//                json.writeValue("positionY", ((GateComponent) component).playerPositionOnTargetMap.y);
-//                json.writeObjectEnd();
-//                continue;
-//            }
-
-            if (component instanceof TextureComponent) {
-                if (((TextureComponent) component).texture == null) {
-                    json.writeObjectEnd();
-                    continue;
-                }
-                json.writeValue("patch", Annihilation.getAssets().getAssetFileName(((TextureComponent) component).texture));
-            }
-
-            if (component instanceof AiComponent) {
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof EnemyComponent) {
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof ActionComponent) {
-                json.writeValue("action", ((ActionComponent) component).action.name());
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof PlayerComponent) {
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof StateComponent) {
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof AnimationComponent) {
-                json.writeValue("id",((AnimationComponent) component).animationId.name());
-                json.writeObjectEnd();
-                continue;
-                //TODO
-            }
-
-            if (component instanceof PlayerInventoryComponent) {
-                json.writeObjectEnd();
-                continue;
-                //TODO
-            }
-
-            if (component instanceof PlayerStatsComponent) {
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof SerializationComponent) {
-                json.writeValue("tag", ((SerializationComponent) component).entityName);
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof ContainerComponent) {
-                json.writeValue("name", ((ContainerComponent) component).name);
-                json.writeArrayStart("itemList");
-                for (InventoryItemLocation location : ((ContainerComponent) component).itemLocations) {
-                  GameEntitySerializer.saveItems(json,location);
-                }
-                json.writeArrayEnd();
-                json.writeObjectEnd();
-                continue;
-            }
-
-            if (component instanceof BodyComponent) {
-                Body body = ((BodyComponent) component).body;
-                json.writeValue("bodyType", body.getType().name());
-                json.writeValue("positionX", body.getPosition().x);
-                json.writeValue("positionY", body.getPosition().y);
-                json.writeValue("fixedRotation", body.isFixedRotation());
-                json.writeValue("bullet", body.isBullet());
-
-                json.writeArrayStart("Fixtures");
-                for (Fixture fixture : body.getFixtureList()) {
-                    json.writeObjectStart();
-                    json.writeValue("shapeType", fixture.getType().name());
-                    if (fixture.getType().equals(Shape.Type.Polygon)) {
-                        PolygonShape shape = (PolygonShape) fixture.getShape();
-                        json.writeArrayStart("polygon");
-                        for (int i = 0; i < shape.getVertexCount(); i++) {
-                            Vector2 vector2 = new Vector2();
-                            shape.getVertex(i, vector2);
-                            json.writeValue(vector2.x);
-                            json.writeValue(vector2.y);
-                        }
-                        json.writeArrayEnd();
-                    }
-                    if (fixture.getType().equals(Shape.Type.Circle)) {
-                        CircleShape shape = (CircleShape) fixture.getShape();
-                        json.writeValue("radius", shape.getRadius());
-                    }
-                    json.writeValue("sensor", fixture.isSensor());
-                    json.writeValue("destiny", fixture.getDensity());
-                    json.writeValue("friction", fixture.getFriction());
-                    json.writeValue("restitution", fixture.getRestitution());
-                    json.writeValue("categoryBits", fixture.getFilterData().categoryBits);
-                    json.writeValue("maskBits", fixture.getFilterData().maskBits);
-                    if (fixture.getUserData() != null) {
-                        json.writeValue("hasUserDate", true);
-                        if (fixture.getUserData() instanceof BodyID) {
-                            json.writeValue("userDate", fixture.getUserData());
-                        }
-                    } else json.writeValue("hasUserDate", false);
-
-                    json.writeObjectEnd();
-                }
-                json.writeArrayEnd();
-            }
-            json.writeObjectEnd();
-        }
-        json.writeObjectEnd();
     }
 
     @Override
@@ -188,7 +64,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             bodyComponent.body.setBullet(jsonData.get("BodyComponent").get("bullet").asBoolean());
             bodyComponent.body.setUserData(entity);
             bodyComponent.body.setTransform(new Vector2(jsonData.get("BodyComponent").get("positionX").asFloat(), jsonData.get("BodyComponent").get("positionY").asFloat()), 0);
-            entity.add(bodyComponent);
+
             for (JsonValue value : jsonData.get("BodyComponent").get("Fixtures")) {
                 FixtureDef fixtureDef = new FixtureDef();
 
@@ -216,12 +92,68 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                 fixtureDef.density = value.get("destiny").asFloat();
                 fixtureDef.friction = value.get("friction").asFloat();
                 fixtureDef.restitution = value.get("restitution").asFloat();
-                if(value.has("categoryBits")){fixtureDef.filter.categoryBits = value.get("categoryBits").asShort();}
-                if(value.has("maskBits")){fixtureDef.filter.maskBits = value.get("maskBits").asShort();}
+
+                if (value.has("categoryBits")) {
+                    switch (value.get("categoryBits").asString()) {
+                        case "player":
+                            fixtureDef.filter.categoryBits = CollisionID.PLAYER;
+                            break;
+                        case "light":
+                            fixtureDef.filter.categoryBits = CollisionID.LIGHT;
+                            break;
+                        case "scenery":
+                            fixtureDef.filter.categoryBits = CollisionID.SCENERY;
+                            break;
+                        case "scenery_bg":
+                            fixtureDef.filter.categoryBits = CollisionID.SCENERY_BACKGROUND_OBJECT;
+                            break;
+                        case "scenery_phy":
+                            fixtureDef.filter.categoryBits = CollisionID.SCENERY_PHYSIC_OBJECT;
+                            break;
+                        case "enemy":
+                            System.out.println(CollisionID.ENEMY);
+                            fixtureDef.filter.categoryBits = CollisionID.ENEMY;
+                            break;
+                        case "npc":
+                            fixtureDef.filter.categoryBits = CollisionID.LIGHT;
+                            break;
+
+                    }
+                }
+                if (value.has("maskBits")) {
+                    switch (value.get("maskBits").asString()) {
+                        case "player":
+                            fixtureDef.filter.maskBits = CollisionID.MASK_PLAYER;
+                            break;
+                        case "light":
+                            fixtureDef.filter.maskBits = CollisionID.MASK_LIGHT;
+                            break;
+                        case "scenery":
+                            fixtureDef.filter.maskBits = CollisionID.MASK_SCENERY;
+                            break;
+                        case "scenery_bg":
+                            fixtureDef.filter.maskBits = CollisionID.MASK_SCENERY_BACKGROUND_OBJECT;
+                            break;
+                        case "scenery_phy":
+                            fixtureDef.filter.maskBits = CollisionID.MASK_SCENERY_PHYSIC_OBJECT;
+                            break;
+                        case "enemy":
+
+                            fixtureDef.filter.maskBits = CollisionID.MASK_ENEMY;
+                            break;
+                        case "npc":
+                            fixtureDef.filter.maskBits = CollisionID.MASK_LIGHT;
+                            break;
+
+                    }
+
+
+                }
                 if (value.get("hasUserDate").asBoolean()) {
                     bodyComponent.body.createFixture(fixtureDef).setUserData(BodyID.valueOf(value.get("userDate").asString()));
                 } else bodyComponent.body.createFixture(fixtureDef);
                 fixtureDef.shape.dispose();
+                entity.add(bodyComponent);
             }
         }
 
@@ -297,7 +229,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
         if (jsonData.has("PlayerInventoryComponent")) {
             PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
-            InventoryItemLocation item = new InventoryItemLocation(0,InventoryItem.ItemID.FIRE_AXE.name(),1);
+            InventoryItemLocation item = new InventoryItemLocation(0, InventoryItem.ItemID.FIRE_AXE.name(), 1);
 
             playerInventoryComponent.inventoryItem.add(item);
             entity.add(playerInventoryComponent);

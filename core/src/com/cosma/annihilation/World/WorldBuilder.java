@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.cosma.annihilation.Ai.TestAi;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
@@ -103,6 +104,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         engine.addEntityListener(this);
 
         inputMultiplexer.addProcessor(engine.getSystem(UserInterfaceSystem.class).getStage());
+        inputMultiplexer.addProcessor(engine.getSystem(PlayerControlSystem.class));
         inputMultiplexer.addProcessor(this);
 
         engine.getSystem(PlayerControlSystem.class).addListenerSystems();
@@ -111,6 +113,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
+
     }
 
     public void update(float delta) {

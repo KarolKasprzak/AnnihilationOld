@@ -8,23 +8,29 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.utils.Timer;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Animation.AnimationStates;
 import com.cosma.annihilation.Utils.Util;
 
+import java.util.ArrayList;
+
 
 public class HumanAi implements ArtificialIntelligence {
     private Vector2 startPosition;
     private String aiStatus = "";
     private PatrolBehaviour patrolBehaviour;
+    private ArrayList<Task> taskList;
 
 
     public HumanAi(Vector2 startPosition) {
         this.startPosition = startPosition;
         patrolBehaviour = new PatrolBehaviour(5, 1);
         patrolBehaviour.setNpcStartPosition(startPosition);
+        taskList = new ArrayList<>();
+
 
     }
 

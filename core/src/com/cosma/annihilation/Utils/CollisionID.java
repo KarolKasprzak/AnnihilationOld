@@ -3,23 +3,24 @@ package com.cosma.annihilation.Utils;
 import com.badlogic.gdx.utils.Array;
 
 public class CollisionID {
-    public static final short NULL = 0x0000;
-    public static final short LIGHT = 0x0001;
+    public static final short NULL = 0x000;
+    public static final short LIGHT =0x0001;
     public static final short PLAYER = 0x0002;
     public static final short SCENERY = 0x0004;
     public static final short SCENERY_BACKGROUND_OBJECT = 0x0008;
-    public static final short ENEMY = 0x0016;
-    public static final short NPC = 0x0032;
-    public static final short SCENERY_PHYSIC_OBJECT = 0x0064;
+    public static final short ENEMY = 16;
+    public static final short NPC = 32;
+    public static final short SCENERY_PHYSIC_OBJECT = 64;
+    public static final short BULLET = 128;
 
     public static final short MASK_LIGHT = SCENERY;
-    public static final short MASK_PLAYER = ENEMY|SCENERY;
+    public static final short MASK_PLAYER = ENEMY | SCENERY | SCENERY_PHYSIC_OBJECT;
     public static final short MASK_SCENERY = -1;
     public static final short MASK_SCENERY_PHYSIC_OBJECT = -1;
     public static final short MASK_SCENERY_BACKGROUND_OBJECT = SCENERY;
-    public static final short MASK_ENEMY = SCENERY|PLAYER;
-    public static final short MASK_NPC = SCENERY|ENEMY;
-
+    public static final short MASK_ENEMY = SCENERY | PLAYER;
+    public static final short MASK_NPC = SCENERY | ENEMY;
+    public static final short MASK_BULLET = PLAYER | ENEMY | NPC | SCENERY_PHYSIC_OBJECT;
     private Array<ContactFilterValue> categoryArray,maskArray;
 
     public CollisionID (){
@@ -53,6 +54,7 @@ public class CollisionID {
     public Array<ContactFilterValue> getMaskArray() {
         return maskArray;
     }
+
 
     public class ContactFilterValue {
         String name;

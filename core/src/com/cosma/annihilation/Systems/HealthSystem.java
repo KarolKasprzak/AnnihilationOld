@@ -54,9 +54,10 @@ public class HealthSystem extends IteratingSystem implements Listener<GameEvent>
             Vector2 attackerPosition = healthComponent.attackerPosition;
             Vector2 position = bodyComponent.body.getPosition();
             if(attackerPosition.x > position.x){
-                this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x-1,bodyComponent.body.getPosition().y+MathUtils.random(-0.2f,0.7f),0));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x-1,bodyComponent.body.getPosition().y+MathUtils.random(-0.2f,0.3f),MathUtils.random(0,90)));
+
             }else{
-                this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x+1,bodyComponent.body.getPosition().y,0));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x+1,bodyComponent.body.getPosition().y+MathUtils.random(-0.2f,0.3f),MathUtils.random(0,90)));
             }
 
 
