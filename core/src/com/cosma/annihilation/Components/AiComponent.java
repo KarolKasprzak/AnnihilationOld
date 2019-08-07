@@ -6,11 +6,9 @@ import com.cosma.annihilation.Ai.ArtificialIntelligence;
 import com.cosma.annihilation.Ai.HumanAi;
 
 public class AiComponent implements Component {
-    public boolean isActive = false;
-    public boolean reactToPlayerWeapon;
-    public boolean onPatrol;
-    public Vector2 startPosition = new Vector2();
 
+    public Vector2 startPosition = new Vector2();
+    public int patrolRange = 4;
     public ArtificialIntelligence ai;
 
 }

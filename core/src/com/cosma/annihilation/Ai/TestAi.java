@@ -11,12 +11,10 @@ public class TestAi implements ArtificialIntelligence {
 
     public TestAi() {
         taskList = new Array<>();
-        Task task = new Task(5);
-        Task task1 = new Task(3);
-        Task task2 = new Task(6);
+        Task task = new Task(5,taskList);
+
         taskList.add(task);
-        taskList.add(task1);
-        taskList.add(task2);
+
 
     }
 
@@ -25,7 +23,7 @@ public class TestAi implements ArtificialIntelligence {
             taskList.sort();
             for(Task task: taskList){
                 if(task.isActive()){
-                    task.run();
+//                    task.run();
                 }
             }
     }
