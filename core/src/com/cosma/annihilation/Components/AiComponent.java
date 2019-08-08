@@ -8,7 +8,7 @@ import com.cosma.annihilation.Ai.HumanAi;
 public class AiComponent implements Component {
 
     public Vector2 startPosition = new Vector2();
-    public int patrolRange = 4;
+    public int patrolRange = 3;
     public ArtificialIntelligence ai;
 
 }

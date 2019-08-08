@@ -80,23 +80,34 @@ public class AiCore {
         AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
         Body aiBody = entity.getComponent(BodyComponent.class).body;
         AiComponent aiComponent = entity.getComponent(AiComponent.class);
+        Vector2 startPosition = aiComponent.startPosition;
         World world = aiBody.getWorld();
 
-        goToPosition(destinationPosition,entity);
 
-        System.out.println("body: " +(int) aiBody.getPosition().x +  "  destiny: " + (int) destinationPosition.x );
 
-        if ((int) destinationPosition.x == (int) aiBody.getPosition().x){
 
-            System.out.println(destinationPosition.x);
-            if (animationComponent.spriteDirection) {
-                destinationPosition.x = destinationPosition.x - aiComponent.patrolRange;
-                System.out.println("fdsa");
-            } else {destinationPosition.x = destinationPosition.x + aiComponent.patrolRange;}
-            onPosition = true;
-            System.out.println(destinationPosition.x);
-            System.out.println(onPosition);
-        } else onPosition = false;
+        System.out.println(Util.roundFloat(aiBody.getPosition().x ,1) == Util.roundFloat(startPosition.x + aiComponent.patrolRange-2,1));
+
+        if(animationComponent.spriteDirection && aiBody.getPosition().x < startPosition.x + aiComponent.patrolRange){
+            destinationPosition.set(startPosition.x+aiComponent.patrolRange,0);
+            goToPosition(destinationPosition,entity);
+        }
+        if(animationComponent.spriteDirection && Util.roundFloat(aiBody.getPosition().x ,1) == Util.roundFloat(startPosition.x + aiComponent.patrolRange-2,1)){
+            destinationPosition.set(startPosition.x - aiComponent.patrolRange,0);
+            goToPosition(destinationPosition,entity);
+        }
+
+//        if ((int) destinationPosition.x == (int) aiBody.getPosition().x){
+//
+//            System.out.println(destinationPosition.x);
+//            if (animationComponent.spriteDirection) {
+//                destinationPosition.x = destinationPosition.x - aiComponent.patrolRange;
+//                System.out.println("fdsa");
+//            } else {destinationPosition.x = destinationPosition.x + aiComponent.patrolRange;}
+//            onPosition = true;
+//            System.out.println(destinationPosition.x);
+//            System.out.println(onPosition);
+//        } else onPosition = false;
 
     }
 }
