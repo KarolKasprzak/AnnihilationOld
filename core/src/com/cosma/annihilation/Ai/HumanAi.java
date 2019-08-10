@@ -22,15 +22,12 @@ public class HumanAi implements ArtificialIntelligence {
     private Vector2 startPosition;
     private String aiStatus = "";
     private PatrolBehaviour patrolBehaviour;
-    private ArrayList<Task> taskList;
 
 
     public HumanAi(Vector2 startPosition) {
         this.startPosition = startPosition;
         patrolBehaviour = new PatrolBehaviour(5, 1);
         patrolBehaviour.setNpcStartPosition(startPosition);
-        taskList = new ArrayList<>();
-
 
     }
 

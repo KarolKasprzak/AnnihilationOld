@@ -14,7 +14,16 @@ public class HumanAiBasic extends AiCore implements ArtificialIntelligence{
 
     @Override
     public void update(Entity entity) {
-        patrol(entity);
+
+        if(isPlayerInSight(entity)){
+            if(isEnemyInShootRange(entity,5)){
+                // shoot(entity)
+            }else{
+                //followEnemy(entity)
+            }
+        }else{
+            patrol(entity);
+        }
     }
 
     @Override

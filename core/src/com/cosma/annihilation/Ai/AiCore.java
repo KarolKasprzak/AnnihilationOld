@@ -24,6 +24,8 @@ public class AiCore {
     private Vector2 destinationPosition = new Vector2();
     private boolean isEnemySpotted = false;
     private boolean onPosition = false;
+    private Entity targetEntity;
+
 
     AiCore() {
 
@@ -46,21 +48,30 @@ public class AiCore {
         Body aiBody = entity.getComponent(BodyComponent.class).body;
         World world = aiBody.getWorld();
         if(animationComponent.spriteDirection){
+            isEnemySpotted = false;
             world.rayCast(sightRayCallback, aiBody.getPosition(),rayEndVector.set(aiBody.getPosition().x + 7, aiBody.getPosition().y));
 
         }else{
+            isEnemySpotted = false;
             world.rayCast(sightRayCallback, aiBody.getPosition(),rayEndVector.set(aiBody.getPosition().x - 7, aiBody.getPosition().y));
         }
         if(isEnemySpotted){
-            isEnemySpotted = false;
             System.out.println("found enemy");
             return true;
         }
         return false;
     }
 
+    boolean isEnemyInShootRange(Entity entity,float range){
+        return false;
+    }
 
-    private void goToPosition(Vector2 targetPosition, Entity entity) {
+
+    void foloowEnemy(Entity entity){
+
+    }
+
+    void goToPosition(Vector2 targetPosition, Entity entity) {
         AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
         Body aiBody = entity.getComponent(BodyComponent.class).body;
         Vector2 aiPosition = aiBody.getPosition();
@@ -76,38 +87,28 @@ public class AiCore {
         } else aiBody.setLinearVelocity(new Vector2(0, 0));
     }
 
-    public void patrol(Entity entity){
+    void patrol(Entity entity){
         AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
         Body aiBody = entity.getComponent(BodyComponent.class).body;
         AiComponent aiComponent = entity.getComponent(AiComponent.class);
         Vector2 startPosition = aiComponent.startPosition;
         World world = aiBody.getWorld();
 
-
-
-
-        System.out.println(Util.roundFloat(aiBody.getPosition().x ,1) == Util.roundFloat(startPosition.x + aiComponent.patrolRange-2,1));
-
-        if(animationComponent.spriteDirection && aiBody.getPosition().x < startPosition.x + aiComponent.patrolRange){
+        if(animationComponent.spriteDirection && aiBody.getPosition().x < startPosition.x + aiComponent.patrolRange &&  aiBody.getPosition().x > startPosition.x - aiComponent.patrolRange){
             destinationPosition.set(startPosition.x+aiComponent.patrolRange,0);
             goToPosition(destinationPosition,entity);
         }
-        if(animationComponent.spriteDirection && Util.roundFloat(aiBody.getPosition().x ,1) == Util.roundFloat(startPosition.x + aiComponent.patrolRange-2,1)){
+        if(!animationComponent.spriteDirection && aiBody.getPosition().x < startPosition.x + aiComponent.patrolRange &&  aiBody.getPosition().x > startPosition.x - aiComponent.patrolRange){
+            destinationPosition.set(startPosition.x-aiComponent.patrolRange,0);
+            goToPosition(destinationPosition,entity);
+        }
+        if(animationComponent.spriteDirection && Util.roundFloat(aiBody.getPosition().x ,1) == Util.roundFloat(startPosition.x + aiComponent.patrolRange-1,1)){
             destinationPosition.set(startPosition.x - aiComponent.patrolRange,0);
             goToPosition(destinationPosition,entity);
         }
-
-//        if ((int) destinationPosition.x == (int) aiBody.getPosition().x){
-//
-//            System.out.println(destinationPosition.x);
-//            if (animationComponent.spriteDirection) {
-//                destinationPosition.x = destinationPosition.x - aiComponent.patrolRange;
-//                System.out.println("fdsa");
-//            } else {destinationPosition.x = destinationPosition.x + aiComponent.patrolRange;}
-//            onPosition = true;
-//            System.out.println(destinationPosition.x);
-//            System.out.println(onPosition);
-//        } else onPosition = false;
-
+        if(!animationComponent.spriteDirection && Util.roundFloat(aiBody.getPosition().x ,1) == Util.roundFloat(startPosition.x - aiComponent.patrolRange,1)){
+            destinationPosition.set(startPosition.x + aiComponent.patrolRange,0);
+            goToPosition(destinationPosition,entity);
+        }
     }
 }
