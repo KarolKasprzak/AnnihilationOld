@@ -10,10 +10,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
-import com.cosma.annihilation.Components.AnimationComponent;
-import com.cosma.annihilation.Components.BodyComponent;
-import com.cosma.annihilation.Components.PlayerComponent;
-import com.cosma.annihilation.Components.StateComponent;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.World;
+import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Items.WeaponItem;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Animation.AnimationStates;
@@ -29,17 +29,33 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
     private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
     private ArrayList<GameEvent> gameEventList;
+    private RayCastCallback noiseRayCallback;
     // false = left, true = right
     private boolean mouseCursorPosition = false;
+    private World world;
+    private Entity noiseTestEntity;
 
-    public PlayerControlSystem(ArrayList<GameEvent> gameEventList) {
+    public PlayerControlSystem(ArrayList<GameEvent> gameEventList, World world) {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
         this.gameEventList = gameEventList;
+        this.world = world;
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
         stateMapper = ComponentMapper.getFor(StateComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         signal = new Signal<GameEvent>();
+
+        noiseRayCallback = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class) != null) {
+                    noiseTestEntity = (Entity) fixture.getBody().getUserData();
+//                    ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class).isHearEnemy = true;
+                }
+                return 0;
+            }
+        };
+
     }
 
     @Override
@@ -48,7 +64,6 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         BodyComponent playerBody = bodyMapper.get(entity);
         PlayerComponent playerComponent = playerMapper.get(entity);
         AnimationComponent animationComponent = animationMapper.get(entity);
-
         animationComponent.spriteDirection = mouseCursorPosition;
 
 
@@ -56,6 +71,9 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
             signal.dispatch(gameEvent);
         }
         gameEventList.clear();
+
+
+
 
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && animationComponent.isAnimationFinish) {
                  playerBody.body.setLinearVelocity(0, playerBody.body.getLinearVelocity().y);
@@ -184,6 +202,26 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
                         playerBody.body.getWorldCenter(), true);
             }
         }
+
+        //simulatingPlayerNoise
+        if(playerBody.body.getLinearVelocity().x != 0 && !playerComponent.isPlayerCrouch){
+
+            world.rayCast(noiseRayCallback,playerBody.body.getPosition().x,playerBody.body.getPosition().y,
+                    playerBody.body.getPosition().x+3,playerBody.body.getPosition().y);
+
+            world.rayCast(noiseRayCallback,playerBody.body.getPosition().x,playerBody.body.getPosition().y,
+                    playerBody.body.getPosition().x-3,playerBody.body.getPosition().y);
+            if(noiseTestEntity != null){
+                AnimationComponent animationComponentAi = noiseTestEntity.getComponent(AnimationComponent.class);
+                AiComponent aiComponent = noiseTestEntity.getComponent(AiComponent.class);
+                if(animationComponentAi.spriteDirection == animationComponent.spriteDirection){
+                    aiComponent.isHearEnemy = true;
+                    aiComponent.enemyPosition = playerBody.body.getPosition();
+                    noiseTestEntity = null;
+                }
+            }
+        }
+
     }
 
     public void addListenerSystems(){

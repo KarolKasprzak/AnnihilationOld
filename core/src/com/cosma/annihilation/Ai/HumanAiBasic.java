@@ -2,6 +2,7 @@ package com.cosma.annihilation.Ai;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
+import com.cosma.annihilation.Components.AiComponent;
 
 public class HumanAiBasic extends AiCore implements ArtificialIntelligence{
 
@@ -14,16 +15,17 @@ public class HumanAiBasic extends AiCore implements ArtificialIntelligence{
 
     @Override
     public void update(Entity entity) {
-
-        if(isPlayerInSight(entity)){
-            if(isEnemyInShootRange(entity,5)){
-                // shoot(entity)
+        System.out.println(entity.getComponent(AiComponent.class).isHearEnemy);
+        if(isEnemyInSight(entity)){
+            if(isEnemyInWeaponRange(entity,5)){
+                 shoot(entity);
             }else{
-                //followEnemy(entity)
+                followEnemy(entity);
             }
         }else{
             patrol(entity);
         }
+        isHearEnemy(entity);
     }
 
     @Override

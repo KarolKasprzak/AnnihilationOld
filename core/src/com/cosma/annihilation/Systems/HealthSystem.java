@@ -60,9 +60,6 @@ public class HealthSystem extends IteratingSystem implements Listener<GameEvent>
                 this.getEngine().addEntity(EntityFactory.getInstance().createBloodSplashEntity(bodyComponent.body.getPosition().x+1,bodyComponent.body.getPosition().y+MathUtils.random(-0.2f,0.3f),MathUtils.random(0,90)));
             }
 
-
-
-
             healthComponent.isHit = false;
         }
 

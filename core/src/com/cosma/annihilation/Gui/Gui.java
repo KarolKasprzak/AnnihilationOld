@@ -164,10 +164,10 @@ public class Gui implements Screen {
                 if (playerState.canClimbDown) {
                     playerState.goDown = true;
                 } else {
-                    if (playerState.crouch) {
-                        playerState.crouch = false;
+                    if (playerState.isPlayerCrouch) {
+                        playerState.isPlayerCrouch = false;
                     } else
-                        playerState.crouch = true;
+                        playerState.isPlayerCrouch = true;
                 }
 
                 return true;
@@ -328,7 +328,7 @@ public class Gui implements Screen {
         float fpss = Gdx.graphics.getFramesPerSecond();
         fpsNumber = Float.toString(fpss);
         fpsLabel.setText(fpsNumber);
-        crouch.setText("crouch " + playerState.crouch);
+        crouch.setText("isPlayerCrouch " + playerState.isPlayerCrouch);
         climbing.setText("climbing " + playerState.climbing);
         onground.setText("onGround " + playerState.onGround);
         canClimb.setText("canclimb " + playerState.canClimb);

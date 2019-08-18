@@ -32,7 +32,7 @@ public class PlayerComponent implements Component {
 
     public boolean canMoveOnSide = true;
     public boolean canClimbDown = false;
-    public boolean crouch = false;
+    public boolean isPlayerCrouch = false;
 
 
 }
