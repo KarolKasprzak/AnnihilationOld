@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.cosma.annihilation.Annihilation;
@@ -45,10 +46,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private BodyComponent bodyComponent;
     private PlayerInventoryComponent playerInventoryComponent;
     private PlayerStatsComponent statsComponent;
-    private StateComponent stateComponent;
-
+    private RayCastCallback noiseRayCallback;
     private Batch batch;
-
     private Body body;
     private WeaponMagazine weaponMagazine;
     private RayCastCallback callback;
@@ -60,10 +59,14 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private boolean isMeleeAttackFinish = true;
     private Signal<GameEvent> signal;
     private Vector2 raycastEnd;
+    private Array<Entity> noiseTestEntityList;
+
+
     ParticleEffect pe;
     Camera camera;
+
     public ShootingSystem(World world, RayHandler rayHandler, Batch batch, Camera camera) {
-        super(Family.all(PlayerComponent.class).get(),Constants.SHOOTING_SYSTEM);
+        super(Family.all(PlayerComponent.class).get(), Constants.SHOOTING_SYSTEM);
         this.world = world;
         this.batch = batch;
         this.camera = camera;
@@ -71,9 +74,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         pe = new ParticleEffect();
 
 
-        pe.load(Gdx.files.internal("particle/gun.p"),Gdx.files.internal("particle/"));
-        pe.getEmitters().first().setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
-        pe.getEmitters().add(new ParticleEmitterBox2D(world,pe.getEmitters().first()));
+        pe.load(Gdx.files.internal("particle/gun.p"), Gdx.files.internal("particle/"));
+        pe.getEmitters().first().setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        pe.getEmitters().add(new ParticleEmitterBox2D(world, pe.getEmitters().first()));
         pe.getEmitters().removeIndex(0);
         pe.scaleEffect(0.1f);
 
@@ -87,7 +90,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         raycastEnd = new Vector2();
 
-        weaponLight = new PointLight(rayHandler, 45, new Color(1,0.8f,0,1), 0.8f,0,0);
+        weaponLight = new PointLight(rayHandler, 45, new Color(1, 0.8f, 0, 1), 0.8f, 0, 0);
         weaponLight.setStaticLight(false);
         Filter filter = new Filter();
         filter.categoryBits = CollisionID.LIGHT;
@@ -97,16 +100,20 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         weaponLight.setSoft(true);
         weaponLight.setActive(false);
 
-        signal = new Signal<GameEvent>();
-
-        callback = new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if(fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class ) != null){
-                    targetEntity =(Entity)fixture.getBody().getUserData();
-                }else targetEntity = null;
-                return 0;
+        signal = new Signal<>();
+        noiseTestEntityList = new Array<>();
+        noiseRayCallback = (fixture, point, normal, fraction) -> {
+            if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class) != null) {
+                noiseTestEntityList.add((Entity) fixture.getBody().getUserData());
             }
+            return 1;
+        };
+
+        callback = (fixture, point, normal, fraction) -> {
+            if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class) != null) {
+                targetEntity = (Entity) fixture.getBody().getUserData();
+            } else targetEntity = null;
+            return 1;
         };
     }
 
@@ -115,7 +122,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         super.update(deltaTime);
 
-        pe.setPosition(body.getPosition().x,body.getPosition().y);
+        pe.setPosition(body.getPosition().x, body.getPosition().y);
 
         batch.begin();
         pe.update(deltaTime);
@@ -138,8 +145,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         if (!animationComponent.spriteDirection) {
             direction = -1;
-        }else direction = 1;
-
+        } else direction = 1;
 
 
         if (Gdx.input.isKeyPressed(Input.Keys.R)) {
@@ -155,7 +161,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 weaponSelect();
                 break;
             case ACTION_BUTTON_TOUCH_UP:
-                isWeaponShooting= false;
+                isWeaponShooting = false;
                 break;
             case WEAPON_TAKE_OUT:
                 weaponTakeOut();
@@ -199,47 +205,48 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             playerComponent.canMoveOnSide = false;
 
             Timer.schedule(new Timer.Task() {
-                               @Override
-                               public void run() {
-                                   world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
-                                   if (calculateAttackAccuracy() && targetEntity != null) {
-                                       targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
-                                   }
-                                   animationComponent.isAnimationFinish = true;
-                                   playerComponent.canMoveOnSide = true;
-                                   isMeleeAttackFinish = true;
-                               }
-                           }, animationTimer);
+                @Override
+                public void run() {
+                    world.rayCast(callback, body.getPosition(), new Vector2(body.getPosition().x + direction, body.getPosition().y));
+                    if (calculateAttackAccuracy() && targetEntity != null) {
+                        targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
+                    }
+                    animationComponent.isAnimationFinish = true;
+                    playerComponent.canMoveOnSide = true;
+                    isMeleeAttackFinish = true;
+                }
+            }, animationTimer);
         }
     }
 
-    private void startShooting(){
-        if(playerComponent.activeWeapon.isAutomatic()){
+    private void startShooting() {
+        if (playerComponent.activeWeapon.isAutomatic()) {
             isWeaponShooting = true;
             automaticWeaponShoot();
-        }else
+        } else
             semiAutomaticShoot();
     }
 
-    private void semiAutomaticShoot(){
-     if(weaponReloadTimer > playerComponent.activeWeapon.getReloadTime()){
-        weaponShoot();
-        weaponReloadTimer = 0;
-     }
+    private void semiAutomaticShoot() {
+        if (weaponReloadTimer > playerComponent.activeWeapon.getReloadTime()) {
+            weaponShoot();
+            weaponReloadTimer = 0;
+        }
     }
 
     private void weaponShoot() {
 
         if (weaponMagazine.hasAmmo()) {
-            world.rayCast(callback,body.getPosition(),raycastEnd.set(body.getPosition().x+15*direction,body.getPosition().y));
-            if(calculateAttackAccuracy() && targetEntity != null){
+            world.rayCast(callback, body.getPosition(), raycastEnd.set(body.getPosition().x + 15 * direction, body.getPosition().y));
+            if (calculateAttackAccuracy() && targetEntity != null) {
                 System.out.println("hit");
                 targetEntity.getComponent(HealthComponent.class).hp -= playerComponent.activeWeapon.getDamage();
                 targetEntity.getComponent(HealthComponent.class).isHit = true;
-                targetEntity.getComponent(HealthComponent.class).attackerPosition =  bodyComponent.body.getPosition();
+                targetEntity.getComponent(HealthComponent.class).attackerPosition = bodyComponent.body.getPosition();
             }
             targetEntity = null;
             shootingLight();
+            simulatingGunShootNoise();
             createShellAndBullet();
             Sound sound = Annihilation.getAssets().get("sfx/cg1.wav");
             sound.play();
@@ -249,42 +256,59 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         }
     }
 
-    private void createShellAndBullet(){
+    private void simulatingGunShootNoise() {
+        world.rayCast(noiseRayCallback, body.getPosition().x, body.getPosition().y,
+                body.getPosition().x + 12, body.getPosition().y);
+
+        world.rayCast(noiseRayCallback, body.getPosition().x, body.getPosition().y,
+                body.getPosition().x - 12, body.getPosition().y);
+        for (Entity entity : noiseTestEntityList) {
+            AnimationComponent animationComponentAi = entity.getComponent(AnimationComponent.class);
+            AiComponent aiComponent = entity.getComponent(AiComponent.class);
+            aiComponent.isHearEnemy = true;
+            aiComponent.enemyPosition = body.getPosition();
+        }
+        noiseTestEntityList.clear();
+    }
+
+
+    private void createShellAndBullet() {
         WeaponItem.ItemID weaponID = playerComponent.activeWeapon.getItemID();
         switch (weaponID) {
             case P38:
-                this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f*direction, body.getPosition().y + 0.63f));
-                this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.63f,20, animationComponent.spriteDirection));
-                this.getEngine().addEntity(EntityFactory.getInstance().createShootSplashEntity(body.getPosition().x + 1.1f*direction,body.getPosition().y + 0.59f,animationComponent.spriteDirection));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.7f * direction, body.getPosition().y + 0.63f));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f * direction, body.getPosition().y + 0.63f, 20, animationComponent.spriteDirection));
+                this.getEngine().addEntity(EntityFactory.getInstance().createShootSplashEntity(body.getPosition().x + 1.1f * direction, body.getPosition().y + 0.59f, animationComponent.spriteDirection));
                 break;
             case MP44:
-                this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.4f*direction, body.getPosition().y + 0.3f));
-                this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f*direction, body.getPosition().y + 0.3f,20, animationComponent.spriteDirection));
-                this.getEngine().addEntity(EntityFactory.getInstance().createShootSplashEntity(body.getPosition().x + 1.1f*direction,body.getPosition().y + 0.29f,animationComponent.spriteDirection));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletShellEntity(body.getPosition().x + 0.4f * direction, body.getPosition().y + 0.3f));
+                this.getEngine().addEntity(EntityFactory.getInstance().createBulletEntity(body.getPosition().x + 1.1f * direction, body.getPosition().y + 0.3f, 20, animationComponent.spriteDirection));
+                this.getEngine().addEntity(EntityFactory.getInstance().createShootSplashEntity(body.getPosition().x + 1.1f * direction, body.getPosition().y + 0.29f, animationComponent.spriteDirection));
                 break;
         }
 
 
     }
 
-    private void automaticWeaponShoot(){
+    private void automaticWeaponShoot() {
         com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
             public void run() {
-                if(isWeaponShooting){
+                if (isWeaponShooting) {
                     weaponShoot();
-                }else{
+                } else {
                     this.cancel();
                 }
             }
-        }, 0,playerComponent.activeWeapon.getReloadTime());
+        }, 0, playerComponent.activeWeapon.getReloadTime());
     }
 
 
-
-    /**true = hit, false = miss */
-    private boolean calculateAttackAccuracy(){
-        float weaponAccuracy =  playerComponent.activeWeapon.getAccuracy();
+    /**
+     * true = hit, false = miss
+     */
+    private boolean calculateAttackAccuracy() {
+        float weaponAccuracy = playerComponent.activeWeapon.getAccuracy();
         float playerSkill = 0;
         int weaponType = playerComponent.activeWeapon.getItemUseType();
 
@@ -305,22 +329,22 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 playerSkill = statsComponent.smallWeapons;
                 break;
         }
-        float playerAccuracy = ((float)playerSkill*0.005f + weaponAccuracy);
-        if(playerAccuracy >=0.95f){
+        float playerAccuracy = ((float) playerSkill * 0.005f + weaponAccuracy);
+        if (playerAccuracy >= 0.95f) {
             return true;
-        }else{
-            double randomBonus = ThreadLocalRandom.current().nextDouble(playerAccuracy,1);
+        } else {
+            double randomBonus = ThreadLocalRandom.current().nextDouble(playerAccuracy, 1);
 //            float randomBonus =  randomGenerator.nextFloat() * (0.99f - playerAccuracy) + playerAccuracy;
-              if (randomBonus >= 0.95f){
-                  System.out.println("Player accuracy + bonus: " + randomBonus);
-                  return true;
-              }
+            if (randomBonus >= 0.95f) {
+                System.out.println("Player accuracy + bonus: " + randomBonus);
+                return true;
+            }
         }
-        System.out.println("miss " );
+        System.out.println("miss ");
         return false;
     }
 
-    private int calcualteAttackDamage(){
+    private int calcualteAttackDamage() {
         //TODO
         return 0;
     }
@@ -351,13 +375,13 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     }
 
 
-    private void shootingLight(){
-        switch (playerComponent.activeWeapon.getItemID()){
+    private void shootingLight() {
+        switch (playerComponent.activeWeapon.getItemID()) {
             case P38:
-                weaponLight.attachToBody(body,direction-0.1f,0.5f);
+                weaponLight.attachToBody(body, direction - 0.1f, 0.5f);
                 break;
             case MP44:
-                weaponLight.attachToBody(body,direction-0.1f,0.3f);
+                weaponLight.attachToBody(body, direction - 0.1f, 0.3f);
                 break;
         }
 

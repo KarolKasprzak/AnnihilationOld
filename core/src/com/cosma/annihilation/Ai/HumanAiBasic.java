@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Components.AiComponent;
 
-public class HumanAiBasic extends AiCore implements ArtificialIntelligence{
+public class HumanAiBasic extends AiCore implements ArtificialIntelligence {
 
     private Vector2 startPosition;
     private String aiStatus = "";
@@ -15,18 +15,26 @@ public class HumanAiBasic extends AiCore implements ArtificialIntelligence{
 
     @Override
     public void update(Entity entity) {
-        System.out.println(entity.getComponent(AiComponent.class).isHearEnemy);
-        if(isEnemyInSight(entity)){
-            if(isEnemyInWeaponRange(entity,5)){
-                 shoot(entity);
-            }else{
+        AiComponent aiComponent = entity.getComponent(AiComponent.class);
+        if (isEnemyInSight(entity)) {
+            aiStatus = "enemy!!!";
+            if (isEnemyInWeaponRange(entity, 8)) {
+                shoot(entity);
+            } else {
                 followEnemy(entity);
+                aiStatus = "follow enemy";
             }
-        }else{
-            patrol(entity);
+        } else {
+            if (isHearEnemy(entity)) {
+                searchEnemy(entity);
+                aiStatus = "hear enemy";
+            }else{
+                patrol(entity);
+                aiStatus = "patrol";
+            }
         }
-        isHearEnemy(entity);
     }
+
 
     @Override
     public String getStatus() {

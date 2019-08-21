@@ -138,7 +138,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                             fixtureDef.filter.maskBits = CollisionID.MASK_SCENERY_PHYSIC_OBJECT;
                             break;
                         case "enemy":
-
                             fixtureDef.filter.maskBits = CollisionID.MASK_ENEMY;
                             break;
                         case "npc":

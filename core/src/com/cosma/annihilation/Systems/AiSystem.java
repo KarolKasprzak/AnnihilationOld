@@ -59,9 +59,6 @@ public class AiSystem extends IteratingSystem {
             aiComponent.ai.update(entity);
         }else bodyComponent.body.setLinearVelocity(new Vector2(0, bodyComponent.body.getLinearVelocity().y));
 
-
-
-
         Vector3 worldPosition = worldCamera.project(new Vector3(bodyComponent.body.getPosition().x,bodyComponent.body.getPosition().y+1,0));
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

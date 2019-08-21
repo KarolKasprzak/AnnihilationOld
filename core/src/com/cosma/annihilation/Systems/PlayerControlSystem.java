@@ -25,7 +25,6 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<BodyComponent> bodyMapper;
-    private ComponentMapper<StateComponent> stateMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
     private ArrayList<GameEvent> gameEventList;
@@ -41,19 +40,14 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         this.world = world;
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-        stateMapper = ComponentMapper.getFor(StateComponent.class);
         animationMapper = ComponentMapper.getFor(AnimationComponent.class);
         signal = new Signal<GameEvent>();
 
-        noiseRayCallback = new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class) != null) {
-                    noiseTestEntity = (Entity) fixture.getBody().getUserData();
-//                    ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class).isHearEnemy = true;
-                }
-                return 0;
+        noiseRayCallback = (fixture, point, normal, fraction) -> {
+            if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class) != null) {
+                noiseTestEntity = (Entity) fixture.getBody().getUserData();
             }
+            return 0;
         };
 
     }
@@ -124,9 +118,9 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         }
 
         //Stealth mode
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
-            //TODO
-        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
+//            //TODO
+//        }
 
         //Moving on side
         if(playerComponent.canMoveOnSide && playerComponent.onGround && playerComponent.isWeaponHidden) {
@@ -230,7 +224,7 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
     }
 
-    public void setPlayerAnimation(PlayerComponent playerComponent, AnimationComponent animationComponent){
+    private void setPlayerAnimation(PlayerComponent playerComponent, AnimationComponent animationComponent){
         WeaponItem.ItemID weaponID = playerComponent.activeWeapon.getItemID();
         switch (weaponID) {
             case P38:
@@ -275,7 +269,6 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         int x = Gdx.graphics.getWidth();
-        int y = Gdx.graphics.getHeight();
         mouseCursorPosition = screenX >= x / 2;
         return false;
     }
