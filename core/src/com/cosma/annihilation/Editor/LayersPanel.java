@@ -5,10 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
-import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
-import com.cosma.annihilation.Editor.CosmaMap.MapLayer;
-import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
-import com.cosma.annihilation.Editor.CosmaMap.TileMapLayer;
+import com.cosma.annihilation.Editor.CosmaMap.*;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
@@ -82,6 +79,15 @@ public class LayersPanel extends VisWindow {
                 }
             }
         }));
+        layerMenu.addItem(new MenuItem("Sprite", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (mapEditor.getMap() != null) {
+                    mapEditor.getMap().createSpriteLayer();
+                    view.rebuildView();
+                }
+            }
+        }));
         menuBar.addMenu(layerMenu);
 
         this.getTitleTable().add(menuBar.getTable());
@@ -99,19 +105,6 @@ public class LayersPanel extends VisWindow {
         setSize(getWidth() * 2, getHeight() + 500);
         setMovable(false);
         setResizable(false);
-//        setResizable(true);
-//        setPosition(1900, Gdx.graphics.getHeight() / 2);
-
-
-//        addLayerButton.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                if (mapEditor.getMap() != null) {
-//                    mapEditor.getMap().createTileMapLayer();
-//                    view.rebuildView();
-//                }
-//            }
-//        });
 
         removeLayerButton.addListener(new ChangeListener() {
             @Override
@@ -176,6 +169,12 @@ public class LayersPanel extends VisWindow {
                     mapEditor.lightsPanel.setPanelButtonsDisable(false);
                     mapEditor.setLightsLayerSelected(true);
                 } else mapEditor.setLightsLayerSelected(false);
+                if (selectedLayer instanceof SpriteMapLayer) {
+                    mapEditor.objectPanel.setPanelButtonsDisable(true);
+                    mapEditor.lightsPanel.setPanelButtonsDisable(true);
+                    mapEditor.setSpriteLayerSelected(true);
+                } else mapEditor.setSpriteLayerSelected(false);
+
             }
 
             @Override
@@ -185,6 +184,7 @@ public class LayersPanel extends VisWindow {
                 mapEditor.setEntityLayerSelected(false);
                 mapEditor.setLightsLayerSelected(false);
                 mapEditor.setObjectLayerSelected(false);
+                mapEditor.setSpriteLayerSelected(false);
             }
         });
     }
@@ -195,7 +195,7 @@ public class LayersPanel extends VisWindow {
         private final Drawable selection = VisUI.getSkin().getDrawable("list-selection");
         private MapEditor mapEditor;
 
-        public MapLayerAdapter(Array<MapLayer> array, MapEditor mapEditor) {
+        MapLayerAdapter(Array<MapLayer> array, MapEditor mapEditor) {
             super(array);
             setSelectionMode(SelectionMode.SINGLE);
             this.mapEditor = mapEditor;

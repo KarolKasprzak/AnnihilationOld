@@ -26,13 +26,12 @@ public class SpriteRenderSystem extends IteratingSystem implements Disposable {
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private ComponentMapper<SpriteComponent> spriteMapper;
-    private Vector2 position;
+    private Vector2 position = new Vector2();
 
     public SpriteRenderSystem(OrthographicCamera camera, SpriteBatch batch) {
         super(Family.all(SpriteComponent.class).get(), Constants.SPRITE_RENDER);
         this.batch = batch;
         this.camera = camera;
-        position = new Vector2();
         spriteMapper = ComponentMapper.getFor(SpriteComponent.class);
     }
 

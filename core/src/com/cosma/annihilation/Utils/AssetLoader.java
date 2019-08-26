@@ -29,6 +29,12 @@ public class AssetLoader {
         for(FileHandle texture: mapTextures.list(".atlas")){
             manager.load(texture.path(),TextureAtlas.class);
         }
+        //Load map textures
+        FileHandle mapSprites = Gdx.files.local("map/map_sprites/");
+        for(FileHandle texture: mapSprites.list(".atlas")){
+            manager.load(texture.path(),TextureAtlas.class);
+        }
+
         //Load icon
         FileHandle iconTextures = Gdx.files.local("gfx/textures/icon/");
         for(FileHandle texture: iconTextures.list(".png")){

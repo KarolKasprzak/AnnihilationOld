@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
@@ -19,6 +20,7 @@ public class MapRender {
     private GameMap gameMap;
     private SpriteBatch batch;
     private TextureAtlas iconPack;
+    private Vector2 position = new Vector2();
 
     public MapRender(ShapeRenderer renderer, GameMap gameMap, SpriteBatch batch) {
         this.batch = batch;
@@ -83,6 +85,19 @@ public class MapRender {
                     }
                 }
             }
+
+            for (SpriteMapLayer mapLayer : gameMap.getLayers().getByType(SpriteMapLayer.class)) {
+                if (mapLayer.isLayerVisible()) {
+                    for (Sprite sprite : mapLayer.getSpriteArray()) {
+                            position.x = position.x - (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2;
+                            position.y = position.y - (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2;
+                            batch.draw(sprite.getTextureRegion(), position.x+(sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
+                                    sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
+                                    1, 1, sprite.getAngle());
+                    }
+                }
+            }
+
         }
         batch.end();
         for (ObjectMapLayer layer : gameMap.getLayers().getByType(ObjectMapLayer.class)) {

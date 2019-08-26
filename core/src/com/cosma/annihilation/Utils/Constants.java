@@ -34,7 +34,7 @@ public class Constants {
     public static final int ANIMATION                      = 9;
     public static final int COLLISION_SYSTEM               = 8;
     public static final int HEALTH_SYSTEM                  = 7;
-    public static final int SHOOTING_SYSTEM                = 6;
+    public static final int SHOOTING_SYSTEM                = 13;
     public static final int CAMERA_SYSTEM                  = 5;
     public static final int ACTION_SYSTEM                  = 4;
     public static final int PLAYER_CONTROL_SYSTEM          = 1;

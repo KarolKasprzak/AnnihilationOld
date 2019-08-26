@@ -90,4 +90,10 @@ public class GameMap{
         LightsMapLayer mapLayer = new LightsMapLayer(width,height,name);
         layers.add(mapLayer);
     }
+
+    public void createSpriteLayer(){
+        String name = "Sprite_layer" +(layers.getCount()+1);
+        SpriteMapLayer spriteMapLayer = new SpriteMapLayer(width,height,name);
+        layers.add(spriteMapLayer);
+    }
 }

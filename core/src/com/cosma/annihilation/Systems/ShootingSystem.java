@@ -3,6 +3,7 @@ package com.cosma.annihilation.Systems;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
@@ -13,10 +14,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
@@ -61,15 +65,17 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
     private Vector2 raycastEnd;
     private Array<Entity> noiseTestEntityList;
 
+    private BitmapFont font;
 
     ParticleEffect pe;
-    Camera camera;
+    private Camera camera;
+    private OrthographicCamera worldCamera;
 
-    public ShootingSystem(World world, RayHandler rayHandler, Batch batch, Camera camera) {
+    public ShootingSystem(World world, RayHandler rayHandler, Batch batch,OrthographicCamera camera) {
         super(Family.all(PlayerComponent.class).get(), Constants.SHOOTING_SYSTEM);
         this.world = world;
         this.batch = batch;
-        this.camera = camera;
+        this.worldCamera = camera;
 
         pe = new ParticleEffect();
 
@@ -80,6 +86,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         pe.getEmitters().removeIndex(0);
         pe.scaleEffect(0.1f);
 
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
+        font.getData().setScale(1, 1);
 
         weaponMagazine = new WeaponMagazine();
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
@@ -110,11 +119,18 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
         };
 
         callback = (fixture, point, normal, fraction) -> {
-            if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(HealthComponent.class) != null) {
+            if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(AiComponent.class) != null) {
                 targetEntity = (Entity) fixture.getBody().getUserData();
+                return 0;
             } else targetEntity = null;
             return 1;
         };
+    }
+
+    @Override
+    public void addedToEngine(Engine engine) {
+        super.addedToEngine(engine);
+        camera = this.getEngine().getSystem(UserInterfaceSystem.class).getStage().getCamera();
     }
 
     @Override
@@ -147,9 +163,18 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             direction = -1;
         } else direction = 1;
 
+        if(!playerComponent.isWeaponHidden){
+            world.rayCast(callback, body.getPosition(), raycastEnd.set(body.getPosition().x + 15 * direction, body.getPosition().y));
+            if(targetEntity != null){
+                BodyComponent targetBody = targetEntity.getComponent(BodyComponent.class);
+                Vector3 worldPosition = worldCamera.project(new Vector3(targetBody.body.getPosition().x,targetBody.body.getPosition().y,0));
+                batch.setProjectionMatrix(camera.combined);
+                batch.begin();
+                font.draw(batch,Float.toString(calculateAttackAccuracyFloat())+"%", worldPosition.x+1, worldPosition.y);
+                batch.end();
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-            meleeAttack();
+
         }
 
     }
@@ -174,6 +199,42 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 break;
         }
     }
+
+    private float calculateAttackAccuracyFloat() {
+        float weaponAccuracy = playerComponent.activeWeapon.getAccuracy();
+        float playerSkill = 0;
+        int weaponType = playerComponent.activeWeapon.getItemUseType();
+
+        switch (weaponType) {
+            case 4:
+                playerSkill = statsComponent.meleeWeapons;
+                break;
+            case 8:
+                playerSkill = statsComponent.energeticWeapons;
+                break;
+            case 16:
+                playerSkill = statsComponent.energeticWeapons;
+                break;
+            case 32:
+                playerSkill = statsComponent.smallWeapons;
+                break;
+            case 64:
+                playerSkill = statsComponent.smallWeapons;
+                break;
+        }
+        float playerAccuracy = ((float) playerSkill * 0.005f + weaponAccuracy);
+        if (playerAccuracy >= 0.95f) {
+            return 0.95f;
+        } else {
+            float distance = targetEntity.getComponent(BodyComponent.class ).body.getPosition().x - body.getPosition().x;
+            if(distance>0){
+                distance = distance * -1;
+            }
+            distance = distance / 100;
+            return playerAccuracy + distance;
+        }
+    }
+
 
 
     private void weaponSelect() {
@@ -302,6 +363,9 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
             }
         }, 0, playerComponent.activeWeapon.getReloadTime());
     }
+
+
+
 
 
     /**

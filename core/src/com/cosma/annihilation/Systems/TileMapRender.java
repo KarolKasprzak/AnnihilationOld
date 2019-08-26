@@ -54,6 +54,8 @@ public class TileMapRender extends IteratingSystem {
             }
         }
 
+
+
         batch.end();
     }
 

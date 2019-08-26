@@ -62,7 +62,7 @@ public class MapEditor implements Screen, InputProcessor {
     public LightsPanel lightsPanel;
     private String currentMapPatch;
 
-    private boolean isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
+    private boolean isSpriteLayerSelected,isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
     private VisLabel editorModeLabel;
     private VisTable rightTable;
     private Box2DDebugRenderer debugRenderer;
@@ -277,6 +277,9 @@ public class MapEditor implements Screen, InputProcessor {
         }
         if (isObjectLayerSelected) {
             editorModeLabel.setText("Object edit mode");
+        }
+        if (isSpriteLayerSelected) {
+            editorModeLabel.setText("Sprite edit mode");
         }
     }
 
@@ -518,6 +521,14 @@ public class MapEditor implements Screen, InputProcessor {
 
     public void setObjectLayerSelected(boolean objectLayerSelected) {
         isObjectLayerSelected = objectLayerSelected;
+    }
+
+    public boolean isSpriteLayerSelected() {
+        return isSpriteLayerSelected;
+    }
+
+    public void setSpriteLayerSelected(boolean spriteLayerSelected) {
+        isSpriteLayerSelected = spriteLayerSelected;
     }
 
     public void setLightsLayerSelected(boolean lightsLayerSelected) {

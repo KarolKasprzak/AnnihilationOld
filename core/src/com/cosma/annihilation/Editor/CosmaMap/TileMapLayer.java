@@ -71,8 +71,6 @@ public class TileMapLayer extends MapLayer implements Json.Serializable {
             String position = value.get("position").asString();
             tile.setTextureRegion(texture.split(",")[1],texture.split(",")[0]);
             setTile(Integer.parseInt(position.split(",")[0]),Integer.parseInt(position.split(",")[1]),tile);
-
         }
-
     }
 }

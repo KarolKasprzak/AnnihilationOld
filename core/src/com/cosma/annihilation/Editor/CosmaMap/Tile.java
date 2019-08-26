@@ -12,14 +12,6 @@ public class Tile implements Json.Serializable {
     private String atlasRegionName;
     private String atlasPath;
 
-    public TextureRegion getTextureRegion() {
-        return textureRegion;
-    }
-
-    public void setTextureRegion(TextureRegion textureRegion) {
-        this.textureRegion = textureRegion;
-    }
-
     public void setTextureRegion(String region, String path) {
       for(String string: Annihilation.getAssets().getAssetNames()){
           if(string.contains(path)){
@@ -30,12 +22,8 @@ public class Tile implements Json.Serializable {
       }
     }
 
-    public void setAtlasRegionName(String atlasRegionName) {
-        this.atlasRegionName = atlasRegionName;
-    }
-
-    public void setAtlasPath(String atlasPath) {
-        this.atlasPath = atlasPath;
+    public TextureRegion getTextureRegion() {
+        return textureRegion;
     }
 
     String getTextureDate(){
@@ -52,12 +40,6 @@ public class Tile implements Json.Serializable {
         json.writeValue("atlasPath",atlasPath);
     }
 
-    public String getAtlasRegionName() {
-        return atlasRegionName;
-    }
-    public String getAtlasPath() {
-        return atlasPath;
-    }
     @Override
     public void read(Json json, JsonValue jsonData) {
 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -82,9 +83,9 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 //
 //        }
 
+        engine.addSystem(new UserInterfaceSystem(engine,world,this));
         engine.addSystem(new ActionSystem(world,this));
         engine.addSystem(new ShootingSystem(world, rayHandler,batch,camera));
-        engine.addSystem(new UserInterfaceSystem(engine,world,this));
         engine.addSystem(new SpriteRenderSystem(camera,batch));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
@@ -124,6 +125,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     public void resize(int w, int h) {
         viewport.update(w, h, false);
         engine.getSystem(UserInterfaceSystem.class).resizeHUD(w, h);
+        rayHandler.getLightMapTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
     public OrthographicCamera getCamera() {
@@ -161,12 +163,15 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
 
         json.setIgnoreUnknownFields(false);
+        System.out.println("save entity");
         for(Entity entity: engine.getEntities()){
             if(!mapLoader.getMap().getEntityArrayList().contains(entity)){
                 mapLoader.getMap().getEntityArrayList().add(entity);
             }
         }
+        System.out.println("entity saved");
         mapLoader.getMap().getEntityArrayList().remove(playerEntity);
+        System.out.println("write file");
         mapFile.writeString(json.prettyPrint(mapLoader.getMap()), false);
     }
 
@@ -192,7 +197,17 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         engine.removeAllEntities();
         System.out.println("e "+engine.getEntities().size());
         System.out.println("b "+world.getBodyCount());
-        mapLoader.loadMap("save/save.json");
+//        mapLoader.loadMap("save/save.json");
+//
+//
+//
+//        isPaused = false;
+
+        FileHandle playerFile = Gdx.files.local("save/player.json");
+        Entity playerEntity  = json.fromJson(Entity.class, playerFile);
+
+        mapLoader.loadMap("map/"+playerEntity.getComponent(PlayerComponent.class).mapName);
+        mapLoader.getMap().getEntityArrayList().add(playerEntity);
         isPaused = false;
 
     }
