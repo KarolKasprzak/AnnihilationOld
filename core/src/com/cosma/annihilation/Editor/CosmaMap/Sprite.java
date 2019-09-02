@@ -3,8 +3,6 @@ package com.cosma.annihilation.Editor.CosmaMap;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Annihilation;
 
 public class Sprite{
@@ -25,29 +23,31 @@ public class Sprite{
     }
 
      void setTextureRegion(String region, String path) {
-        for(String string: Annihilation.getAssets().getAssetNames()){
-            if(string.contains(path)){
-                this.textureRegion = Annihilation.getAssets().get(string,TextureAtlas.class).findRegion(region);
+                this.textureRegion = Annihilation.getAssets().get(path,TextureAtlas.class).findRegion(region);
                 this.atlasRegionName= region;
                 this.width = textureRegion.getRegionWidth()/32;
                 this.height = textureRegion.getRegionHeight()/32;
-                break;
-            }else{
-                System.out.println("texture not loaded");
-            }
         }
-    }
 
 
 
-    void setSpritePosition(float x,float y, float angle){
+    public void setSpritePosition(float x,float y, float angle){
         this.x = x;
         this.y = y;
         this.angle = angle;
     }
 
+    public void setSpritePosition(float x,float y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setSpriteAngle(float angle){
+        this.angle = angle;
+    }
+
     String getTextureDate(){
-        return ((FileTextureData)textureRegion.getTexture().getTextureData()).getFileHandle().nameWithoutExtension()+".atlas"+","+atlasRegionName;
+        return ((FileTextureData)textureRegion.getTexture().getTextureData()).getFileHandle().pathWithoutExtension()+".atlas"+","+atlasRegionName;
     }
 
     public TextureRegion getTextureRegion() {

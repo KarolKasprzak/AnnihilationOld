@@ -3,7 +3,9 @@ package com.cosma.annihilation.Utils;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -65,6 +67,20 @@ public class Util {
 
     public static Vector2 jsonStringToVector2(String string){
         return new Vector2(Float.parseFloat(string.split(",")[0]),Float.parseFloat(string.split(",")[1]));
+    }
+
+    public static void setCursorMove(){
+        Pixmap pm = new Pixmap(Gdx.files.internal("gfx/textures/cursor_move.png"));
+        Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 16, 16));
+        pm.dispose();
+    }
+    public static void setCursorSize(){
+        Pixmap pm = new Pixmap(Gdx.files.internal("gfx/textures/cursor_size.png"));
+        Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 16, 16));
+        pm.dispose();
+    }
+    public static void setCursorSystem(){
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 
     public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name,float rotation) {

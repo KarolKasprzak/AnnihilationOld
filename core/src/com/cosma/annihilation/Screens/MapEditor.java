@@ -61,6 +61,8 @@ public class MapEditor implements Screen, InputProcessor {
     private MapRender mapRender;
     public LightsPanel lightsPanel;
     private String currentMapPatch;
+    private EntityTreeWindow entityTreeWindow;
+    private SpriteTreeWindow spriteTreeWindow;
 
     private boolean isSpriteLayerSelected,isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
     private VisLabel editorModeLabel;
@@ -382,6 +384,13 @@ public class MapEditor implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+
+        if(keycode == Input.Keys.PLUS){
+            camera.zoom -= zoomLevel;
+        }
+        if(keycode == Input.Keys.MINUS){
+            camera.zoom += zoomLevel;
+        }
         return false;
     }
 
@@ -504,16 +513,22 @@ public class MapEditor implements Screen, InputProcessor {
         rightTable.add(lightsPanel).fillX().top().minHeight(lightsPanel.getParent().getHeight() * 0.25f).maxHeight(lightsPanel.getParent().getHeight() * 0.25f);
         rightTable.row();
 
-        EntityTreeWindow entityTreeWindow = new EntityTreeWindow(world, this);
+        entityTreeWindow = new EntityTreeWindow(world, this);
+        spriteTreeWindow = new SpriteTreeWindow(this);
+        stage.addActor(spriteTreeWindow);
         stage.addActor(entityTreeWindow);
 
         im.addProcessor(entityTreeWindow);
+        im.addProcessor(spriteTreeWindow);
 
         rightTable.add().expandY();
         im.addProcessor(objectPanel);
         im.addProcessor(lightsPanel);
         setCameraOnMapCenter();
     }
+
+
+
 
     public void setTileLayerSelected(boolean tileLayerSelected) {
         isTileLayerSelected = tileLayerSelected;

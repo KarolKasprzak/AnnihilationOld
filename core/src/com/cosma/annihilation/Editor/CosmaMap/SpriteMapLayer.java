@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Annihilation;
 
-public class SpriteMapLayer extends MapLayer implements Json.Serializable{
+public class SpriteMapLayer extends MapLayer implements Json.Serializable {
 
     private Array<Sprite> spriteArray = new Array<>();
 
@@ -15,6 +15,13 @@ public class SpriteMapLayer extends MapLayer implements Json.Serializable{
     }
 
     public SpriteMapLayer() {
+    }
+
+    public void createSprite(String regionName, String texturePath, float x, float y, float angle) {
+        Sprite sprite = new Sprite();
+        sprite.setTextureRegion(regionName, texturePath);
+        sprite.setSpritePosition(x, y, angle);
+        spriteArray.add(sprite);
     }
 
     public Array<Sprite> getSpriteArray() {
@@ -27,10 +34,10 @@ public class SpriteMapLayer extends MapLayer implements Json.Serializable{
         json.writeValue("height", this.getHeight());
         json.writeValue("width", this.getWidth());
         json.writeArrayStart("sprites");
-        for(Sprite sprite: spriteArray){
+        for (Sprite sprite : spriteArray) {
             json.writeObjectStart();
-            json.writeValue("position",sprite.getX()+","+sprite.getY()+","+sprite.getAngle());
-            json.writeValue("texture",sprite.getTextureDate());
+            json.writeValue("position", sprite.getX() + "," + sprite.getY() + "," + sprite.getAngle());
+            json.writeValue("texture", sprite.getTextureDate());
             json.writeObjectEnd();
         }
         json.writeArrayEnd();
@@ -41,13 +48,13 @@ public class SpriteMapLayer extends MapLayer implements Json.Serializable{
         this.setName(jsonData.get("name").asString());
         this.setHeight(jsonData.get("height").asInt());
         this.setWidth(jsonData.get("width").asInt());
-        for(JsonValue value: jsonData.get("sprites")){
+        for (JsonValue value : jsonData.get("sprites")) {
             Sprite sprite = new Sprite();
             String texture = value.get("texture").asString();
             String position = value.get("position").asString();
-            sprite.setTextureRegion(texture.split(",")[1],texture.split(",")[0]);
-            sprite.setSpritePosition(Float.parseFloat(position.split(",")[0]),Float.parseFloat(position.split(",")[1]),Float.parseFloat(position.split(",")[2]));
-
+            sprite.setTextureRegion(texture.split(",")[1], texture.split(",")[0]);
+            sprite.setSpritePosition(Float.parseFloat(position.split(",")[0]), Float.parseFloat(position.split(",")[1]), Float.parseFloat(position.split(",")[2]));
+            spriteArray.add(sprite);
         }
     }
 }
