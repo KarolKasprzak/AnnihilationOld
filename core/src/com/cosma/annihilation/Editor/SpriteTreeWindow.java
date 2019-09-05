@@ -86,18 +86,24 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
     private void findSprite(int x, int y){
         Vector3 worldCoordinates = new Vector3(x, y, 0);
         final Vector3 vec = mapEditor.getCamera().unproject(worldCoordinates);
+        boolean isSpriteSelected = false;
         for(Sprite sprite: mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).getSpriteArray()){
             if(vec.x >= sprite.getX()- sprite.getWidth()/2 && vec.x <= sprite.getX()+ sprite.getWidth()/2 && vec.y >= sprite.getY()-sprite.getHeight()/2 && vec.y <= sprite.getY()+sprite.getHeight()/2){
                     Util.setCursorMove();
                     canMove = true;
                     canRotate = true;
                     selectedSprite = sprite;
-            }else {
-                Util.setCursorSystem();
-                canMove = false;
-                canRotate = false;
-                selectedSprite = null;
+                    isSpriteSelected = true;
+                    System.out.println("find");
+                    continue;
             }
+        }
+        if(!isSpriteSelected){
+            Util.setCursorSystem();
+            canMove = false;
+            canRotate = false;
+            selectedSprite = null;
+            System.out.println("null");
         }
     }
 
@@ -126,7 +132,8 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
         Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
         final Vector3 vec = mapEditor.getCamera().unproject(worldCoordinates);
         if (canAddSprite && button == Input.Buttons.LEFT && mapEditor.isSpriteLayerSelected()) {
-            mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).createSprite(textureRegionName,texturePath,vec.x,vec.y,0);
+            mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).createSprite(textureRegionName,texturePath,
+                    Util.roundFloat(vec.x,0),Util.roundFloat(vec.y,0),0);
             canAddSprite = false;
             Util.setCursorSystem();
         }
@@ -183,7 +190,9 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+
         if(mapEditor.isSpriteLayerSelected()){
+            System.out.println(mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).getSpriteArray().size);
             findSprite(screenX,screenY);
         }
 

@@ -68,7 +68,7 @@ public class TilesPanel extends VisWindow {
     }
 
     private void findTextureAtlas(){
-        FileHandle file = Gdx.files.local("map/map_textures");
+        FileHandle file = Gdx.files.local("map/map_tiles");
         for(FileHandle texture: file.list(".atlas")){
             if(!textureAtlasArray.contains(texture,false)){
                 textureAtlasArray.add(texture);

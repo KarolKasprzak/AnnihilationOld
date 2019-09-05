@@ -25,7 +25,6 @@ import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.TableUtils;
-import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
 import com.kotcrab.vis.ui.util.dialog.Dialogs;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisTextButton;
@@ -39,26 +38,22 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner;
 public class LightsPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
-    private VisTextButton createLightButton, openLightsListWindowButton;
+    private VisTextButton createLightButton;
     /**
      * 0 = point , 1 = cone, 2 = directional
      **/
     private int selectedLightType = 0;
     private VisCheckBox setPointLight, setConeLight, setDirectionalLight;
-    private Spinner distanceSpinner, softDistanceSpinner;
+    private Spinner distanceSpinner;
     private OrthographicCamera camera;
     private RayHandler rayHandler;
     private ColorPicker picker;
-    private final Drawable white = VisUI.getSkin().getDrawable("white");
     private Color selectedColor;
     private MapLight selectedLight;
     private Light selectedBox2dLight;
     private Filter filter;
-    private boolean canDragObject, isLeftButtonPressed, isRightButtonPressed, canCreateLight = false, isLightListWindowOpen = false;
+    private boolean canDragObject, isLeftButtonPressed, canCreateLight = false;
 
-    void setLightListWindowOpen(boolean isLightListWindowOpen) {
-        this.isLightListWindowOpen = isLightListWindowOpen;
-    }
 
     public LightsPanel(final MapEditor mapEditor, RayHandler rayHandler) {
         super("Lights:");
@@ -66,6 +61,7 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         this.mapEditor = mapEditor;
         this.camera = mapEditor.getCamera();
 
+        Drawable white = VisUI.getSkin().getDrawable("white");
         final Image image = new Image(white);
         picker = new ColorPicker("color picker", new ColorPickerAdapter() {
             @Override
@@ -101,7 +97,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setDirectionalLight = new VisCheckBox("sun");
         setDirectionalLight.setFocusBorderEnabled(false);
         setConeLight = new VisCheckBox("cone");
-        openLightsListWindowButton = new VisTextButton("lights list");
 
         setPointLight.addListener(new ClickListener() {
             @Override
@@ -161,7 +156,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         add(distanceSpinner);
         row();
         add(createLightButton).center().top();
-        add(openLightsListWindowButton).center().top();
         add(image).top().size(25).center().top().expandX().expandY();
         setPanelButtonsDisable(true);
         pack();
@@ -174,7 +168,6 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         setConeLight.setDisabled(status);
         setDirectionalLight.setDisabled(status);
         setPointLight.setDisabled(status);
-        openLightsListWindowButton.setDisabled(status);
     }
 
     @Override
@@ -199,34 +192,25 @@ public class LightsPanel extends VisWindow implements InputProcessor {
         if (button == Input.Buttons.RIGHT && selectedLight != null) {
             final int delete = 1;
             final int options = 2;
-            final int filter = 3;
-            final int cancel = 4;
+            final int cancel = 3;
             Dialogs.showConfirmDialog(getStage(), "Light:", "what do you want?",
-                    new String[]{"delete", "options","filter","cancel"}, new Integer[]{delete, options, filter,cancel},
-                    new ConfirmDialogListener<Integer>() {
-                        @Override
-                        public void result(Integer result) {
-                            if (result == delete) {
-                                mapEditor.layersPanel.getSelectedLayer(LightsMapLayer.class).getLights().remove(selectedLight.getName());
-                                mapEditor.getMap().getLight(selectedLight.getName()).remove(true);
-                                selectedBox2dLight = null;
-                                selectedLight = null;
-                            }
-
-                            if (result == options){
-                                LightsAdvWindow lightsAdvWindow = new LightsAdvWindow(selectedLight,selectedBox2dLight);
-                                lightsAdvWindow.setPosition(Gdx.input.getX(),Gdx.input.getY());
-                                getStage().addActor(lightsAdvWindow);
-                            }
-
-                            if (result == filter){
-                                LightFilterWindow lightFilterWindow = new LightFilterWindow(selectedBox2dLight,selectedLight);
-                                lightFilterWindow.setPosition(Gdx.input.getX(),Gdx.input.getY());
-                                getStage().addActor(lightFilterWindow);
-                            }
-
-
+                    new String[]{"delete", "options","cancel"}, new Integer[]{delete, options,cancel},
+                    result -> {
+                        if (result == delete) {
+                            mapEditor.layersPanel.getSelectedLayer(LightsMapLayer.class).getLights().remove(selectedLight.getName());
+                            mapEditor.getMap().getLight(selectedLight.getName()).remove(true);
+                            selectedBox2dLight = null;
+                            selectedLight = null;
                         }
+
+                        if (result == options){
+                            LightsAdvWindow lightsAdvWindow = new LightsAdvWindow(selectedLight,selectedBox2dLight);
+                            lightsAdvWindow.setPosition(Gdx.input.getX(),Gdx.input.getY());
+                            getStage().addActor(lightsAdvWindow);
+                        }
+
+
+
                     }).setPosition(Gdx.input.getX(),Gdx.input.getY());
 
         }

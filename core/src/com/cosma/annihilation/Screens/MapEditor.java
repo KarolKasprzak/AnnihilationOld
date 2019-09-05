@@ -64,7 +64,7 @@ public class MapEditor implements Screen, InputProcessor {
     private EntityTreeWindow entityTreeWindow;
     private SpriteTreeWindow spriteTreeWindow;
 
-    private boolean isSpriteLayerSelected,isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true;
+    private boolean isSpriteLayerSelected,isTileLayerSelected, isObjectLayerSelected, isLightsLayerSelected, isEntityLayerSelected, isLightsRendered, drawGrid = true,isDebugRenderEnabled = true;
     private VisLabel editorModeLabel;
     private VisTable rightTable;
     private Box2DDebugRenderer debugRenderer;
@@ -128,6 +128,16 @@ public class MapEditor implements Screen, InputProcessor {
             }
         });
 
+        final VisCheckBox debugButton = new VisCheckBox("Debug: ");
+        debugButton.setChecked(true);
+        debugButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                isDebugRenderEnabled = debugButton.isChecked();
+            }
+        });
+
+
         MapFileChooser mapFileChooser = new MapFileChooser(this);
 
         final VisTextButton undoButton = new VisTextButton("<");
@@ -148,6 +158,7 @@ public class MapEditor implements Screen, InputProcessor {
 
         menuBar.getTable().add(undoButton);
         menuBar.getTable().add(redoButton);
+        menuBar.getTable().add(debugButton);
         menuBar.getTable().add(gridButton);
         menuBar.getTable().add(lightsButton);
 
@@ -350,7 +361,9 @@ public class MapEditor implements Screen, InputProcessor {
             rayHandler.setCombinedMatrix(camera);
             rayHandler.updateAndRender();
         }
-        debugRenderer.render(world, camera.combined);
+        if(isDebugRenderEnabled){
+            debugRenderer.render(world, camera.combined);
+        }
         stage.draw();
     }
 

@@ -65,6 +65,19 @@ public class MapRender {
                 }
             }
 
+            for (SpriteMapLayer mapLayer : gameMap.getLayers().getByType(SpriteMapLayer.class)) {
+                if (mapLayer.isLayerVisible()) {
+                    for (Sprite sprite : mapLayer.getSpriteArray()) {
+                        position.set(sprite.getX(), sprite.getY());
+                        position.x = position.x - (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2;
+                        position.y = position.y - (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2;
+                        batch.draw(sprite.getTextureRegion(), position.x + (sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
+                                sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
+                                1, 1, sprite.getAngle());
+                    }
+                }
+            }
+
             for (LightsMapLayer mapLayer : gameMap.getLayers().getByType(LightsMapLayer.class)) {
                 if (mapLayer.isLayerVisible()) {
                     for (MapLight light : mapLayer.getLights()) {
@@ -82,19 +95,6 @@ public class MapRender {
                             }
                             batch.draw(texture, light.getX() - (texture.getRegionWidth() / gameMap.getTileSize()) / 4, light.getY() - (texture.getRegionHeight() / gameMap.getTileSize()) / 4, texture.getRegionWidth() / gameMap.getTileSize() / 2, texture.getRegionHeight() / gameMap.getTileSize() / 2);
                         }
-                    }
-                }
-            }
-
-            for (SpriteMapLayer mapLayer : gameMap.getLayers().getByType(SpriteMapLayer.class)) {
-                if (mapLayer.isLayerVisible()) {
-                    for (Sprite sprite : mapLayer.getSpriteArray()) {
-                            position.set(sprite.getX(),sprite.getY());
-                            position.x = position.x - (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2;
-                            position.y = position.y - (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2;
-                            batch.draw(sprite.getTextureRegion(), position.x+(sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
-                                    sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
-                                    1, 1, sprite.getAngle());
                     }
                 }
             }

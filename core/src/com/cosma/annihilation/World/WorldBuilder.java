@@ -59,19 +59,20 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         SpriteBatch batch = new SpriteBatch();
         //Box2d world & light handler
         world = new World(new Vector2(Constants.WORLD_GRAVITY), true);
+
         rayHandler = new RayHandler(world);
         RayHandler.useDiffuseLight(true);
         rayHandler.setShadows(true);
+
         engine = new PooledEngine();
         engine.addEntityListener(this);
-
 
         EntityFactory.getInstance().setEngine(engine);
         EntityFactory.getInstance().setWorld(world);
         signal = new Signal<GameEvent>();
 
         mapLoader = new CosmaMapLoader( world, rayHandler, engine);
-        mapLoader.loadMap("map/test_map.map");
+        mapLoader.loadMap("map/lab.map");
 
         json = new Json();
         json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));

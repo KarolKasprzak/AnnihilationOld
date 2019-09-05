@@ -13,13 +13,8 @@ public class Tile implements Json.Serializable {
     private String atlasPath;
 
     public void setTextureRegion(String region, String path) {
-      for(String string: Annihilation.getAssets().getAssetNames()){
-          if(string.contains(path)){
-              this.textureRegion = Annihilation.getAssets().get(string,TextureAtlas.class).findRegion(region);
-              this.atlasRegionName= region;
-              break;
-          }
-      }
+        this.textureRegion = Annihilation.getAssets().get(path,TextureAtlas.class).findRegion(region);
+        this.atlasRegionName= region;
     }
 
     public TextureRegion getTextureRegion() {
@@ -27,7 +22,7 @@ public class Tile implements Json.Serializable {
     }
 
     String getTextureDate(){
-        return ((FileTextureData)textureRegion.getTexture().getTextureData()).getFileHandle().nameWithoutExtension()+".atlas"+","+atlasRegionName;
+        return ((FileTextureData)textureRegion.getTexture().getTextureData()).getFileHandle().pathWithoutExtension()+".atlas"+","+atlasRegionName;
     }
 
     public Tile(){

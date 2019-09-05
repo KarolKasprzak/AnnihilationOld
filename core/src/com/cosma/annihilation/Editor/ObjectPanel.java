@@ -4,15 +4,24 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
+import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Utils.Util;
@@ -24,7 +33,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
     private TabbedPane tabbedPane;
-    private VisTextButton createRectangleButton, createJointButton,openObjectListWindowButton;
+    private VisTextButton createRectangleButton, createJointButton;
     private float x1, y1, x2, y2;
     private BodyDef.BodyType bodyType = BodyDef.BodyType.StaticBody;
     private VisCheckBox setStaticBox, setKinematicBox, setDynamicBox;
@@ -34,6 +43,11 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     private OrthographicCamera camera;
     private ObjectsListWindow objectsListWindow;
     private boolean isObjectListWindowOpen = false;
+    private Array<Body> bodies = new Array<Body>();
+    private Body selectedBody;
+    private boolean canDragRight, canDragLeft, canDragUp, canDragDown, canDragObject, canRotateObject,
+            isLeftButtonPressed, isRightButtonPressed;
+    private RectangleObject selectedObject;
 
     public void setObjectListWindowOpen(boolean objectListWindowOpen) {
         isObjectListWindowOpen = objectListWindowOpen;
@@ -55,7 +69,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         setDynamicBox = new VisCheckBox("Dynamic");
         setDynamicBox.setFocusBorderEnabled(false);
         setKinematicBox = new VisCheckBox("Kinematic");
-        openObjectListWindowButton = new VisTextButton("Obj. list");
 
         add(setDynamicBox);
         add(setStaticBox);
@@ -63,7 +76,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         row();
         add(createRectangleButton).top();
         add(createJointButton).top();
-        add(openObjectListWindowButton).top();
         add().expand().fill();
 
         setStaticBox.addListener(new ClickListener() {
@@ -102,17 +114,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
                 canCreateBox = true;
             }
         });
-        openObjectListWindowButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!getStage().getActors().contains(objectsListWindow, true) && mapEditor.isObjectLayerSelected()) {
-                    objectsListWindow = new ObjectsListWindow(mapEditor, camera);
-                    getStage().addActor(objectsListWindow);
-                    mapEditor.getInputMultiplexer().addProcessor(0, objectsListWindow);
-                    setObjectListWindowOpen(true);
-                }
-            }
-        });
 
         setPanelButtonsDisable(true);
         pack();
@@ -137,7 +138,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         setKinematicBox.setDisabled(status);
         setDynamicBox.setDisabled(status);
         setStaticBox.setDisabled(status);
-        openObjectListWindowButton.setDisabled(status);
         createJointButton.setDisabled(status);
     }
 
@@ -181,6 +181,8 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
             x1 = vec.x;
             y1 = vec.y;
         }
+        if (button == Input.Buttons.LEFT) isLeftButtonPressed = true;
+        if (button == Input.Buttons.RIGHT) isRightButtonPressed = true;
         return false;
     }
 
@@ -188,7 +190,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT && canCreateBox()) {
             canDraw = false;
-
             float x = x1;
             float y = y1;
             float width = x2 - x1;
@@ -211,16 +212,158 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
             createBoxObject(x, y, width, height);
         }
+        if (button == Input.Buttons.LEFT) isLeftButtonPressed = false;
+        if (button == Input.Buttons.RIGHT) isRightButtonPressed = false;
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if(selectedBody != null){
+            Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
+            Vector3 vec = camera.unproject(worldCoordinates);
+            Vector3 deltaWorldCoordinates = new Vector3(screenX - Gdx.input.getDeltaX(), screenY - Gdx.input.getDeltaY(), 0);
+            Vector3 deltaVec = camera.unproject(deltaWorldCoordinates);
+            float amountX, amountY, startX, startY;
+            if (canDragRight && isLeftButtonPressed) {
+                float width = vec.x - selectedObject.getX();
+                if (width < 0.2f) width = 0.2f;
+                selectedObject.setWidth(width);
+            }
+            if (canDragLeft && isLeftButtonPressed) {
+                amountX = vec.x - deltaVec.x;
+                startX = deltaVec.x;
+                if (selectedObject.getWidth() - amountX < 0.2f) amountX = 0;
+                selectedObject.setX(selectedObject.getX() + amountX);
+                selectedObject.setWidth(selectedObject.getWidth() - amountX);
+            }
+            if (canDragDown && isLeftButtonPressed) {
+                float height = vec.y - selectedObject.getY();
+                if (height < 0.2f) height = 0.2f;
+                selectedObject.setHeight(height);
+            }
+            if (canDragUp && isLeftButtonPressed) {
+                amountY = vec.y - deltaVec.y;
+                startY = deltaVec.y;
+                if (selectedObject.getHeight() - amountY < 0.2f) amountY = 0;
+                selectedObject.setY(selectedObject.getY() + amountY);
+                selectedObject.setHeight(selectedObject.getHeight() - amountY);
+            }
+            if (canDragObject && isLeftButtonPressed) {
+                amountX = vec.x - deltaVec.x;
+                amountY = vec.y - deltaVec.y;
+                selectedObject.setX(selectedObject.getX() + amountX);
+                selectedObject.setY(selectedObject.getY() + amountY);
+            }
+            if (canRotateObject && isRightButtonPressed) {
+                amountY = vec.y - deltaVec.y;
+                selectedObject.setRotation(selectedObject.getRotation() + amountY * 7);
+            }
+            if (selectedBody != null) {
+                float x = selectedObject.getX();
+                float y = selectedObject.getY();
+                float width = selectedObject.getWidth();
+                float height = selectedObject.getHeight();
+                ((PolygonShape) selectedBody.getFixtureList().first().getShape()).setAsBox(width / 2, height / 2);
+                selectedBody.setTransform(width / 2 + x, height / 2 + y, selectedObject.getRotation() * MathUtils.degreesToRadians);
+            }
+        }
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
+        Vector3 vec = camera.unproject(worldCoordinates);
+
+        if (mapEditor.isObjectLayerSelected()) {
+            boolean isObjectSelected = false;
+
+            for(MapObject mapObject: mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects()){
+                if(mapObject instanceof RectangleObject){
+                    RectangleObject obj = (RectangleObject) mapObject;
+                    if(vec.x >= obj.getX()- obj.getWidth() && vec.x <= obj.getX()+ obj.getWidth() && vec.y >= obj.getY()-obj.getHeight() && vec.y <= obj.getY()+obj.getHeight()){
+
+                        isObjectSelected = true;
+                        obj.setHighlighted(true);
+                        System.out.println("find");
+
+                        selectedObject = obj;
+                        mapEditor.getWorld().getBodies(bodies);
+                        for (Body body : bodies) {
+                            if (body.getUserData().equals(obj.getName())) {
+                                selectedBody = body;
+                            }
+                        }
+
+
+                        break;
+                    }
+                }
+            }
+
+            if(!isObjectSelected) {
+                for (MapObject mapObject : mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects()) {
+                    if (mapObject instanceof RectangleObject) {
+                        mapObject.setHighlighted(false);
+                    }
+                    selectedObject = null;
+                    selectedBody = null;
+
+                }
+
+
+            }
+
+        }
+
+
+
+        if (selectedObject != null) {
+            float x = selectedObject.getX();
+            float y = selectedObject.getY();
+            float width = selectedObject.getWidth();
+            float height = selectedObject.getHeight();
+            if (Util.roundFloat(x + width, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
+                Util.setCursorSizeHorizontal();
+                canDragRight = true;
+            } else {
+                canDragRight = false;
+            }
+            if (Util.roundFloat(x, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
+                Util.setCursorSizeHorizontal();
+                canDragLeft = true;
+            } else {
+                canDragLeft = false;
+            }
+            if (Util.roundFloat(y, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
+                Util.setCursorSize();
+                canDragUp = true;
+            } else {
+                canDragUp = false;
+            }
+            if (Util.roundFloat(y + height, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
+                Util.setCursorSize();
+                canDragDown = true;
+            } else {
+                canDragDown = false;
+            }
+            if (Util.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
+                    && (Util.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
+                Util.setCursorMove();
+                canDragObject = true;
+                canRotateObject = true;
+            } else {
+                canDragObject = false;
+                canRotateObject = false;
+            }
+
+            if (!canDragLeft && !canDragRight && !canDragDown && !canDragUp && !canDragObject) {
+                Util.setCursorSystem();
+            }
+        }
+
+
         return false;
     }
 

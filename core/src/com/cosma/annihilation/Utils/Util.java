@@ -79,6 +79,12 @@ public class Util {
         Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 16, 16));
         pm.dispose();
     }
+
+    public static void setCursorSizeHorizontal(){
+        Pixmap pm = new Pixmap(Gdx.files.internal("gfx/textures/cursor_size_horizontal.png"));
+        Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 16, 16));
+        pm.dispose();
+    }
     public static void setCursorSystem(){
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }

@@ -11,15 +11,15 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.cosma.annihilation.Editor.CosmaMap.GameMap;
-import com.cosma.annihilation.Editor.CosmaMap.Tile;
-import com.cosma.annihilation.Editor.CosmaMap.TileMapLayer;
+import com.badlogic.gdx.math.Vector2;
+import com.cosma.annihilation.Editor.CosmaMap.*;
 import com.cosma.annihilation.Utils.Constants;
 
 public class TileMapRender extends IteratingSystem {
 
     private OrthographicCamera camera;
     private GameMap tiledMap;
+    private Vector2 position = new Vector2();
     protected Batch batch;
 
     public TileMapRender(OrthographicCamera camera, GameMap tiledMap) {
@@ -35,6 +35,8 @@ public class TileMapRender extends IteratingSystem {
         super.update(deltaTime);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+
 
         for (TileMapLayer mapLayer : tiledMap.getLayers().getByType(TileMapLayer.class)) {
             if (mapLayer.isLayerVisible()) {
@@ -53,8 +55,19 @@ public class TileMapRender extends IteratingSystem {
                 }
             }
         }
-
-
+        
+        for (SpriteMapLayer mapLayer : tiledMap.getLayers().getByType(SpriteMapLayer.class)) {
+            if (mapLayer.isLayerVisible()) {
+                for (Sprite sprite : mapLayer.getSpriteArray()) {
+                    position.set(sprite.getX(),sprite.getY());
+                    position.x = position.x - (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2;
+                    position.y = position.y - (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2;
+                    batch.draw(sprite.getTextureRegion(), position.x+(sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
+                            sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
+                            1, 1, sprite.getAngle());
+                }
+            }
+        }
 
         batch.end();
     }

@@ -285,8 +285,6 @@ public class ObjectsListWindow extends VisWindow implements InputProcessor {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
 
-                        BodyFilterWindow window= new BodyFilterWindow(objectsListWindow.selectedBody);
-                        objectsListWindow.getStage().addActor(window);
 
                 }
             });

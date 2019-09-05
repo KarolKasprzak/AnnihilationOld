@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.SerializationComponent;
-import com.cosma.annihilation.Editor.BodyFilterWindow;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.kotcrab.vis.ui.widget.*;
@@ -39,9 +38,7 @@ public class EntityEditOptionsWindow extends VisWindow {
                 textButton.addListener(new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent event, Actor actor) {
-                        BodyFilterWindow bodyFilterWindow = new BodyFilterWindow(((BodyComponent) component).body);
-                        getStage().addActor(bodyFilterWindow);
-                        close();
+                        //*todo
                     }
                 });
                 add(textButton);

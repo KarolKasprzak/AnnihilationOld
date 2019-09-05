@@ -25,7 +25,7 @@ public class AssetLoader {
         loadFonts();
 
         //Load map textures
-        FileHandle mapTextures = Gdx.files.local("map/map_textures/");
+        FileHandle mapTextures = Gdx.files.local("map/map_tiles/");
         for(FileHandle texture: mapTextures.list(".atlas")){
             manager.load(texture.path(),TextureAtlas.class);
         }
