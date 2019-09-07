@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -18,21 +17,17 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.MapObject;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
-import com.cosma.annihilation.Editor.CosmaMap.LightsMapLayer;
 import com.cosma.annihilation.Editor.CosmaMap.ObjectMapLayer;
 import com.cosma.annihilation.Screens.MapEditor;
 import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.util.TableUtils;
 import com.kotcrab.vis.ui.widget.*;
-import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane;
 
 public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private MapEditor mapEditor;
-    private TabbedPane tabbedPane;
     private VisTextButton createRectangleButton, createJointButton;
     private float x1, y1, x2, y2;
     private BodyDef.BodyType bodyType = BodyDef.BodyType.StaticBody;
@@ -41,17 +36,11 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     private ShapeRenderer shapeRenderer;
     private boolean canDraw = false;
     private OrthographicCamera camera;
-    private ObjectsListWindow objectsListWindow;
-    private boolean isObjectListWindowOpen = false;
-    private Array<Body> bodies = new Array<Body>();
+    private Array<Body> bodies = new Array<>();
     private Body selectedBody;
     private boolean canDragRight, canDragLeft, canDragUp, canDragDown, canDragObject, canRotateObject,
             isLeftButtonPressed, isRightButtonPressed;
     private RectangleObject selectedObject;
-
-    public void setObjectListWindowOpen(boolean objectListWindowOpen) {
-        isObjectListWindowOpen = objectListWindowOpen;
-    }
 
     public ObjectPanel(final MapEditor mapEditor) {
         super("Objects:");
@@ -133,7 +122,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         }
     }
 
-    public void setPanelButtonsDisable(Boolean status) {
+    void setPanelButtonsDisable(Boolean status) {
         createRectangleButton.setDisabled(status);
         setKinematicBox.setDisabled(status);
         setDynamicBox.setDisabled(status);
@@ -143,11 +132,8 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private void createBoxObject(float x, float y, float w, float h) {
         if (mapEditor.isObjectLayerSelected()) {
-            Util.createBox2dObject(mapEditor.getWorld(), x, y, w, h,bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h,bodyType),0);
+            Util.createBox2dObject(mapEditor.getWorld(), x, y, w, h, bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h, bodyType), 0);
             canCreateBox = false;
-            if (isObjectListWindowOpen) {
-                objectsListWindow.rebuildView();
-            }
         }
     }
 
@@ -159,6 +145,19 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.FORWARD_DEL && selectedBody != null) {
+            mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects().remove(selectedObject.getName());
+            Array<Body> bodies = new Array<>();
+            mapEditor.getWorld().getBodies(bodies);
+            for (Body body : bodies) {
+                if (body.getUserData().equals(selectedObject.getName())) {
+                    mapEditor.getWorld().destroyBody(body);
+                    selectedObject = null;
+                    selectedBody = null;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -219,12 +218,12 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if(selectedBody != null){
+        if (selectedBody != null) {
             Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
             Vector3 vec = camera.unproject(worldCoordinates);
             Vector3 deltaWorldCoordinates = new Vector3(screenX - Gdx.input.getDeltaX(), screenY - Gdx.input.getDeltaY(), 0);
             Vector3 deltaVec = camera.unproject(deltaWorldCoordinates);
-            float amountX, amountY, startX, startY;
+            float amountX, amountY;
             if (canDragRight && isLeftButtonPressed) {
                 float width = vec.x - selectedObject.getX();
                 if (width < 0.2f) width = 0.2f;
@@ -232,7 +231,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
             }
             if (canDragLeft && isLeftButtonPressed) {
                 amountX = vec.x - deltaVec.x;
-                startX = deltaVec.x;
                 if (selectedObject.getWidth() - amountX < 0.2f) amountX = 0;
                 selectedObject.setX(selectedObject.getX() + amountX);
                 selectedObject.setWidth(selectedObject.getWidth() - amountX);
@@ -244,7 +242,6 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
             }
             if (canDragUp && isLeftButtonPressed) {
                 amountY = vec.y - deltaVec.y;
-                startY = deltaVec.y;
                 if (selectedObject.getHeight() - amountY < 0.2f) amountY = 0;
                 selectedObject.setY(selectedObject.getY() + amountY);
                 selectedObject.setHeight(selectedObject.getHeight() - amountY);
@@ -279,91 +276,77 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         if (mapEditor.isObjectLayerSelected()) {
             boolean isObjectSelected = false;
 
-            for(MapObject mapObject: mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects()){
-                if(mapObject instanceof RectangleObject){
+            for (MapObject mapObject : mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects()) {
+                if (mapObject instanceof RectangleObject) {
                     RectangleObject obj = (RectangleObject) mapObject;
-                    if(vec.x >= obj.getX()- obj.getWidth() && vec.x <= obj.getX()+ obj.getWidth() && vec.y >= obj.getY()-obj.getHeight() && vec.y <= obj.getY()+obj.getHeight()){
+                    if (vec.x >= obj.getX() - obj.getWidth() && vec.x <= obj.getX() + obj.getWidth() && vec.y >= obj.getY() - obj.getHeight() && vec.y <= obj.getY() + obj.getHeight()) {
 
                         isObjectSelected = true;
                         obj.setHighlighted(true);
-                        System.out.println("find");
-
                         selectedObject = obj;
                         mapEditor.getWorld().getBodies(bodies);
                         for (Body body : bodies) {
                             if (body.getUserData().equals(obj.getName())) {
                                 selectedBody = body;
+                                float x = selectedObject.getX();
+                                float y = selectedObject.getY();
+                                float width = selectedObject.getWidth();
+                                float height = selectedObject.getHeight();
+                                if (Util.roundFloat(x + width, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
+                                    Util.setCursorSizeHorizontal();
+                                    canDragRight = true;
+                                } else {
+                                    canDragRight = false;
+                                }
+                                if (Util.roundFloat(x, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
+                                    Util.setCursorSizeHorizontal();
+                                    canDragLeft = true;
+                                } else {
+                                    canDragLeft = false;
+                                }
+                                if (Util.roundFloat(y, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
+                                    Util.setCursorSize();
+                                    canDragUp = true;
+                                } else {
+                                    canDragUp = false;
+                                }
+                                if (Util.roundFloat(y + height, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
+                                    Util.setCursorSize();
+                                    canDragDown = true;
+                                } else {
+                                    canDragDown = false;
+                                }
+                                if (Util.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
+                                        && (Util.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
+                                    Util.setCursorMove();
+                                    canDragObject = true;
+                                    canRotateObject = true;
+                                } else {
+                                    canDragObject = false;
+                                    canRotateObject = false;
+                                }
+                                if (!canDragLeft && !canDragRight && !canDragDown && !canDragUp && !canDragObject) {
+                                    Util.setCursorSystem();
+                                }
+                                break;
                             }
                         }
-
-
                         break;
                     }
                 }
             }
 
-            if(!isObjectSelected) {
+            if (!isObjectSelected) {
                 for (MapObject mapObject : mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).getObjects()) {
                     if (mapObject instanceof RectangleObject) {
                         mapObject.setHighlighted(false);
                     }
                     selectedObject = null;
                     selectedBody = null;
-
+                    Util.setCursorSystem();
                 }
-
-
-            }
-
-        }
-
-
-
-        if (selectedObject != null) {
-            float x = selectedObject.getX();
-            float y = selectedObject.getY();
-            float width = selectedObject.getWidth();
-            float height = selectedObject.getHeight();
-            if (Util.roundFloat(x + width, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
-                Util.setCursorSizeHorizontal();
-                canDragRight = true;
-            } else {
-                canDragRight = false;
-            }
-            if (Util.roundFloat(x, 1) == Util.roundFloat(vec.x, 1) && Util.isFloatInRange(vec.y, y, y + height)) {
-                Util.setCursorSizeHorizontal();
-                canDragLeft = true;
-            } else {
-                canDragLeft = false;
-            }
-            if (Util.roundFloat(y, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
-                Util.setCursorSize();
-                canDragUp = true;
-            } else {
-                canDragUp = false;
-            }
-            if (Util.roundFloat(y + height, 1) == Util.roundFloat(vec.y, 1) && Util.isFloatInRange(vec.x, x, x + width)) {
-                Util.setCursorSize();
-                canDragDown = true;
-            } else {
-                canDragDown = false;
-            }
-            if (Util.isFloatInRange(vec.x, x + 0.1f, x + width - 0.1f)
-                    && (Util.isFloatInRange(vec.y, y + 0.1f, y + height - 0.1f))) {
-                Util.setCursorMove();
-                canDragObject = true;
-                canRotateObject = true;
-            } else {
-                canDragObject = false;
-                canRotateObject = false;
-            }
-
-            if (!canDragLeft && !canDragRight && !canDragDown && !canDragUp && !canDragObject) {
-                Util.setCursorSystem();
             }
         }
-
-
         return false;
     }
 
@@ -372,12 +355,8 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         return false;
     }
 
-    public boolean canCreateBox() {
+    private boolean canCreateBox() {
         return canCreateBox;
-    }
-
-    public void setCanCreateBox(boolean canCreateBox) {
-        this.canCreateBox = canCreateBox;
     }
 
     private void drawBox() {

@@ -76,7 +76,7 @@ public class EntityTreeWindow extends VisWindow implements InputProcessor {
         add(tree).expand().fill();
 
         setSize(150, 380);
-        setPosition(0, 303);
+        setPosition(0, 400);
 
         tree.addListener(new ChangeListener() {
             @Override

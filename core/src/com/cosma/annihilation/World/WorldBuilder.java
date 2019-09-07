@@ -54,7 +54,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
         //Game camera
         camera = new OrthographicCamera();
-        viewport = new ExtendViewport(16,9,camera);
+        viewport = new ExtendViewport(16, 9, camera);
         viewport.apply(false);
         SpriteBatch batch = new SpriteBatch();
         //Box2d world & light handler
@@ -71,11 +71,11 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         EntityFactory.getInstance().setWorld(world);
         signal = new Signal<GameEvent>();
 
-        mapLoader = new CosmaMapLoader( world, rayHandler, engine);
+        mapLoader = new CosmaMapLoader(world, rayHandler, engine);
         mapLoader.loadMap("map/lab.map");
 
         json = new Json();
-        json.setSerializer(Entity.class, new GameEntitySerializer(world,engine));
+        json.setSerializer(Entity.class, new GameEntitySerializer(world, engine));
 
         gameEventList = new ArrayList<>();
 
@@ -84,21 +84,21 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 //
 //        }
 
-        engine.addSystem(new UserInterfaceSystem(engine,world,this));
-        engine.addSystem(new ActionSystem(world,this));
-        engine.addSystem(new ShootingSystem(world, rayHandler,batch,camera));
-        engine.addSystem(new SpriteRenderSystem(camera,batch));
+        engine.addSystem(new UserInterfaceSystem(engine, world, this));
+        engine.addSystem(new ActionSystem(world, this));
+        engine.addSystem(new ShootingSystem(world, rayHandler, batch, camera));
+        engine.addSystem(new SpriteRenderSystem(camera, batch));
         engine.addSystem(new RenderSystem(camera, world, rayHandler, batch));
         engine.addSystem(new SecondRenderSystem(camera, batch));
         engine.addSystem(new HealthSystem(camera));
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
-        engine.addSystem(new PlayerControlSystem(gameEventList,world));
+        engine.addSystem(new PlayerControlSystem(gameEventList, world));
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera, mapLoader.getMap()));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new DebugRenderSystem(camera, world));
-        engine.addSystem(new AiSystem(world,batch,camera));
+        engine.addSystem(new AiSystem(world, batch, camera));
 
         engine.addEntityListener(this);
 
@@ -117,7 +117,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
     public void update(float delta) {
         debugInput();
-        if(!isPaused){
+        if (!isPaused) {
             engine.update(delta);
             camera.update();
         }
@@ -141,32 +141,31 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.translate(1, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) camera.zoom = camera.zoom + 0.2f;
         if (Gdx.input.isKeyPressed(Input.Keys.X)) camera.zoom = camera.zoom - 0.2f;
-        if (Gdx.input.isKeyPressed(Input.Keys.P)){
+        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
             loadMap();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)){
-            if (Gdx.input.isKeyPressed(Input.Keys.D)){
-                StateManager.debugMode = !StateManager.debugMode;
-            }
+        if (Gdx.input.isKeyPressed(Input.Keys.V)) {
+            StateManager.debugMode = !StateManager.debugMode;
         }
+
         camera.update();
     }
 
 
-    public void saveMap(boolean isPlayerGoToNewLocation){
-        FileHandle mapFile = Gdx.files.local("save/"+mapLoader.getMap().getMapName());
+    public void saveMap(boolean isPlayerGoToNewLocation) {
+        FileHandle mapFile = Gdx.files.local("save/" + mapLoader.getMap().getMapName());
         FileHandle playerFile = Gdx.files.local("save/player.json");
         Entity playerEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        if(!isPlayerGoToNewLocation){
+        if (!isPlayerGoToNewLocation) {
             playerEntity.getComponent(PlayerComponent.class).mapName = mapLoader.getMap().getMapName();
         }
-        playerFile.writeString(json.prettyPrint( playerEntity),false);
+        playerFile.writeString(json.prettyPrint(playerEntity), false);
 
 
         json.setIgnoreUnknownFields(false);
         System.out.println("save entity");
-        for(Entity entity: engine.getEntities()){
-            if(!mapLoader.getMap().getEntityArrayList().contains(entity)){
+        for (Entity entity : engine.getEntities()) {
+            if (!mapLoader.getMap().getEntityArrayList().contains(entity)) {
                 mapLoader.getMap().getEntityArrayList().add(entity);
             }
         }
@@ -176,13 +175,13 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         mapFile.writeString(json.prettyPrint(mapLoader.getMap()), false);
     }
 
-    public void loadMap(){
+    public void loadMap() {
         isPaused = true;
-        System.out.println("e "+engine.getEntities().size());
-        System.out.println("b "+world.getBodyCount());
-        for(Entity entity: engine.getEntities()){
-            for(Component component: entity.getComponents()){
-                if(component instanceof BodyComponent){
+        System.out.println("e " + engine.getEntities().size());
+        System.out.println("b " + world.getBodyCount());
+        for (Entity entity : engine.getEntities()) {
+            for (Component component : entity.getComponents()) {
+                if (component instanceof BodyComponent) {
                     world.destroyBody(((BodyComponent) component).body);
                     ((BodyComponent) component).body = null;
                 }
@@ -190,14 +189,14 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         }
         Array<Body> bodies = new Array<>();
         world.getBodies(bodies);
-        for(Body body: bodies){
+        for (Body body : bodies) {
             world.destroyBody(body);
         }
         rayHandler.removeAll();
         bodies.clear();
         engine.removeAllEntities();
-        System.out.println("e "+engine.getEntities().size());
-        System.out.println("b "+world.getBodyCount());
+        System.out.println("e " + engine.getEntities().size());
+        System.out.println("b " + world.getBodyCount());
 //        mapLoader.loadMap("save/save.json");
 //
 //
@@ -205,22 +204,22 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 //        isPaused = false;
 
         FileHandle playerFile = Gdx.files.local("save/player.json");
-        Entity playerEntity  = json.fromJson(Entity.class, playerFile);
+        Entity playerEntity = json.fromJson(Entity.class, playerFile);
 
-        mapLoader.loadMap("map/"+playerEntity.getComponent(PlayerComponent.class).mapName);
+        mapLoader.loadMap("map/" + playerEntity.getComponent(PlayerComponent.class).mapName);
         mapLoader.getMap().getEntityArrayList().add(playerEntity);
         isPaused = false;
 
     }
 
-    public void goToMap(){
+    public void goToMap() {
         saveMap(true);
         isPaused = true;
-        System.out.println("e "+engine.getEntities().size());
-        System.out.println("b "+world.getBodyCount());
-        for(Entity entity: engine.getEntities()){
-            for(Component component: entity.getComponents()){
-                if(component instanceof BodyComponent){
+        System.out.println("e " + engine.getEntities().size());
+        System.out.println("b " + world.getBodyCount());
+        for (Entity entity : engine.getEntities()) {
+            for (Component component : entity.getComponents()) {
+                if (component instanceof BodyComponent) {
                     world.destroyBody(((BodyComponent) component).body);
                     ((BodyComponent) component).body = null;
                 }
@@ -228,24 +227,23 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         }
         Array<Body> bodies = new Array<>();
         world.getBodies(bodies);
-        for(Body body: bodies){
+        for (Body body : bodies) {
             world.destroyBody(body);
         }
         rayHandler.removeAll();
         bodies.clear();
         engine.removeAllEntities();
-        System.out.println("e "+engine.getEntities().size());
-        System.out.println("b "+world.getBodyCount());
+        System.out.println("e " + engine.getEntities().size());
+        System.out.println("b " + world.getBodyCount());
 
         FileHandle playerFile = Gdx.files.local("save/player.json");
-        Entity playerEntity  = json.fromJson(Entity.class, playerFile);
+        Entity playerEntity = json.fromJson(Entity.class, playerFile);
 
-        mapLoader.loadMap("map/"+playerEntity.getComponent(PlayerComponent.class).mapName);
+        mapLoader.loadMap("map/" + playerEntity.getComponent(PlayerComponent.class).mapName);
         mapLoader.getMap().getEntityArrayList().add(playerEntity);
         isPaused = false;
 
     }
-
 
 
     public Engine getEngine() {
@@ -274,7 +272,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
     @Override
     public boolean keyDown(int keycode) {
-        if(keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE){
+        if (keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE) {
             signal.dispatch(GameEvent.OPEN_MENU);
         }
 
@@ -293,7 +291,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(button == Input.Buttons.LEFT){
+        if (button == Input.Buttons.LEFT) {
             gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
             gameEventList.add(GameEvent.PERFORM_ACTION);
 //            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
@@ -301,7 +299,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         }
 
         //Weapon take out/hide
-        if(button == Input.Buttons.RIGHT){
+        if (button == Input.Buttons.RIGHT) {
 //            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
             gameEventList.add(GameEvent.WEAPON_TAKE_OUT);
         }
@@ -311,7 +309,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if(button == Input.Buttons.LEFT){
+        if (button == Input.Buttons.LEFT) {
             gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_UP);
 //            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
         }
@@ -335,7 +333,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent object) {
-        if(object.equals(GameEvent.PLAYER_GO_TO_NEW_MAP)){
+        if (object.equals(GameEvent.PLAYER_GO_TO_NEW_MAP)) {
             goToMap();
         }
     }

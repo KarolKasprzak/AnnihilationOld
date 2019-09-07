@@ -11,7 +11,6 @@ import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 
 public class MapRender {
 
@@ -69,8 +68,6 @@ public class MapRender {
                 if (mapLayer.isLayerVisible()) {
                     for (Sprite sprite : mapLayer.getSpriteArray()) {
                         position.set(sprite.getX(), sprite.getY());
-                        position.x = position.x - (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2;
-                        position.y = position.y - (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2;
                         batch.draw(sprite.getTextureRegion(), position.x + (sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
                                 sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
                                 1, 1, sprite.getAngle());
@@ -101,9 +98,9 @@ public class MapRender {
 
         }
         batch.end();
+        renderer.begin();
         for (ObjectMapLayer layer : gameMap.getLayers().getByType(ObjectMapLayer.class)) {
             if (layer.isLayerVisible()) {
-                renderer.begin();
                 for (RectangleObject object : layer.getObjects().getByType(RectangleObject.class)) {
                     renderer.setColor(Color.WHITE);
                     if (object.isHighlighted()) {
@@ -111,8 +108,9 @@ public class MapRender {
                     }
                     renderer.rect(object.getX(), object.getY(), object.getWidth() / 2, object.getHeight() / 2, object.getWidth(), object.getHeight(), 1, 1, object.getRotation());
                 }
-                renderer.end();
+
             }
         }
+        renderer.end();
     }
 }
