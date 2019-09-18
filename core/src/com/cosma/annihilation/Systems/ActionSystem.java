@@ -6,7 +6,11 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
@@ -15,24 +19,24 @@ import com.cosma.annihilation.Utils.Util;
 import com.cosma.annihilation.World.WorldBuilder;
 
 public class ActionSystem extends IteratingSystem implements Listener<GameEvent> {
-    private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<PlayerComponent> stateMapper;
     private PlayerComponent playerComponent;
 
-    private Body playerBody;
-    private World world;
+
     private WorldBuilder worldBuilder;
+    private OrthographicCamera camera;
+    private SpriteBatch batch;
 
 //    Filter filter;
 //    Filter filter1;
 
-    public ActionSystem(World world, WorldBuilder worldBuilder) {
+    public ActionSystem(WorldBuilder worldBuilder,OrthographicCamera camera, SpriteBatch batch) {
         super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
-        this.world = world;
         this.worldBuilder = worldBuilder;
-        bodyMapper = ComponentMapper.getFor(BodyComponent.class);
-
         stateMapper = ComponentMapper.getFor(PlayerComponent.class);
+
+        this.batch = batch;
+        this.camera = camera;
 //        filter = new Filter();
 //        filter.categoryBits = CollisionID.NO_SHADOW;
 //
@@ -42,7 +46,6 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        playerBody = bodyMapper.get(entity).body;
         playerComponent = stateMapper.get(entity);
 
         if (!playerComponent.collisionEntityList.isEmpty()) {
@@ -50,6 +53,26 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
             if(Util.hasComponent(playerComponent.processedEntity,TextureComponent.class)){
                 playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
             }
+            ActionComponent actionComponent = playerComponent.processedEntity.getComponent(ActionComponent.class);
+            batch.setProjectionMatrix(camera.combined);
+            batch.begin();
+
+            Texture texture;
+            Body entityBody =  playerComponent.processedEntity.getComponent(BodyComponent.class).body;
+
+            switch (actionComponent.action){
+                case TALK:
+                    texture = Annihilation.getAssets().get("gfx/textures/talk_icon.png",Texture.class);
+                    batch.draw(texture,entityBody.getPosition().x,entityBody.getPosition().y+0.8f,texture.getWidth()/32,texture.getHeight()/32);
+                    break;
+                case OPEN:
+                    texture = Annihilation.getAssets().get("gfx/textures/take_icon.png",Texture.class);
+                    batch.draw(texture,entityBody.getPosition().x,entityBody.getPosition().y+1f,texture.getWidth()/32,texture.getHeight()/32);
+                    break;
+
+            }
+            batch.end();
+
         } else
             playerComponent.processedEntity = null;
     }
@@ -88,7 +111,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     private void goToAnotherMap(){
         playerComponent.mapName = playerComponent.processedEntity.getComponent(GateComponent.class).targetMapPath;
         worldBuilder.goToMap();
-//        playerComponent.ggetComponent(BodyComponent.class).body.setTransform(gateEntity.getComponent(GateComponent.class).playerPositionOnTargetMap,0);
+//        playerComponent.getComponent(BodyComponent.class).body.setTransform(gateEntity.getComponent(GateComponent.class).playerPositionOnTargetMap,0);
     }
 
     private void openBoxAction() {

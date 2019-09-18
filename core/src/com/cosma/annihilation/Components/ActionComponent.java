@@ -5,7 +5,4 @@ import com.cosma.annihilation.Utils.Enums.EntityAction;
 
 public class ActionComponent implements Component {
     public EntityAction action;
-    public EntityAction action1;
-    public EntityAction action2;
-    public EntityAction action3;
 }

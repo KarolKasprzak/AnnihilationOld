@@ -1,6 +1,5 @@
 package com.cosma.annihilation.Utils.Serialization;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
@@ -8,23 +7,24 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.cosma.annihilation.Ai.HumanAiBasic;
+import com.cosma.annihilation.Ai.NpcAiBasic;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
 import com.cosma.annihilation.Items.InventoryItem;
 import com.cosma.annihilation.Utils.Animation.AnimationFactory;
 import com.cosma.annihilation.Utils.CollisionID;
+import com.cosma.annihilation.Utils.Enums.AiType;
 import com.cosma.annihilation.Utils.Enums.BodyID;
 import com.cosma.annihilation.Utils.Enums.EntityAction;
 
-import java.lang.reflect.Field;
 
 
 public class EntitySerializer implements Json.Serializer<Entity> {
     private World world;
     private Engine engine;
     private AnimationFactory animationFactory;
-    private CollisionID collisionID;
 
     /**
      * use in game
@@ -33,7 +33,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         this.world = world;
         this.engine = engine;
         animationFactory = new AnimationFactory();
-        collisionID = new CollisionID();
     }
 
     /**
@@ -43,7 +42,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
         this.world = world;
         this.engine = null;
         animationFactory = new AnimationFactory();
-        collisionID = new CollisionID();
     }
 
     @Override
@@ -115,7 +113,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                             fixtureDef.filter.categoryBits = CollisionID.ENEMY;
                             break;
                         case "npc":
-                            fixtureDef.filter.categoryBits = CollisionID.LIGHT;
+                            fixtureDef.filter.categoryBits = CollisionID.NPC;
                             break;
 
                     }
@@ -141,7 +139,7 @@ public class EntitySerializer implements Json.Serializer<Entity> {
                             fixtureDef.filter.maskBits = CollisionID.MASK_ENEMY;
                             break;
                         case "npc":
-                            fixtureDef.filter.maskBits = CollisionID.MASK_LIGHT;
+                            fixtureDef.filter.maskBits = CollisionID.MASK_NPC;
                             break;
 
                     }
@@ -220,12 +218,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(animationComponent);
         }
 
-        if (jsonData.has("PlayerComponent")) {
-            PlayerComponent playerComponent = new PlayerComponent();
-            entity.add(playerComponent);
-
-        }
-
         if (jsonData.has("PlayerInventoryComponent")) {
             PlayerInventoryComponent playerInventoryComponent = new PlayerInventoryComponent();
             InventoryItemLocation item = new InventoryItemLocation(0, InventoryItem.ItemID.FIRE_AXE.name(), 1);
@@ -242,6 +234,16 @@ public class EntitySerializer implements Json.Serializer<Entity> {
 
         if (jsonData.has("AiComponent")) {
             AiComponent aiComponent = new AiComponent();
+            aiComponent.aiType = AiType.valueOf(jsonData.get("AiComponent").getString("aiType"));
+            switch(aiComponent.aiType){
+                case HUMAN_NPC:
+                    aiComponent.ai = new NpcAiBasic();
+                    System.out.println("ai basic");
+                    break;
+                case HUMAN_ENEMY:
+                    aiComponent.ai = new HumanAiBasic();
+                    break;
+            }
             entity.add(aiComponent);
         }
 

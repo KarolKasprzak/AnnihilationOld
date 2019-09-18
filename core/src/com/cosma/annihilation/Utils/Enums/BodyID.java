@@ -8,6 +8,7 @@ public enum  BodyID {
     DESCENT_LADDER,
     LADDER,
     ACTION_TRIGGER,
+    SCRIPT_TRIGGER,
     BULLET,
     BULLET_SHELL,
     ENEMY_TEST,

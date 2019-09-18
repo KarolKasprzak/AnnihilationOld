@@ -22,10 +22,10 @@ class AiCore {
     private RayCastCallback sightRayCallback, shootRayCallback;
     private Vector2 rayEndVector = new Vector2();
     private Vector2 destinationPosition = new Vector2();
-    private boolean isEnemySpotted = false;
+    private boolean isPlayerSpotted = false;
     private boolean isBusy = false;
     private boolean isAttacked = false;
-    private Body enemyBody;
+    private Body playerBody;
     private Entity targetEntity;
 
 
@@ -45,8 +45,8 @@ class AiCore {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                 if (fixture.getBody().getUserData() instanceof Entity && ((Entity) fixture.getBody().getUserData()).getComponent(PlayerComponent.class) != null) {
-                    isEnemySpotted = true;
-                    enemyBody = fixture.getBody();
+                    isPlayerSpotted = true;
+                    playerBody = fixture.getBody();
                     return 0;
                 }
                 return 0;
@@ -72,6 +72,19 @@ class AiCore {
         }
     }
 
+    void setFaceToPlayer(Entity entity){
+        AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
+        Body aiBody = entity.getComponent(BodyComponent.class).body;
+        World world = aiBody.getWorld();
+        world.rayCast(sightRayCallback, aiBody.getPosition(), rayEndVector.set(aiBody.getPosition().x - 6, aiBody.getPosition().y));
+        world.rayCast(sightRayCallback, aiBody.getPosition(), rayEndVector.set(aiBody.getPosition().x + 6, aiBody.getPosition().y));
+        if(isPlayerSpotted){
+            animationComponent.spriteDirection = ((Entity) playerBody.getUserData()).getComponent(AnimationComponent.class).spriteDirection;
+        }
+        isPlayerSpotted = false;
+        playerBody = null;
+    }
+
     boolean isEnemyInSight(Entity entity) {
         AnimationComponent animationComponent = entity.getComponent(AnimationComponent.class);
         Body aiBody = entity.getComponent(BodyComponent.class).body;
@@ -79,16 +92,16 @@ class AiCore {
         World world = aiBody.getWorld();
         if (!isBusy) {
             if (animationComponent.spriteDirection) {
-                isEnemySpotted = false;
-                enemyBody = null;
+                isPlayerSpotted = false;
+                playerBody = null;
                 world.rayCast(sightRayCallback, aiBody.getPosition(), rayEndVector.set(aiBody.getPosition().x + 7, aiBody.getPosition().y));
 
             } else {
-                isEnemySpotted = false;
-                enemyBody = null;
+                isPlayerSpotted = false;
+                playerBody = null;
                 world.rayCast(sightRayCallback, aiBody.getPosition(), rayEndVector.set(aiBody.getPosition().x - 7, aiBody.getPosition().y));
             }
-            return isEnemySpotted;
+            return isPlayerSpotted;
         }
         return false;
     }
@@ -111,11 +124,11 @@ class AiCore {
 
     void followEnemy(Entity entity) {
         if (!isBusy) {
-            if (isEnemySpotted) {
+            if (isPlayerSpotted) {
                 Body aiBody = entity.getComponent(BodyComponent.class).body;
                 AiComponent aiComponent = entity.getComponent(AiComponent.class);
                 if (aiComponent.startPosition.x + 7 >= aiBody.getPosition().x) {
-                    goToPosition(enemyBody.getPosition(), entity);
+                    goToPosition(playerBody.getPosition(), entity);
                 }
             }
         }

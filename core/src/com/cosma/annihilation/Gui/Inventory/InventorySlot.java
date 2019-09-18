@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Items.InventoryItem;
-import com.cosma.annihilation.Utils.OLDAssetDescriptors;
 
 public class InventorySlot extends Stack implements InventorySlotObservable{
     private int itemsAmount = 0;

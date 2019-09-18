@@ -22,7 +22,7 @@ import java.util.HashMap;
         //SHOOT
         Animation<TextureRegion> shootAnimation = new Animation<>(0.1f,textureAtlas.findRegions("shoot"),Animation.PlayMode.NORMAL);
         this.put("NPC_SHOOT",shootAnimation);
-        //SHOOT
+        //DEATH_STAND
         Animation<TextureRegion> deathStandAnimation = new Animation<>(0.15f,textureAtlas.findRegions("die_stand"),Animation.PlayMode.NORMAL);
         this.put("DEATH_STAND",deathStandAnimation);
 

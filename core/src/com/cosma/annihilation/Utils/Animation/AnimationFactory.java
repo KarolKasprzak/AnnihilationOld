@@ -75,6 +75,7 @@ public class AnimationFactory {
         animationMap.put(AnimationId.PLAYER,playerAnimationMap);
         animationMap.put(AnimationId.TEST_ZOMBIE,zombieAnimationMap);
         animationMap.put(AnimationId.HAZMAT_NPC,new NpcHazmat());
+        animationMap.put(AnimationId.NPC_SCIENTIST,new NpcScientist());
 
 
 
@@ -87,6 +88,6 @@ public class AnimationFactory {
         return null;
     }
     public enum AnimationId{
-        PLAYER,TEST_ZOMBIE, HAZMAT_NPC
+        PLAYER,TEST_ZOMBIE,HAZMAT_NPC,NPC_SCIENTIST
     }
 }
