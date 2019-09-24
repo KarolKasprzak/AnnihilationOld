@@ -30,7 +30,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 //    Filter filter;
 //    Filter filter1;
 
-    public ActionSystem(WorldBuilder worldBuilder,OrthographicCamera camera, SpriteBatch batch) {
+    public ActionSystem(WorldBuilder worldBuilder, OrthographicCamera camera, SpriteBatch batch) {
         super(Family.all(PlayerComponent.class).get(), Constants.ACTION_SYSTEM);
         this.worldBuilder = worldBuilder;
         stateMapper = ComponentMapper.getFor(PlayerComponent.class);
@@ -50,7 +50,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
         if (!playerComponent.collisionEntityList.isEmpty()) {
             playerComponent.processedEntity = playerComponent.collisionEntityList.listIterator().next();
-            if(Util.hasComponent(playerComponent.processedEntity,TextureComponent.class)){
+            if (Util.hasComponent(playerComponent.processedEntity, TextureComponent.class)) {
                 playerComponent.processedEntity.getComponent(TextureComponent.class).renderWithShader = true;
             }
             ActionComponent actionComponent = playerComponent.processedEntity.getComponent(ActionComponent.class);
@@ -58,16 +58,16 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
             batch.begin();
 
             Texture texture;
-            Body entityBody =  playerComponent.processedEntity.getComponent(BodyComponent.class).body;
+            Body entityBody = playerComponent.processedEntity.getComponent(BodyComponent.class).body;
 
-            switch (actionComponent.action){
+            switch (actionComponent.action) {
                 case TALK:
-                    texture = Annihilation.getAssets().get("gfx/textures/talk_icon.png",Texture.class);
-                    batch.draw(texture,entityBody.getPosition().x,entityBody.getPosition().y+0.8f,texture.getWidth()/32,texture.getHeight()/32);
+                    texture = Annihilation.getAssets().get("gfx/textures/talk_icon.png", Texture.class);
+                    batch.draw(texture, entityBody.getPosition().x, entityBody.getPosition().y + 0.8f, texture.getWidth() / 32, texture.getHeight() / 32);
                     break;
                 case OPEN:
-                    texture = Annihilation.getAssets().get("gfx/textures/take_icon.png",Texture.class);
-                    batch.draw(texture,entityBody.getPosition().x,entityBody.getPosition().y+1f,texture.getWidth()/32,texture.getHeight()/32);
+                    texture = Annihilation.getAssets().get("gfx/textures/take_icon.png", Texture.class);
+                    batch.draw(texture, entityBody.getPosition().x, entityBody.getPosition().y + 1f, texture.getWidth() / 32, texture.getHeight() / 32);
                     break;
 
             }
@@ -79,12 +79,12 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent event) {
-        switch(event){
+        switch (event) {
             case PERFORM_ACTION:
-                if (playerComponent.processedEntity == null){
+                if (playerComponent.processedEntity == null) {
                     System.out.println("null");
                 }
-                    System.out.println(playerComponent.isWeaponHidden);
+                System.out.println(playerComponent.isWeaponHidden);
 
                 if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden) {
                     EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
@@ -98,6 +98,9 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
                         case GO_TO:
                             goToAnotherMap();
                             break;
+                        case TALK:
+                            startDialogAction();
+                            break;
                     }
                 }
                 break;
@@ -108,7 +111,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     }
 
-    private void goToAnotherMap(){
+    private void goToAnotherMap() {
         playerComponent.mapName = playerComponent.processedEntity.getComponent(GateComponent.class).targetMapPath;
         worldBuilder.goToMap();
 //        playerComponent.getComponent(BodyComponent.class).body.setTransform(gateEntity.getComponent(GateComponent.class).playerPositionOnTargetMap,0);
@@ -116,7 +119,13 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     private void openBoxAction() {
         if (playerComponent.processedEntity.getComponent(ContainerComponent.class).itemLocations.size > -1) {
-                  getEngine().getSystem(UserInterfaceSystem.class).showLootWindow(playerComponent.processedEntity);
+            getEngine().getSystem(UserInterfaceSystem.class).showLootWindow(playerComponent.processedEntity);
+        }
+    }
+
+    private void startDialogAction() {
+        {
+            getEngine().getSystem(UserInterfaceSystem.class).showDialogWindow(playerComponent.processedEntity);
         }
     }
 

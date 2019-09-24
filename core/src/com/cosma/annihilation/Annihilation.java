@@ -31,9 +31,6 @@ public class Annihilation extends Game {
         assetLoader.load();
         FileHandle mapTextures = Gdx.files.local("locale/loc");
         myBundle = I18NBundle.createBundle(mapTextures,Locale.UK);
-
-//        myBundle =  assetLoader.manager.get("locale/loc_pl", I18NBundle.class);
-
         menuScreen = new MenuScreen(this);
         this.setScreen(menuScreen);
     }

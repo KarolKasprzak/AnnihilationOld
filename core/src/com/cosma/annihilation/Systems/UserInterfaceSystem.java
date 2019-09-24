@@ -28,6 +28,7 @@ import com.cosma.annihilation.Components.ContainerComponent;
 import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Gui.ContainerWindow;
+import com.cosma.annihilation.Gui.DialogueWindow;
 import com.cosma.annihilation.Gui.PlayerInventoryWindow;
 import com.cosma.annihilation.Gui.GameMainMenuWindow;
 import com.cosma.annihilation.Utils.Constants;
@@ -45,6 +46,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     private PlayerComponent playerComponent;
     private ComponentMapper<PlayerComponent> playerMapper;
     private BitmapFont font;
+    private DialogueWindow dialogueWindow;
 
     public UserInterfaceSystem(Engine engine, World world, WorldBuilder worldBuilder) {
         super(Family.all(PlayerComponent.class).get(), Constants.USER_INTERFACE);
@@ -64,6 +66,10 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         stage.addActor(coreTable);
 
         Signal<GameEvent> signal = new Signal<GameEvent>();
+
+        dialogueWindow = new DialogueWindow(skin);
+        stage.addActor(dialogueWindow);
+        dialogueWindow.setVisible(false);
 
         containerWindow = new ContainerWindow("", skin, 4, engine);
         containerWindow.setSize(Util.setWindowWidth(0.4f), Util.setWindowHeight(0.5f));
@@ -112,6 +118,13 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         containerWindow.setVisible(true);
         PlayerInventoryWindow.fillInventory(containerWindow.containerSlotsTable, entity.getComponent(ContainerComponent.class).itemLocations, containerWindow.dragAndDrop);
 
+    }
+
+    void showDialogWindow(Entity entity) {
+        if(!stage.getActors().contains(dialogueWindow,true)){
+            stage.addActor(dialogueWindow);
+        }
+        dialogueWindow.setVisible(true);
     }
 
     public void resizeHUD(int width, int height) {

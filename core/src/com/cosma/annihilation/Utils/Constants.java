@@ -8,7 +8,6 @@ public class Constants {
 
 
     // -------------- Physics -----------------
-    // -------------- Physics -----------------
 
     public static final float PPM = 32f;
     public static final float PIXEL_TO_METRE = 1 / PPM;
@@ -20,8 +19,6 @@ public class Constants {
     public static final int BOX2D_POSITION_ITERATIONS = 2;
 
     public static final Vector2 WORLD_GRAVITY = new Vector2(0, -10);
-    public static final   short PLAYER_COLIDED = 0x1;
-    public static final   short  NOT_COLIDED= 0x2;
 
     //--------ENGINE-----------
     public static final int USER_INTERFACE                 = 15;
