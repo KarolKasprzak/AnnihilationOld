@@ -17,6 +17,7 @@ public class PlayerComponent implements Component {
     public WeaponItem activeWeapon;
     public int activeWeaponAmmo;
     public Entity processedEntity;
+    public boolean canPerformAction = true;
 
     public boolean isWeaponHidden = true;
 

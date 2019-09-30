@@ -81,12 +81,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
     public void receive(Signal<GameEvent> signal, GameEvent event) {
         switch (event) {
             case PERFORM_ACTION:
-                if (playerComponent.processedEntity == null) {
-                    System.out.println("null");
-                }
-                System.out.println(playerComponent.isWeaponHidden);
 
-                if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden) {
+                if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden && playerComponent.canPerformAction) {
                     EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
                     switch (action) {
                         case OPEN_DOOR:
@@ -125,7 +121,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     private void startDialogAction() {
         {
-            getEngine().getSystem(UserInterfaceSystem.class).showDialogWindow(playerComponent.processedEntity);
+            getEngine().getSystem(UserInterfaceSystem.class).showDialogWindow(playerComponent.processedEntity,playerComponent);
+            playerComponent.canPerformAction = false;
         }
     }
 

@@ -27,7 +27,11 @@ import com.cosma.annihilation.Entities.EntityFactory;
 import com.cosma.annihilation.Items.ItemFactory;
 import com.cosma.annihilation.Systems.*;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.Dialogs.DialogueManager;
 import com.cosma.annihilation.Utils.Enums.GameEvent;
+import com.cosma.annihilation.Utils.LuaScript.LuaScript;
+import com.cosma.annihilation.Utils.LuaScript.ScriptManager;
+import com.cosma.annihilation.Utils.LuaScript.TestLua;
 import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.StateManager;
 
@@ -79,10 +83,11 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
         gameEventList = new ArrayList<>();
 
-//        if (isGameLoaded) {
-//            gui.loadGame();
-//
-//        }
+
+        ScriptManager scriptManager = new ScriptManager(engine,world);
+        scriptManager.runScript("script_test");
+
+
 
         engine.addSystem(new UserInterfaceSystem(engine, world, this));
         engine.addSystem(new ActionSystem(this, camera,batch));

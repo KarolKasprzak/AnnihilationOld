@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.cosma.annihilation.Components.*;
 import com.cosma.annihilation.Gui.Inventory.InventoryItemLocation;
+import com.cosma.annihilation.Utils.Dialogs.DialogueManager;
 import com.cosma.annihilation.Utils.Util;
 
 import java.util.HashMap;
@@ -19,11 +20,14 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
 
     private Json loadJason;
     private HashMap<String, FileHandle> jsonList;
+    private DialogueManager dialogueManager;
 
-    public GameEntitySerializer(World world,Engine engine) {
+    public GameEntitySerializer(World world, Engine engine) {
 
         loadJason = new Json();
         loadJason.setSerializer(Entity.class, new EntitySerializer(world,engine));
+
+        dialogueManager = new DialogueManager();
 
         //Load all entity
         jsonList = new HashMap<>();
@@ -120,6 +124,7 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                 }
             }
 
+
             if(component instanceof ContainerComponent){
                 if(jsonData.has("itemList")){
                     ((ContainerComponent) component).itemLocations = new Array<>();
@@ -138,6 +143,10 @@ public class GameEntitySerializer implements Json.Serializer<Entity>  {
                 if(jsonData.has("mapName")){
                     ((PlayerComponent) component).mapName = jsonData.get("mapName").asString();
                 }
+            }
+
+            if(component instanceof DialogueComponent){
+                    ((DialogueComponent) component).dialog = dialogueManager.getDialogue(((DialogueComponent) component).dialogId);
             }
 
             if(component instanceof GateComponent){

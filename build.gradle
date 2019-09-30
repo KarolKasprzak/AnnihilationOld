@@ -100,6 +100,8 @@ project(":core") {
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.4"
         compile "com.kotcrab.vis:vis-ui:$visuiVersion"
+        compile group: 'org.luaj', name: 'luaj-jse', version: '3.0.1'
+
     }
 }
 

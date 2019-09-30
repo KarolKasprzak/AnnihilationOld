@@ -176,6 +176,13 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             entity.add(serializationComponent);
         }
 
+        if (jsonData.has("DialogueComponent")) {
+            DialogueComponent dialogueComponent = new DialogueComponent();
+            dialogueComponent.dialogId = jsonData.get("DialogueComponent").get("dialogId").asString();
+            entity.add(dialogueComponent);
+            System.out.println(dialogueComponent.dialogId);
+        }
+
         if (jsonData.has("GateComponent")) {
             GateComponent gateComponent = new GateComponent();
             entity.add(gateComponent);

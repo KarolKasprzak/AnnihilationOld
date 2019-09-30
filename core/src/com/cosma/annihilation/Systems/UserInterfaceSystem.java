@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Components.ContainerComponent;
+import com.cosma.annihilation.Components.DialogueComponent;
 import com.cosma.annihilation.Components.HealthComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Gui.ContainerWindow;
@@ -106,7 +107,7 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         playerMapper.get(entity);
-
+        playerComponent = playerMapper.get(entity);
         if(entity.getComponent(HealthComponent.class).hp < entity.getComponent(HealthComponent.class).maxHP/2){
             playerHealthStatusIcon.setDrawable(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/textures/player_health_bad.png",Texture.class))));
         }
@@ -120,11 +121,18 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
 
     }
 
-    void showDialogWindow(Entity entity) {
-        if(!stage.getActors().contains(dialogueWindow,true)){
-            stage.addActor(dialogueWindow);
+    void showDialogWindow(Entity entity,PlayerComponent playerComponent) {
+        dialogueWindow.setPlayerComponent(playerComponent);
+        if(Util.hasComponent(entity,DialogueComponent.class)){
+            DialogueComponent dialogueComponent = entity.getComponent(DialogueComponent.class);
+            if(!stage.getActors().contains(dialogueWindow,true)){
+                stage.addActor(dialogueWindow);
+                dialogueWindow.drawDialogueOptions(dialogueComponent);
+            }
+            dialogueWindow.setVisible(true);
+            dialogueWindow.drawDialogueOptions(dialogueComponent);
         }
-        dialogueWindow.setVisible(true);
+
     }
 
     public void resizeHUD(int width, int height) {
