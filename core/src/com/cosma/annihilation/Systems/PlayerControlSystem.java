@@ -27,16 +27,15 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
     private ComponentMapper<BodyComponent> bodyMapper;
     private ComponentMapper<AnimationComponent> animationMapper;
     private Signal<GameEvent> signal;
-    private ArrayList<GameEvent> gameEventList;
+    private ArrayList<GameEvent> gameEventList = new ArrayList<>();
     private RayCastCallback noiseRayCallback;
     // false = left, true = right
     private boolean mouseCursorPosition = false;
     private World world;
     private Entity noiseTestEntity;
 
-    public PlayerControlSystem(ArrayList<GameEvent> gameEventList, World world) {
+    public PlayerControlSystem( World world) {
         super(Family.all(PlayerComponent.class).get(), Constants.PLAYER_CONTROL_SYSTEM);
-        this.gameEventList = gameEventList;
         this.world = world;
         playerMapper = ComponentMapper.getFor(PlayerComponent.class);
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
@@ -60,13 +59,10 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
         AnimationComponent animationComponent = animationMapper.get(entity);
         animationComponent.spriteDirection = mouseCursorPosition;
 
-
         for(GameEvent gameEvent: gameEventList ){
             signal.dispatch(gameEvent);
         }
         gameEventList.clear();
-
-
 
 
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)  && playerComponent.onGround && animationComponent.isAnimationFinish) {
@@ -238,6 +234,9 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE) {
+            signal.dispatch(GameEvent.OPEN_MENU);
+        }
         return false;
     }
 
@@ -253,11 +252,23 @@ public class PlayerControlSystem extends IteratingSystem implements InputProcess
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT) {
+            gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
+            gameEventList.add(GameEvent.PERFORM_ACTION);
+        }
+
+        if (button == Input.Buttons.RIGHT) {
+            gameEventList.add(GameEvent.WEAPON_TAKE_OUT);
+        }
+
         return false;
     }
 
     @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    public boolean touchUp(int screenX, int screenY, int pointer, int button)  {
+        if (button == Input.Buttons.LEFT) {
+            gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_UP);
+        }
         return false;
     }
 

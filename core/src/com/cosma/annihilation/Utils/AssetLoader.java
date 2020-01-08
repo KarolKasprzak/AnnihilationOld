@@ -43,12 +43,15 @@ public class AssetLoader {
         //Load interface textures
         FileHandle interfaceTextures = Gdx.files.local("gfx/interface/");
         for(FileHandle texture: interfaceTextures.list(".png")){
+            System.out.println(texture.name());
             manager.load(texture.path(),Texture.class);
+
         }
         //Load textures
         FileHandle textures = Gdx.files.local("gfx/textures/");
         for(FileHandle texture: textures.list(".png")){
             manager.load(texture.path(),Texture.class);
+            System.out.println(texture.path());
         }
         //Load texture atlas
         FileHandle gfxAtlas = Gdx.files.local("gfx/atlas/");
@@ -57,7 +60,7 @@ public class AssetLoader {
             if(file.isDirectory()){
                 for(FileHandle texture: file.list(".atlas")){
                     manager.load(texture.path(),TextureAtlas.class);
-                    System.out.println(texture.path());
+
                 }
             }
         }

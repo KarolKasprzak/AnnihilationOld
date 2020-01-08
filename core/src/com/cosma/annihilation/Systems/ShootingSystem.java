@@ -88,7 +88,7 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
         font = new BitmapFont();
         font.setColor(Color.WHITE);
-        font.getData().setScale(1, 1);
+        font.getData().setScale(2, 2);
 
         weaponMagazine = new WeaponMagazine();
         bodyMapper = ComponentMapper.getFor(BodyComponent.class);
@@ -170,7 +170,8 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
                 Vector3 worldPosition = worldCamera.project(new Vector3(targetBody.body.getPosition().x,targetBody.body.getPosition().y,0));
                 batch.setProjectionMatrix(camera.combined);
                 batch.begin();
-                font.draw(batch,Float.toString(calculateAttackAccuracyFloat())+"%", worldPosition.x+1, worldPosition.y);
+                //show accuracy on target
+                font.draw(batch,Math.round(calculateAttackAccuracyFloat() *100)+"%", worldPosition.x+45, worldPosition.y+50);
                 batch.end();
             }
 
@@ -238,19 +239,21 @@ public class ShootingSystem extends IteratingSystem implements Listener<GameEven
 
 
     private void weaponSelect() {
-        if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
-            int weaponType = playerComponent.activeWeapon.getItemUseType();
+        if(playerComponent != null){
+            if (playerComponent.activeWeapon != null && !playerComponent.isWeaponHidden) {
+                int weaponType = playerComponent.activeWeapon.getItemUseType();
 
-            switch (weaponType) {
-                case 4:
-                    meleeAttack();
-                    break;
-                case 8:
-                case 16:
-                case 32:
-                case 64:
-                    startShooting();
-                    break;
+                switch (weaponType) {
+                    case 4:
+                        meleeAttack();
+                        break;
+                    case 8:
+                    case 16:
+                    case 32:
+                    case 64:
+                        startShooting();
+                        break;
+                }
             }
         }
     }

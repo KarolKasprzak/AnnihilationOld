@@ -3,10 +3,7 @@ package com.cosma.annihilation.Editor.CosmaMap;
 import box2dLight.Light;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.OrderedMap;
-
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
 
 public class GameMap{
 
@@ -36,6 +33,7 @@ public class GameMap{
         lightMap = new OrderedMap<>();
         entityList = new ArrayList<>();
     }
+
 
     public GameMap() {
         lightMap = new OrderedMap<>();

@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,10 +20,11 @@ import com.cosma.annihilation.Components.BulletComponent;
 import com.cosma.annihilation.Components.PlayerComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Utils.Constants;
+import com.cosma.annihilation.Utils.RenderComparator;
 import com.cosma.annihilation.Utils.Util;
 
 
-public class RenderSystem extends IteratingSystem implements Disposable {
+public class RenderSystem extends SortedIteratingSystem implements Disposable {
 
 
     private OrthographicCamera camera;
@@ -36,7 +38,7 @@ public class RenderSystem extends IteratingSystem implements Disposable {
 
 
     public RenderSystem(OrthographicCamera camera, World world, RayHandler rayHandler, SpriteBatch batch) {
-        super(Family.all(TextureComponent.class, BodyComponent.class).get(), Constants.RENDER);
+        super(Family.all(TextureComponent.class, BodyComponent.class).get(), new RenderComparator(),Constants.RENDER);
         this.batch = batch;
         this.camera = camera;
         this.world = world;

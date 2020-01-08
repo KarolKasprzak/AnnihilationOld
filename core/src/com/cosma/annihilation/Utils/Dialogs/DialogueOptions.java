@@ -3,7 +3,6 @@ package com.cosma.annihilation.Utils.Dialogs;
 import com.badlogic.gdx.utils.Array;
 
 public class DialogueOptions {
-    private boolean selected = false;
     private int index;
     private int selectedOption;
     private Array<DialogueLine> dialogLines;
@@ -22,13 +21,6 @@ public class DialogueOptions {
 
     }
 
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
 
     public int getIndex() {
         return index;

@@ -70,22 +70,22 @@ public class SecondRenderSystem extends IteratingSystem implements Disposable {
 
         Vector2 position = body.getPosition();
 
-
-        if (textureComponent.texture != null && textureComponent.renderWithShader) {
-            shaderOutline2.begin();
-            shaderOutline2.setUniformf("u_viewportInverse", new Vector2(1f / 32, 1f / 32));
-            shaderOutline2.setUniformf("u_offset", 0.3f);
-            shaderOutline2.setUniformf("u_step", Math.min(1f, 0.1f));
-            shaderOutline2.setUniformf("u_color", new Vector3(1, 1, 1));
-            shaderOutline2.end();
-            batch.setShader(shaderOutline2);
-            position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
-            position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
-            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
-                    textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
-                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
-            batch.setShader(null);
-        }
+//
+//        if (textureComponent.texture != null && textureComponent.renderWithShader) {
+//            shaderOutline2.begin();
+//            shaderOutline2.setUniformf("u_viewportInverse", new Vector2(1f / 32, 1f / 32));
+//            shaderOutline2.setUniformf("u_offset", 0.3f);
+//            shaderOutline2.setUniformf("u_step", Math.min(1f, 0.1f));
+//            shaderOutline2.setUniformf("u_color", new Vector3(1, 1, 1));
+//            shaderOutline2.end();
+//            batch.setShader(shaderOutline2);
+//            position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
+//            position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
+//            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
+//                    textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
+//                    1, 1, body.getAngle() * MathUtils.radiansToDegrees);
+//            batch.setShader(null);
+//        }
         if (textureComponent.texture != null && textureComponent.renderAfterLight) {
 
             position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;

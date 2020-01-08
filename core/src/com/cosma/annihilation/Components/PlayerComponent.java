@@ -10,7 +10,7 @@ public class PlayerComponent implements Component {
 
     public float velocity = 2;
     public int numFootContacts = 0;
-    public boolean hidde = false;
+    public boolean hide = false;
     public String mapName;
 
     public ArrayList<Entity> collisionEntityList = new ArrayList<Entity>();

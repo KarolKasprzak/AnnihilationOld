@@ -6,9 +6,27 @@ public class DialogueLine {
     private int id;
     private String dialogText;
     private int nextDialog;
-    private Object action;
+    private boolean hasAction = false;
 
-    public DialogueLine() {
+    public boolean hasAction() {
+        return hasAction;
+    }
+
+    public void setHasAction(boolean hasAction) {
+        this.hasAction = hasAction;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    private String action;
+
+    DialogueLine() {
 
     }
 
@@ -25,7 +43,7 @@ public class DialogueLine {
         return dialogText;
     }
 
-    public void setDialogText(String dialogText) {
+    void setDialogText(String dialogText) {
         this.dialogText = dialogText;
     }
 
@@ -33,7 +51,7 @@ public class DialogueLine {
         return nextDialog;
     }
 
-    public void setNextDialog(int nextDialog) {
+    void setNextDialog(int nextDialog) {
         this.nextDialog = nextDialog;
     }
 

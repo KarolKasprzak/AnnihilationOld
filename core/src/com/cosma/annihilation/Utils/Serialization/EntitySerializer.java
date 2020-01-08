@@ -167,6 +167,9 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             if (jsonData.get("TextureComponent").has("patch")) {
                 textureComponent.texture = Annihilation.getAssets().get(jsonData.get("TextureComponent").get("patch").asString());
             }
+            if (jsonData.get("TextureComponent").has("renderOrder")) {
+                textureComponent.renderOrder = jsonData.get("TextureComponent").get("renderOrder").asInt();
+            }
             entity.add(textureComponent);
         }
 
@@ -180,7 +183,6 @@ public class EntitySerializer implements Json.Serializer<Entity> {
             DialogueComponent dialogueComponent = new DialogueComponent();
             dialogueComponent.dialogId = jsonData.get("DialogueComponent").get("dialogId").asString();
             entity.add(dialogueComponent);
-            System.out.println(dialogueComponent.dialogId);
         }
 
         if (jsonData.has("GateComponent")) {

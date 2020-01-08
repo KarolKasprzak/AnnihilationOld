@@ -68,9 +68,8 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
 
         Signal<GameEvent> signal = new Signal<GameEvent>();
 
-        dialogueWindow = new DialogueWindow(skin);
-        stage.addActor(dialogueWindow);
-        dialogueWindow.setVisible(false);
+        dialogueWindow = new DialogueWindow(skin, engine);
+
 
         containerWindow = new ContainerWindow("", skin, 4, engine);
         containerWindow.setSize(Util.setWindowWidth(0.4f), Util.setWindowHeight(0.5f));
@@ -78,14 +77,14 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
         containerWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.4f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.5f) / 2));
         stage.addActor(containerWindow);
 
-        gameMainMenuWindow = new GameMainMenuWindow("", skin, engine, Util.setWindowWidth(0.95f), Util.setWindowHeight(0.95f),world,worldBuilder);
+        gameMainMenuWindow = new GameMainMenuWindow("", skin, engine, Util.setWindowWidth(0.95f), Util.setWindowHeight(0.95f), world, worldBuilder);
         gameMainMenuWindow.setPosition(Gdx.graphics.getWidth() / 2 - (Util.setWindowWidth(0.95f) / 2), Gdx.graphics.getHeight() / 2 - (Util.setWindowHeight(0.95f) / 2));
         gameMainMenuWindow.setVisible(false);
         gameMainMenuWindow.setFillParent(true);
         stage.addActor(gameMainMenuWindow);
 
         fpsLabel = new Label("", skin);
-        playerHealthStatusIcon = new Image(Annihilation.getAssets().get("gfx/textures/player_health.png",Texture.class));
+        playerHealthStatusIcon = new Image(Annihilation.getAssets().get("gfx/textures/player_health.png", Texture.class));
 
 
         coreTable.add(fpsLabel).left().top().expandX().expandY();
@@ -108,8 +107,8 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
     protected void processEntity(Entity entity, float deltaTime) {
         playerMapper.get(entity);
         playerComponent = playerMapper.get(entity);
-        if(entity.getComponent(HealthComponent.class).hp < entity.getComponent(HealthComponent.class).maxHP/2){
-            playerHealthStatusIcon.setDrawable(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/textures/player_health_bad.png",Texture.class))));
+        if (entity.getComponent(HealthComponent.class).hp < entity.getComponent(HealthComponent.class).maxHP / 2) {
+            playerHealthStatusIcon.setDrawable(new TextureRegionDrawable(new TextureRegion(Annihilation.getAssets().get("gfx/textures/player_health_bad.png", Texture.class))));
         }
 
     }
@@ -121,18 +120,19 @@ public class UserInterfaceSystem extends IteratingSystem implements Listener<Gam
 
     }
 
-    void showDialogWindow(Entity entity,PlayerComponent playerComponent) {
-        dialogueWindow.setPlayerComponent(playerComponent);
-        if(Util.hasComponent(entity,DialogueComponent.class)){
-            DialogueComponent dialogueComponent = entity.getComponent(DialogueComponent.class);
-            if(!stage.getActors().contains(dialogueWindow,true)){
-                stage.addActor(dialogueWindow);
-                dialogueWindow.drawDialogueOptions(dialogueComponent);
-            }
-            dialogueWindow.setVisible(true);
-            dialogueWindow.drawDialogueOptions(dialogueComponent);
-        }
+    void showDialogWindow(Entity entity) {
 
+      if(!stage.getActors().contains(dialogueWindow,true)){
+          if (Util.hasComponent(entity, DialogueComponent.class) && playerComponent.canPerformAction) {
+              playerComponent.canPerformAction = false;
+              playerComponent.canMoveOnSide = false;
+              DialogueComponent dialogueComponent = entity.getComponent(DialogueComponent.class);
+
+              stage.addActor(dialogueWindow);
+              dialogueWindow.setVisible(true);
+              dialogueWindow.displayDialogue(dialogueComponent);
+          }
+      }
     }
 
     public void resizeHUD(int width, int height) {

@@ -38,7 +38,7 @@ import com.cosma.annihilation.Utils.StateManager;
 import java.util.ArrayList;
 
 
-public class WorldBuilder implements Disposable, EntityListener, InputProcessor, Listener<GameEvent> {
+public class WorldBuilder implements Disposable, EntityListener, Listener<GameEvent> {
 
 
     private Engine engine;
@@ -50,7 +50,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
     private boolean isPaused = false;
     private RayHandler rayHandler;
     private Json json;
-    private ArrayList<GameEvent> gameEventList;
 
     public WorldBuilder(Boolean isGameLoaded, InputMultiplexer inputMultiplexer) {
         ItemFactory.getInstance().setAssetLoader(Annihilation.getAssetsLoader());
@@ -58,7 +57,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
         //Game camera
         camera = new OrthographicCamera();
-        viewport = new ExtendViewport(16, 9, camera);
+        viewport = new ExtendViewport(18, 10, camera);
         viewport.apply(false);
         SpriteBatch batch = new SpriteBatch();
         //Box2d world & light handler
@@ -81,7 +80,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         json = new Json();
         json.setSerializer(Entity.class, new GameEntitySerializer(world, engine));
 
-        gameEventList = new ArrayList<>();
+
 
 
         ScriptManager scriptManager = new ScriptManager(engine,world);
@@ -98,7 +97,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         engine.addSystem(new HealthSystem(camera));
         engine.addSystem(new CollisionSystem(world));
         engine.addSystem(new PhysicsSystem(world));
-        engine.addSystem(new PlayerControlSystem(gameEventList, world));
+        engine.addSystem(new PlayerControlSystem(world));
         engine.addSystem(new CameraSystem(camera));
         engine.addSystem(new TileMapRender(camera, mapLoader.getMap()));
         engine.addSystem(new AnimationSystem());
@@ -107,9 +106,7 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
 
         engine.addEntityListener(this);
 
-        inputMultiplexer.addProcessor(engine.getSystem(UserInterfaceSystem.class).getStage());
-        inputMultiplexer.addProcessor(engine.getSystem(PlayerControlSystem.class));
-        inputMultiplexer.addProcessor(this);
+
 
         engine.getSystem(PlayerControlSystem.class).addListenerSystems();
         engine.getSystem(CollisionSystem.class).addListenerSystems(this);
@@ -117,6 +114,9 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
         signal.add(getEngine().getSystem(ActionSystem.class));
         signal.add(getEngine().getSystem(ShootingSystem.class));
         signal.add(getEngine().getSystem(UserInterfaceSystem.class));
+
+        inputMultiplexer.addProcessor(engine.getSystem(UserInterfaceSystem.class).getStage());
+        inputMultiplexer.addProcessor(engine.getSystem(PlayerControlSystem.class));
 
     }
 
@@ -273,67 +273,6 @@ public class WorldBuilder implements Disposable, EntityListener, InputProcessor,
                 ((Disposable) entitySystem).dispose();
             }
         }
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.I || keycode == Input.Keys.ESCAPE) {
-            signal.dispatch(GameEvent.OPEN_MENU);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT) {
-            gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
-            gameEventList.add(GameEvent.PERFORM_ACTION);
-//            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_DOWN);
-//            signal.dispatch(GameEvent.PERFORM_ACTION);
-        }
-
-        //Weapon take out/hide
-        if (button == Input.Buttons.RIGHT) {
-//            signal.dispatch(GameEvent.WEAPON_TAKE_OUT);
-            gameEventList.add(GameEvent.WEAPON_TAKE_OUT);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT) {
-            gameEventList.add(GameEvent.ACTION_BUTTON_TOUCH_UP);
-//            signal.dispatch(GameEvent.ACTION_BUTTON_TOUCH_UP);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 
     @Override

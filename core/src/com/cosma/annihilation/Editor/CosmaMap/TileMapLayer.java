@@ -1,12 +1,7 @@
 package com.cosma.annihilation.Editor.CosmaMap;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 public class TileMapLayer extends MapLayer implements Json.Serializable {
     private int width;

@@ -66,8 +66,8 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
                     batch.draw(texture, entityBody.getPosition().x, entityBody.getPosition().y + 0.8f, texture.getWidth() / 32, texture.getHeight() / 32);
                     break;
                 case OPEN:
-                    texture = Annihilation.getAssets().get("gfx/textures/take_icon.png", Texture.class);
-                    batch.draw(texture, entityBody.getPosition().x, entityBody.getPosition().y + 1f, texture.getWidth() / 32, texture.getHeight() / 32);
+                    texture = Annihilation.getAssets().get("gfx/textures/search_icon.png", Texture.class);
+                    batch.draw(texture, entityBody.getPosition().x-0.5f, entityBody.getPosition().y-0.5f , texture.getWidth() / 32, texture.getHeight() / 32);
                     break;
 
             }
@@ -79,32 +79,32 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     @Override
     public void receive(Signal<GameEvent> signal, GameEvent event) {
-        switch (event) {
-            case PERFORM_ACTION:
-
-                if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden && playerComponent.canPerformAction) {
-                    EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
-                    switch (action) {
-                        case OPEN_DOOR:
+        if (playerComponent != null) {
+            switch (event) {
+                case PERFORM_ACTION:
+                    if (playerComponent.processedEntity != null && playerComponent.isWeaponHidden && playerComponent.canPerformAction) {
+                        EntityAction action = playerComponent.processedEntity.getComponent(ActionComponent.class).action;
+                        switch (action) {
+                            case OPEN_DOOR:
 //                            doorAction();
-                            break;
-                        case OPEN:
-                            openBoxAction();
-                            break;
-                        case GO_TO:
-                            goToAnotherMap();
-                            break;
-                        case TALK:
-                            startDialogAction();
-                            break;
+                                break;
+                            case OPEN:
+                                openBoxAction();
+                                break;
+                            case GO_TO:
+                                goToAnotherMap();
+                                break;
+                            case TALK:
+                                startDialogAction();
+                                break;
+                        }
                     }
-                }
-                break;
-            case CROUCH:
-                break;
+                    break;
+                case CROUCH:
+                    break;
 
+            }
         }
-
     }
 
     private void goToAnotherMap() {
@@ -121,8 +121,7 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
 
     private void startDialogAction() {
         {
-            getEngine().getSystem(UserInterfaceSystem.class).showDialogWindow(playerComponent.processedEntity,playerComponent);
-            playerComponent.canPerformAction = false;
+            getEngine().getSystem(UserInterfaceSystem.class).showDialogWindow(playerComponent.processedEntity);
         }
     }
 

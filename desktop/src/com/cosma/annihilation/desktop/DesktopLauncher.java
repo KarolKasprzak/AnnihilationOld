@@ -20,7 +20,7 @@ public class DesktopLauncher {
 
 		config.title = "Annihilation";
         config.resizable = false;
-        config.fullscreen = false;
+        config.fullscreen = true;
         config.width = screenSize.width /2;
         config.height = screenSize.height /2;
 
