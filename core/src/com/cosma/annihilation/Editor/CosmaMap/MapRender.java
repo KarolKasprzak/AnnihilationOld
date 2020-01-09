@@ -43,7 +43,7 @@ public class MapRender {
         renderer.end();
     }
 
-    public void renderMap() {
+    public void renderMap(float delta) {
         batch.begin();
         if (gameMap.getLayers().getCount() > 0) {
             for (TileMapLayer mapLayer : gameMap.getLayers().getByType(TileMapLayer.class)) {
@@ -67,10 +67,16 @@ public class MapRender {
             for (SpriteMapLayer mapLayer : gameMap.getLayers().getByType(SpriteMapLayer.class)) {
                 if (mapLayer.isLayerVisible()) {
                     for (Sprite sprite : mapLayer.getSpriteArray()) {
-                        position.set(sprite.getX(), sprite.getY());
-                        batch.draw(sprite.getTextureRegion(), position.x + (sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
-                                sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
-                                1, 1, sprite.getAngle());
+                        if(sprite instanceof AnimatedSprite){
+                            ((AnimatedSprite) sprite).updateAnimation(delta);
+                        }
+                        if (sprite.getTextureRegion() != null) {
+                            position.set(sprite.getX(), sprite.getY());
+                            batch.draw(sprite.getTextureRegion(), position.x + (sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
+                                    sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
+                                    1, 1, sprite.getAngle());
+
+                        }
                     }
                 }
             }

@@ -22,6 +22,14 @@ public class SpriteMapLayer extends MapLayer implements Json.Serializable {
         sprite.setTextureRegion(regionName, texturePath);
         sprite.setSpritePosition(x, y, angle);
         spriteArray.add(sprite);
+        System.out.println("sprite added");
+    }
+    public void createAnimatedSprite(String regionName, String texturePath, float x, float y, float angle){
+        AnimatedSprite sprite = new AnimatedSprite();
+        sprite.setTextureRegion(regionName, texturePath);
+        sprite.setSpritePosition(x, y, angle);
+        spriteArray.add(sprite);
+        System.out.println("animated sprite added");
     }
 
     public Array<Sprite> getSpriteArray() {
@@ -36,6 +44,9 @@ public class SpriteMapLayer extends MapLayer implements Json.Serializable {
         json.writeArrayStart("sprites");
         for (Sprite sprite : spriteArray) {
             json.writeObjectStart();
+            if(sprite instanceof AnimatedSprite){
+                json.writeValue("animated",true);
+            }
             json.writeValue("position", sprite.getX() + "," + sprite.getY() + "," + sprite.getAngle());
             json.writeValue("texture", sprite.getTextureDate());
             json.writeObjectEnd();
@@ -49,12 +60,20 @@ public class SpriteMapLayer extends MapLayer implements Json.Serializable {
         this.setHeight(jsonData.get("height").asInt());
         this.setWidth(jsonData.get("width").asInt());
         for (JsonValue value : jsonData.get("sprites")) {
-            Sprite sprite = new Sprite();
             String texture = value.get("texture").asString();
             String position = value.get("position").asString();
-            sprite.setTextureRegion(texture.split(",")[1], texture.split(",")[0]);
-            sprite.setSpritePosition(Float.parseFloat(position.split(",")[0]), Float.parseFloat(position.split(",")[1]), Float.parseFloat(position.split(",")[2]));
-            spriteArray.add(sprite);
+            if(value.has("animated")){
+                AnimatedSprite animatedSprite = new AnimatedSprite();
+                animatedSprite.setTextureRegion(texture.split(",")[1], texture.split(",")[0]);
+                animatedSprite.setSpritePosition(Float.parseFloat(position.split(",")[0]), Float.parseFloat(position.split(",")[1]), Float.parseFloat(position.split(",")[2]));
+                spriteArray.add(animatedSprite);
+            }else{
+                Sprite sprite = new Sprite();
+
+                sprite.setTextureRegion(texture.split(",")[1], texture.split(",")[0]);
+                sprite.setSpritePosition(Float.parseFloat(position.split(",")[0]), Float.parseFloat(position.split(",")[1]), Float.parseFloat(position.split(",")[2]));
+                spriteArray.add(sprite);
+            }
         }
     }
 }

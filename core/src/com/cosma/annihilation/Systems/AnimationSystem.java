@@ -26,7 +26,6 @@ public class AnimationSystem extends IteratingSystem {
         textureComponent.flipTexture = !animationComponent.spriteDirection;
 
         animationComponent.time += deltaTime;
-
         animationComponent.currentAnimation = animationComponent.animationMap.get(animationComponent.animationState.toString());
 
         if (animationMapper.get(entity).currentAnimation != null) {

@@ -34,6 +34,7 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
 
     private boolean canMove = false;
     private boolean isMoving = false;
+    private boolean createAnimatedSprite = false;
 
     private boolean canRotate = false;
     private boolean isRotating = false;
@@ -53,11 +54,22 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
             treeRoot.add(node);
             TextureAtlas atlas = Annihilation.getAssets().get(atlasFile.path(),TextureAtlas.class);
             for(TextureAtlas.AtlasRegion textureRegion : atlas.getRegions()){
-                VisLabel label = new VisLabel(textureRegion.name);
-                label.setName(textureRegion.name);
-                Node childrenNode = new Node(label);
-                childrenNode.setObject(textureRegion);
-                node.add(childrenNode);
+                if(textureRegion.index < 0){
+                    VisLabel label = new VisLabel(textureRegion.name);
+                    label.setName(textureRegion.name);
+                    Node childrenNode = new Node(label);
+                    childrenNode.setObject(textureRegion);
+                    node.add(childrenNode);
+                }
+                if(textureRegion.index == 1){
+                    VisLabel label = new VisLabel(textureRegion.name+"*");
+                    label.setName(textureRegion.name);
+                    Node childrenNode = new Node(label);
+                    childrenNode.setObject(textureRegion);
+                    node.add(childrenNode);
+                }
+
+
             }
         }
         treeRoot.setExpanded(true);
@@ -81,6 +93,10 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
                 if (!tree.getSelection().isEmpty()) {
                     if(tree.getSelection().first().getObject() instanceof TextureAtlas.AtlasRegion && mapEditor.isSpriteLayerSelected()){
                         canAddSprite = true;
+                        if(((TextureAtlas.AtlasRegion) tree.getSelection().first().getObject()).index > 0){
+                            createAnimatedSprite = true;
+                            System.out.println("index:"  + ((TextureAtlas.AtlasRegion) tree.getSelection().first().getObject()).index);
+                        }
                         textureRegionName = ((TextureAtlas.AtlasRegion) tree.getSelection().first().getObject()).name;
                         texturePath = ((FileTextureData) ((TextureAtlas.AtlasRegion) tree.getSelection().first().getObject()).getTexture().getTextureData()).getFileHandle().pathWithoutExtension()+".atlas";
                         Util.setCursorMove();
@@ -137,9 +153,16 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
         Vector3 worldCoordinates = new Vector3(screenX, screenY, 0);
         final Vector3 vec = mapEditor.getCamera().unproject(worldCoordinates);
         if (canAddSprite && button == Input.Buttons.LEFT && mapEditor.isSpriteLayerSelected()) {
-            mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).createSprite(textureRegionName,texturePath,
-                    Util.roundFloat(vec.x,0),Util.roundFloat(vec.y,0),0);
+            if(createAnimatedSprite){
+                mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).createAnimatedSprite(textureRegionName,texturePath,
+                        Util.roundFloat(vec.x,0),Util.roundFloat(vec.y,0),0);
+            }else{
+                mapEditor.layersPanel.getSelectedLayer(SpriteMapLayer.class).createSprite(textureRegionName,texturePath,
+                        Util.roundFloat(vec.x,0),Util.roundFloat(vec.y,0),0);
+            }
+
             canAddSprite = false;
+            createAnimatedSprite = false;
             Util.setCursorSystem();
         }
         if (canAddSprite && button == Input.Buttons.RIGHT) {
@@ -157,7 +180,6 @@ public class SpriteTreeWindow extends VisWindow implements InputProcessor {
         if(editSprite.isChecked() && button == Input.Buttons.RIGHT && selectedSprite != null){
             SpriteEditWindow spriteEditWindow = new SpriteEditWindow(selectedSprite);
             this.getStage().addActor(spriteEditWindow);
-            System.out.println("open");
         }
 
       return false;

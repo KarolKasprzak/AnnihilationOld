@@ -60,6 +60,9 @@ public class TileMapRender extends IteratingSystem {
             if (mapLayer.isLayerVisible()) {
                 for (Sprite sprite : mapLayer.getSpriteArray()) {
                     position.set(sprite.getX(),sprite.getY());
+                    if(sprite instanceof AnimatedSprite){
+                        ((AnimatedSprite) sprite).updateAnimation(deltaTime);
+                    }
                     batch.draw(sprite.getTextureRegion(), position.x+(sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32, (float) sprite.getTextureRegion().getRegionHeight() / 32,
                             sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
                             1, 1, sprite.getAngle());

@@ -334,7 +334,7 @@ public class MapEditor implements Screen, InputProcessor {
                 mapRender.renderGrid();
             }
             Gdx.gl.glDisable(GL20.GL_BLEND);
-            mapRender.renderMap();
+            mapRender.renderMap(delta);
         }
         if (gameMap != null && !gameMap.getEntityArrayList().isEmpty()) {
             batch.begin();
