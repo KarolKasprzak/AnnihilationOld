@@ -75,8 +75,8 @@ public class WorldBuilder implements Disposable, EntityListener, Listener<GameEv
         signal = new Signal<GameEvent>();
 
         mapLoader = new CosmaMapLoader(world, rayHandler, engine);
-        mapLoader.loadMap("map/lab.map");
-
+//        mapLoader.loadMap("map/lab.map");
+        mapLoader.loadMap("map/forest_test.map");
         json = new Json();
         json.setSerializer(Entity.class, new GameEntitySerializer(world, engine));
 

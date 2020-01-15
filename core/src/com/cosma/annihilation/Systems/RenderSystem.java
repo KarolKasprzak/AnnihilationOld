@@ -71,21 +71,21 @@ public class RenderSystem extends SortedIteratingSystem implements Disposable {
 
         batch.begin();
         if (textureComponent.texture != null && !textureComponent.renderAfterLight) {
-            position.x = position.x - (float) textureComponent.texture.getWidth() / 32 / 2;
-            position.y = position.y - (float) textureComponent.texture.getHeight() / 32 / 2;
-            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float) textureComponent.texture.getWidth() / 32 / 2, (float) textureComponent.texture.getHeight() / 32 / 2,
-                    textureComponent.texture.getWidth() / 32, textureComponent.texture.getHeight() / 32,
+            position.x = position.x - (float) textureComponent.texture.getWidth()/Constants.PPM/2;
+            position.y = position.y - (float) textureComponent.texture.getHeight()/Constants.PPM/2;
+            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float) textureComponent.texture.getWidth()/Constants.PPM/2, (float) textureComponent.texture.getHeight()/Constants.PPM/2,
+                    textureComponent.texture.getWidth()/Constants.PPM, textureComponent.texture.getHeight()/Constants.PPM,
                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
 
         }
 
         if (textureComponent.textureRegion != null && !textureComponent.renderAfterLight) {
-            position.x = position.x - textureComponent.textureRegion.getRegionWidth() / 32 / 2;
-            position.y = position.y - textureComponent.textureRegion.getRegionHeight() / 32 / 2;
+            position.x = position.x - textureComponent.textureRegion.getRegionWidth()/Constants.PPM/2;
+            position.y = position.y - textureComponent.textureRegion.getRegionHeight()/Constants.PPM/2;
 
 
-            batch.draw(textureComponent.textureRegion, position.x + (textureComponent.flipTexture ? textureComponent.textureRegion.getRegionWidth() / 32 : 0), position.y, (float) textureComponent.textureRegion.getRegionWidth() / 2, (float) textureComponent.textureRegion.getRegionHeight() / 2,
-                    textureComponent.textureRegion.getRegionWidth() / 32 * (textureComponent.flipTexture ? -1 : 1), textureComponent.textureRegion.getRegionHeight() / 32,
+            batch.draw(textureComponent.textureRegion, position.x + (textureComponent.flipTexture ? textureComponent.textureRegion.getRegionWidth()/Constants.PPM: 0), position.y, (float) textureComponent.textureRegion.getRegionWidth()/2, (float) textureComponent.textureRegion.getRegionHeight()/2,
+                    textureComponent.textureRegion.getRegionWidth()/Constants.PPM * (textureComponent.flipTexture ? -1 : 1), textureComponent.textureRegion.getRegionHeight()/Constants.PPM,
                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
 //            batch.draw(textureComponent.textureRegion, position.x, position.y,(float)textureComponent.textureRegion.getRegionWidth()/2,(float)textureComponent.textureRegion.getRegionHeight()/2,
 //                     textureComponent.textureRegion.getRegionWidth()/32*(textureComponent.flipTexture ? -1 : 1), textureComponent.textureRegion.getRegionHeight()/32,

@@ -132,7 +132,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>flora.atlas</filename>
+                <filename>ground.atlas</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -149,7 +149,7 @@
             <string></string>
         </struct>
         <key>autoAliasEnabled</key>
-        <false/>
+        <true/>
         <key>trimSpriteNames</key>
         <false/>
         <key>prependSmartFolderName</key>
@@ -181,26 +181,9 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">Nowy folder/high_grass.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>8,16,16,32</rect>
-                <key>scale9Paddings</key>
-                <rect>8,16,16,32</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">Nowy folder/small_grass_anim_1.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_2.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_3.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_4.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_5.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_6.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_7.png</key>
+            <key type="filename">../tiles/graadient.png</key>
+            <key type="filename">../tiles/ground.png</key>
+            <key type="filename">../tiles/ground_end.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -216,14 +199,9 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>Nowy folder/high_grass.png</filename>
-            <filename>Nowy folder/small_grass_anim_1.png</filename>
-            <filename>Nowy folder/small_grass_anim_2.png</filename>
-            <filename>Nowy folder/small_grass_anim_3.png</filename>
-            <filename>Nowy folder/small_grass_anim_4.png</filename>
-            <filename>Nowy folder/small_grass_anim_5.png</filename>
-            <filename>Nowy folder/small_grass_anim_6.png</filename>
-            <filename>Nowy folder/small_grass_anim_7.png</filename>
+            <filename>../tiles/graadient.png</filename>
+            <filename>../tiles/ground.png</filename>
+            <filename>../tiles/ground_end.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

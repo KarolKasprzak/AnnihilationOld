@@ -63,11 +63,11 @@ public class ActionSystem extends IteratingSystem implements Listener<GameEvent>
             switch (actionComponent.action) {
                 case TALK:
                     texture = Annihilation.getAssets().get("gfx/textures/talk_icon.png", Texture.class);
-                    batch.draw(texture, entityBody.getPosition().x, entityBody.getPosition().y + 0.8f, texture.getWidth() / 32, texture.getHeight() / 32);
+                    batch.draw(texture, entityBody.getPosition().x, entityBody.getPosition().y + 0.8f, texture.getWidth()/Constants.PPM, texture.getHeight()/Constants.PPM);
                     break;
                 case OPEN:
                     texture = Annihilation.getAssets().get("gfx/textures/search_icon.png", Texture.class);
-                    batch.draw(texture, entityBody.getPosition().x-0.5f, entityBody.getPosition().y-0.5f , texture.getWidth() / 32, texture.getHeight() / 32);
+                    batch.draw(texture, entityBody.getPosition().x-0.5f, entityBody.getPosition().y-0.5f , texture.getWidth()/Constants.PPM, texture.getHeight()/Constants.PPM);
                     break;
 
             }

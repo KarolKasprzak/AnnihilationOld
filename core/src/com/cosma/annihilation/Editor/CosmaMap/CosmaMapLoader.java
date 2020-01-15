@@ -1,6 +1,7 @@
 package com.cosma.annihilation.Editor.CosmaMap;
 
 import box2dLight.ConeLight;
+import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
@@ -13,7 +14,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapSunLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
+import com.cosma.annihilation.Utils.CollisionID;
 import com.cosma.annihilation.Utils.Serialization.EntitySerializer;
 import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.Util;
@@ -47,7 +50,7 @@ public class CosmaMapLoader {
     private void createMapObject(){
         for (ObjectMapLayer layer : map.getLayers().getByType(ObjectMapLayer.class)) {
             for (RectangleObject object : layer.getObjects().getByType(RectangleObject.class)) {
-                Util.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation() * MathUtils.degreesToRadians);
+                Util.createBox2dObject(world, object.getX(), object.getY(), object.getWidth(), object.getHeight(), object.getBodyType(), object.getName(), object.getRotation() * MathUtils.degreesToRadians,object.getUserDate());
             }
         }
 
@@ -58,8 +61,8 @@ public class CosmaMapLoader {
                 point.setSoft(light.isSoftLight());
                 point.setSoftnessLength(light.getSoftLength());
                 Filter filter = new Filter();
-                filter.maskBits = light.getMaskBit();
-                filter.categoryBits = light.getCategoryBit();
+                filter.maskBits = CollisionID.MASK_LIGHT;
+                filter.categoryBits = CollisionID.LIGHT;
                 point.setContactFilter(filter);
                 map.putLight(light.getName(), point);
             }
@@ -69,13 +72,23 @@ public class CosmaMapLoader {
                 cone.setSoft(light.isSoftLight());
                 cone.setSoftnessLength(light.getSoftLength());
                 Filter filter = new Filter();
-                filter.maskBits = light.getMaskBit();
-                filter.categoryBits = light.getCategoryBit();
+                filter.maskBits = CollisionID.MASK_LIGHT;
+                filter.categoryBits = CollisionID.LIGHT;
                 cone.setContactFilter(filter);
                 map.putLight(light.getName(), cone);
             }
+            for (MapSunLight light : layer.getLights().getByType(MapSunLight.class)) {
+                DirectionalLight sun = new DirectionalLight(rayHandler, light.getRaysNumber(), light.getColor(), light.getDirection());
+                sun.setStaticLight(light.isStaticLight());
+                sun.setSoft(light.isSoftLight());
+                sun.setSoftnessLength(light.getSoftLength());
+                Filter filter = new Filter();
+                filter.maskBits = CollisionID.MASK_LIGHT;
+                filter.categoryBits = CollisionID.LIGHT;
+                sun.setContactFilter(filter);
+                map.putLight(light.getName(), sun);
+            }
         }
-
     }
 
     public GameMap getMap() {

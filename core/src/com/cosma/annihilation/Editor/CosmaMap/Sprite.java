@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Utils.Constants;
 
 public class Sprite{
     private float x,y,width,height,angle;
@@ -25,8 +26,8 @@ public class Sprite{
      void setTextureRegion(String region, String path) {
                 this.textureRegion = Annihilation.getAssets().get(path,TextureAtlas.class).findRegion(region);
                 this.atlasRegionName= region;
-                this.width = textureRegion.getRegionWidth()/32;
-                this.height = textureRegion.getRegionHeight()/32;
+                this.width = textureRegion.getRegionWidth()/ Constants.PPM;
+                this.height = textureRegion.getRegionHeight()/Constants.PPM;
         }
 
 

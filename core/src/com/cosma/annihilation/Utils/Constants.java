@@ -8,9 +8,8 @@ public class Constants {
 
 
     // -------------- Physics -----------------
-
-    public static final float PPM = 32f;
-    public static final float PIXEL_TO_METRE = 1 / PPM;
+    //pixel to meter
+    public static final float PPM = 64;
 
 
 

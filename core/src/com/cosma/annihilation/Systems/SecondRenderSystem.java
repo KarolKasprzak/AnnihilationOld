@@ -88,10 +88,10 @@ public class SecondRenderSystem extends IteratingSystem implements Disposable {
 //        }
         if (textureComponent.texture != null && textureComponent.renderAfterLight) {
 
-            position.x = position.x - (float)textureComponent.texture.getWidth()/32/2;
-            position.y = position.y - (float)textureComponent.texture.getHeight()/32/2;
-            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/32/2, (float)textureComponent.texture.getHeight()/32/2,
-                    textureComponent.texture.getWidth()/32, textureComponent.texture.getHeight()/32,
+            position.x = position.x - (float)textureComponent.texture.getWidth()/Constants.PPM/2;
+            position.y = position.y - (float)textureComponent.texture.getHeight()/Constants.PPM/2;
+            batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float)textureComponent.texture.getWidth()/Constants.PPM/2, (float)textureComponent.texture.getHeight()/Constants.PPM/2,
+                    textureComponent.texture.getWidth()/Constants.PPM, textureComponent.texture.getHeight()/Constants.PPM,
                     1, 1, body.getAngle() * MathUtils.radiansToDegrees);
         }
 

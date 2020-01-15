@@ -132,7 +132,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>flora.atlas</filename>
+                <filename>metro.atlas</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -169,7 +169,7 @@
             <key>trimMargin</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">None</enum>
+            <enum type="SpriteSettings::TrimMode">Trim</enum>
             <key>tracerTolerance</key>
             <int>200</int>
             <key>heuristicMask</key>
@@ -181,49 +181,61 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">Nowy folder/high_grass.png</key>
+            <key type="filename">sprite_asp/metro/metro_ground.png</key>
+            <key type="filename">sprite_asp/metro/metro_ground1.png</key>
+            <key type="filename">sprite_asp/metro/metro_ground2.png</key>
+            <key type="filename">sprite_asp/metro/metro_ground3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>8,16,16,32</rect>
+                <rect>16,8,32,16</rect>
                 <key>scale9Paddings</key>
-                <rect>8,16,16,32</rect>
+                <rect>16,8,32,16</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">Nowy folder/small_grass_anim_1.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_2.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_3.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_4.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_5.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_6.png</key>
-            <key type="filename">Nowy folder/small_grass_anim_7.png</key>
+            <key type="filename">sprite_asp/metro/metro_wall.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>8,8,16,16</rect>
+                <rect>16,32,32,64</rect>
                 <key>scale9Paddings</key>
-                <rect>8,8,16,16</rect>
+                <rect>16,32,32,64</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">sprite_asp/metro/metro_wall1.png</key>
+            <key type="filename">sprite_asp/metro/metro_wall2.png</key>
+            <key type="filename">sprite_asp/metro/metro_wall3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>32,64,64,128</rect>
+                <key>scale9Paddings</key>
+                <rect>32,64,64,128</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
         </map>
         <key>fileList</key>
         <array>
-            <filename>Nowy folder/high_grass.png</filename>
-            <filename>Nowy folder/small_grass_anim_1.png</filename>
-            <filename>Nowy folder/small_grass_anim_2.png</filename>
-            <filename>Nowy folder/small_grass_anim_3.png</filename>
-            <filename>Nowy folder/small_grass_anim_4.png</filename>
-            <filename>Nowy folder/small_grass_anim_5.png</filename>
-            <filename>Nowy folder/small_grass_anim_6.png</filename>
-            <filename>Nowy folder/small_grass_anim_7.png</filename>
+            <filename>sprite_asp/metro/metro_ground.png</filename>
+            <filename>sprite_asp/metro/metro_ground1.png</filename>
+            <filename>sprite_asp/metro/metro_ground2.png</filename>
+            <filename>sprite_asp/metro/metro_ground3.png</filename>
+            <filename>sprite_asp/metro/metro_wall.png</filename>
+            <filename>sprite_asp/metro/metro_wall1.png</filename>
+            <filename>sprite_asp/metro/metro_wall2.png</filename>
+            <filename>sprite_asp/metro/metro_wall3.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

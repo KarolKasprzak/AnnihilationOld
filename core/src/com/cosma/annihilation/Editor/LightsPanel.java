@@ -1,9 +1,6 @@
 package com.cosma.annihilation.Editor;
 
-import box2dLight.ConeLight;
-import box2dLight.Light;
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
+import box2dLight.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -227,6 +224,12 @@ public class LightsPanel extends VisWindow implements InputProcessor {
             if (selectedLightType == 1) {
                 mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createConeLight(vec.x, vec.y, selectedColor, 25, getMaxLightDistance(), 270, 45);
                 ConeLight light = new ConeLight(rayHandler, 25, selectedColor, getMaxLightDistance(), vec.x, vec.y, 270, 45);
+                light.setContactFilter(filter);
+                mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
+            }
+            if (selectedLightType == 2) {
+                mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().createSunLight(vec.x, vec.y, selectedColor, 50, 270);
+                DirectionalLight light = new DirectionalLight(rayHandler, 50, selectedColor, 270);
                 light.setContactFilter(filter);
                 mapEditor.getMap().putLight(mapEditor.getMap().getLayers().getByType(LightsMapLayer.class).first().getLastLightName(), light);
             }

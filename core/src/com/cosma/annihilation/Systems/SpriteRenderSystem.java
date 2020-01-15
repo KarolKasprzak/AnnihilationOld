@@ -47,10 +47,10 @@ public class SpriteRenderSystem extends IteratingSystem implements Disposable {
 
 
         if (spriteComponent.texture != null) {
-            position.x = position.x - (float) spriteComponent.texture.getWidth() / 32 / 2;
-            position.y = position.y - (float) spriteComponent.texture.getHeight() / 32 / 2;
-            batch.draw(new TextureRegion(spriteComponent.texture), position.x+(spriteComponent.flipX ? spriteComponent.texture.getWidth() / 32 : 0), position.y, (float) spriteComponent.texture.getWidth() / 32 / 2, (float) spriteComponent.texture.getHeight() / 32 / 2,
-                    spriteComponent.texture.getWidth() / 32 * (spriteComponent.flipX ? -1 : 1), spriteComponent.texture.getHeight() / 32,
+            position.x = position.x - (float) spriteComponent.texture.getWidth()/Constants.PPM/ 2;
+            position.y = position.y - (float) spriteComponent.texture.getHeight()/Constants.PPM/ 2;
+            batch.draw(new TextureRegion(spriteComponent.texture), position.x+(spriteComponent.flipX ? spriteComponent.texture.getWidth()/Constants.PPM : 0), position.y, (float) spriteComponent.texture.getWidth() / Constants.PPM / 2, (float) spriteComponent.texture.getHeight() / Constants.PPM/ 2,
+                    spriteComponent.texture.getWidth() / Constants.PPM * (spriteComponent.flipX ? -1 : 1), spriteComponent.texture.getHeight() / Constants.PPM,
                     1, 1, spriteComponent.angle);
         }
 

@@ -29,6 +29,7 @@ import com.cosma.annihilation.Components.BodyComponent;
 import com.cosma.annihilation.Components.TextureComponent;
 import com.cosma.annihilation.Editor.*;
 import com.cosma.annihilation.Editor.CosmaMap.*;
+import com.cosma.annihilation.Utils.Constants;
 import com.cosma.annihilation.Utils.Serialization.GameEntitySerializer;
 import com.cosma.annihilation.Utils.Util;
 import com.kotcrab.vis.ui.FocusManager;
@@ -319,10 +320,10 @@ public class MapEditor implements Screen, InputProcessor {
         float frameTime = Math.min(delta, 0.25f);
         engine.update(delta);
         accumulator += frameTime;
-        if (accumulator >= MAX_STEP_TIME) {
-            world.step(MAX_STEP_TIME, 6, 2);
-            accumulator -= MAX_STEP_TIME;
-        }
+//        if (accumulator >= MAX_STEP_TIME) {
+//            world.step(MAX_STEP_TIME, 6, 2);
+//            accumulator -= MAX_STEP_TIME;
+//        }
         camera.update();
         cameraUi.update();
         batch.setProjectionMatrix(camera.combined);
@@ -348,10 +349,10 @@ public class MapEditor implements Screen, InputProcessor {
                 }
                 Body body = entity.getComponent(BodyComponent.class).body;
                 Vector2 position = body.getPosition();
-                position.x = position.x - (float) textureComponent.texture.getWidth() / 32 / 2;
-                position.y = position.y - (float) textureComponent.texture.getHeight() / 32 / 2;
-                batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float) textureComponent.texture.getWidth() / 32 / 2, (float) textureComponent.texture.getHeight() / 32 / 2,
-                        textureComponent.texture.getWidth() / 32, textureComponent.texture.getHeight() / 32,
+                position.x = position.x - (float) textureComponent.texture.getWidth() / Constants.PPM / 2;
+                position.y = position.y - (float) textureComponent.texture.getHeight() / Constants.PPM / 2;
+                batch.draw(new TextureRegion(textureComponent.texture), position.x, position.y, (float) textureComponent.texture.getWidth() / Constants.PPM / 2, (float) textureComponent.texture.getHeight() /Constants.PPM / 2,
+                        textureComponent.texture.getWidth() / Constants.PPM, textureComponent.texture.getHeight() / Constants.PPM,
                         1, 1, body.getAngle() * MathUtils.radiansToDegrees);
             }
             batch.end();

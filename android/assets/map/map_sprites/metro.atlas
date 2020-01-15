@@ -1,0 +1,61 @@
+metro.png
+size: 130, 1552
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+metro_ground
+  rotate: false
+  xy: 1, 1033
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+metro_ground1
+  rotate: false
+  xy: 1, 1163
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+metro_ground2
+  rotate: false
+  xy: 1, 1293
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+metro_ground3
+  rotate: false
+  xy: 1, 1423
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+metro_wall
+  rotate: false
+  xy: 1, 1
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1
+metro_wall1
+  rotate: false
+  xy: 1, 259
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1
+metro_wall2
+  rotate: false
+  xy: 1, 517
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1
+metro_wall3
+  rotate: false
+  xy: 1, 775
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1

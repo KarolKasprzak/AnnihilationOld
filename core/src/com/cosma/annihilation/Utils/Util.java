@@ -94,7 +94,7 @@ public class Util {
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 
-    public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name,float rotation) {
+    public static void createBox2dObject(World world, float x, float y, float width, float height, BodyDef.BodyType bodyType, String name,float rotation,String userDate) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = bodyType;
         bodyDef.position.set(width / 2 + x, height / 2 + y);
@@ -109,9 +109,10 @@ public class Util {
         fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = CollisionID.SCENERY;
         fixtureDef.filter.maskBits = CollisionID.MASK_SCENERY;
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData(userDate);
         body.setTransform(body.getPosition(),rotation);
     }
+
 
     public static void createPointLight(){
 

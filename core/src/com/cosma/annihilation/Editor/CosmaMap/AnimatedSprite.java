@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.utils.Array;
 import com.cosma.annihilation.Annihilation;
+import com.cosma.annihilation.Utils.Constants;
 
 public class AnimatedSprite extends Sprite{
 
@@ -32,8 +33,8 @@ public class AnimatedSprite extends Sprite{
                 this.animation = new Animation<>(0.1f,Annihilation.getAssets().get(path,TextureAtlas.class).findRegions(region),Animation.PlayMode.LOOP);
                 this.textureRegion = animation.getKeyFrame(time);
                 this.atlasRegionName= region;
-                this.width = textureRegion.getRegionWidth()/32;
-                this.height = textureRegion.getRegionHeight()/32;
+                this.width = textureRegion.getRegionWidth()/ Constants.PPM;
+                this.height = textureRegion.getRegionHeight()/Constants.PPM;
 
         }
 

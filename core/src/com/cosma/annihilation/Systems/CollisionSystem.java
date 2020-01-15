@@ -208,6 +208,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
             if (fb.getUserData() == BodyID.PLAYER_FOOT && !fa.isSensor() || fa.getUserData() == BodyID.PLAYER_FOOT && !fb.isSensor()) {
                 playerComponent.onGround = false;
                 playerComponent.numFootContacts--;
+                delayJump(0.6f, playerComponent);
             }
 
             //------------------------Ladder contacts--------------

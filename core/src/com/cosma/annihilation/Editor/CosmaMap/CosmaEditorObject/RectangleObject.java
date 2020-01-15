@@ -5,6 +5,15 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 public class RectangleObject extends MapObject {
     private float x,y,width,height,rotation;
     private BodyDef.BodyType bodyType;
+    private String userDate;
+
+    public String getUserDate() {
+        return userDate;
+    }
+
+    public void setUserDate(String userDate) {
+        this.userDate = userDate;
+    }
 
     public float getX() {
         return x;

@@ -10,7 +10,9 @@ import com.cosma.annihilation.Annihilation;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapConeLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapPointLight;
+import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorLights.MapSunLight;
 import com.cosma.annihilation.Editor.CosmaMap.CosmaEditorObject.RectangleObject;
+import com.cosma.annihilation.Utils.Constants;
 
 public class MapRender {
 
@@ -58,7 +60,7 @@ public class MapRender {
                                 continue;
                             }
                             TextureRegion texture = tile.getTextureRegion();
-                            batch.draw(tile.getTextureRegion(), x, y, texture.getRegionWidth() / gameMap.getTileSize(), texture.getRegionHeight() / gameMap.getTileSize());
+                            batch.draw(tile.getTextureRegion(), x, y, texture.getRegionWidth()/gameMap.getTileSize(), texture.getRegionHeight()/gameMap.getTileSize());
                         }
                     }
                 }
@@ -72,8 +74,8 @@ public class MapRender {
                         }
                         if (sprite.getTextureRegion() != null) {
                             position.set(sprite.getX(), sprite.getY());
-                            batch.draw(sprite.getTextureRegion(), position.x + (sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth() / 32 : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth() / 32 / 2, (float) sprite.getTextureRegion().getRegionHeight() / 32 / 2,
-                                    sprite.getTextureRegion().getRegionWidth() / 32 * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight() / 32,
+                            batch.draw(sprite.getTextureRegion(), position.x + (sprite.isFlipX() ? sprite.getTextureRegion().getRegionWidth()/Constants.PPM : 0), position.y, (float) sprite.getTextureRegion().getRegionWidth()/Constants.PPM/2, (float) sprite.getTextureRegion().getRegionHeight()/Constants.PPM/2,
+                                    sprite.getTextureRegion().getRegionWidth()/Constants.PPM * (sprite.isFlipX() ? -1 : 1), sprite.getTextureRegion().getRegionHeight()/Constants.PPM,
                                     1, 1, sprite.getAngle());
 
                         }
@@ -91,7 +93,8 @@ public class MapRender {
                             }
                             batch.draw(texture, light.getX() - (texture.getRegionWidth() / gameMap.getTileSize()) / 4, light.getY() - (texture.getRegionHeight() / gameMap.getTileSize()) / 4, texture.getRegionWidth() / gameMap.getTileSize() / 2, texture.getRegionHeight() / gameMap.getTileSize() / 2);
                         }
-                        if (light instanceof MapConeLight) {
+
+                        if (light instanceof MapConeLight || light instanceof MapSunLight) {
                             TextureAtlas.AtlasRegion texture = iconPack.findRegion("cone_light");
                             if (light.isHighlighted()) {
                                 texture = iconPack.findRegion("point_light_h");

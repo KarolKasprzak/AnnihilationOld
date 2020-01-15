@@ -31,15 +31,13 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
     private VisTextButton createRectangleButton, createJointButton;
     private float x1, y1, x2, y2;
     private BodyDef.BodyType bodyType = BodyDef.BodyType.StaticBody;
-    private VisCheckBox setStaticBox, setKinematicBox, setDynamicBox;
-    private boolean canCreateBox = false;
+    private VisCheckBox setStaticBox, setKinematicBox, setDynamicBox ,enableBodyEdit;
     private ShapeRenderer shapeRenderer;
-    private boolean canDraw = false;
     private OrthographicCamera camera;
     private Array<Body> bodies = new Array<>();
     private Body selectedBody;
     private boolean canDragRight, canDragLeft, canDragUp, canDragDown, canDragObject, canRotateObject,
-            isLeftButtonPressed, isRightButtonPressed;
+            isLeftButtonPressed, isRightButtonPressed,canDraw = false,canCreateBox = false, canOpenEditWindow =false, canBodyEdit = false;
     private RectangleObject selectedObject;
 
     public ObjectPanel(final MapEditor mapEditor) {
@@ -58,6 +56,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         setDynamicBox = new VisCheckBox("Dynamic");
         setDynamicBox.setFocusBorderEnabled(false);
         setKinematicBox = new VisCheckBox("Kinematic");
+        enableBodyEdit = new VisCheckBox("Edit");
 
         add(setDynamicBox);
         add(setStaticBox);
@@ -65,6 +64,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         row();
         add(createRectangleButton).top();
         add(createJointButton).top();
+        add(enableBodyEdit);
         add().expand().fill();
 
         setStaticBox.addListener(new ClickListener() {
@@ -96,6 +96,16 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
+
+        enableBodyEdit.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                canBodyEdit = !enableBodyEdit.isChecked();
+                return super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+
 
         createRectangleButton.addListener(new ChangeListener() {
             @Override
@@ -132,7 +142,7 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
 
     private void createBoxObject(float x, float y, float w, float h) {
         if (mapEditor.isObjectLayerSelected()) {
-            Util.createBox2dObject(mapEditor.getWorld(), x, y, w, h, bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h, bodyType), 0);
+            Util.createBox2dObject(mapEditor.getWorld(), x, y, w, h, bodyType, mapEditor.layersPanel.getSelectedLayer(ObjectMapLayer.class).createBoxObject(x, y, w, h, bodyType), 0,null);
             canCreateBox = false;
         }
     }
@@ -213,6 +223,11 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
         }
         if (button == Input.Buttons.LEFT) isLeftButtonPressed = false;
         if (button == Input.Buttons.RIGHT) isRightButtonPressed = false;
+        if (button == Input.Buttons.RIGHT && canOpenEditWindow && canBodyEdit ){
+            ObjectEditWindow objectEditWindow= new ObjectEditWindow(selectedBody);
+            getStage().addActor(objectEditWindow);
+        }
+
         return false;
     }
 
@@ -321,9 +336,11 @@ public class ObjectPanel extends VisWindow implements InputProcessor {
                                     Util.setCursorMove();
                                     canDragObject = true;
                                     canRotateObject = true;
+                                    canOpenEditWindow = true;
                                 } else {
                                     canDragObject = false;
                                     canRotateObject = false;
+                                    canOpenEditWindow = false;
                                 }
                                 if (!canDragLeft && !canDragRight && !canDragDown && !canDragUp && !canDragObject) {
                                     Util.setCursorSystem();
